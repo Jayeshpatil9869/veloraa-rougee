@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+/* Brand Font Faces */
+@font-face {
+  font-family: 'Amithen';
+  src: url('/fonts/Amithen-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sofia Pro';
+  src: url('/fonts/SofiaPro-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sofia Pro';
+  src: url('/fonts/SofiaPro-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sofia Pro';
+  src: url('/fonts/SofiaPro-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sofia Pro';
+  src: url('/fonts/SofiaPro-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;
+
+    --primary: 308 22% 52%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 327 69% 97%;
+    --secondary-foreground: 308 29% 36%;
+
+    --tertiary: 307 34% 81%;
+    --tertiary-foreground: 308 22% 52%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 0 0% 40%;
+
+    --light: 0 0% 40%;
+    --accent: 210 40% 96.1%;
+
+    --destructive: 0 84.2% 60.2%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 283 60% 92%;
+    --ring: 308 22% 52%;
+
+    --card: 0 0% 100%;
+    --popover: 0 0% 100%;
+
+    --radius: 0.3rem;
+
+    --font-amithen: 'Amithen', 'Alex Brush', cursive;
+    --font-sofia-pro: 'Sofia Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-sofia-pro);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @media (max-width: 767px) {
+    html,
+    body {
+      font-size: clamp(0.4rem, 0.6rem + 1.6vw, 1rem) !important;
+    }
+  }
+}
+
+.font-serif,
+.font-script,
+.font-editorial {
+  font-family: var(--font-amithen);
+}
+
+.font-sans {
+  font-family: var(--font-sofia-pro);
+}
+
+/* Custom exact hex surfaces and theme colors */
+.bg-primary {
+  background-color: #A06A98;
+}
+.text-primary {
+  color: #A06A98;
+}
+.border-primary {
+  border-color: #A06A98;
+}
+
+.bg-primary-foreground {
+  background-color: #F8FAFC;
+}
+.text-primary-foreground {
+  color: #F8FAFC;
+}
+
+.bg-secondary {
+  background-color: #FDF2F8;
+}
+.text-secondary {
+  color: #FDF2F8;
+}
+.text-secondary-foreground {
+  color: #76416F;
+}
+
+.bg-tertiary {
+  background-color: #DFBEDB;
+}
+.text-tertiary {
+  color: #DFBEDB;
+}
+.border-tertiary {
+  border-color: #DFBEDB;
+}
+
+.text-light {
+  color: #666666;
+}
+
+.bg-collection-band {
+  background-color: #FDF4F9;
+}
+
+.rounded-brand {
+  border-radius: 2.8px;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+    transform: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
