@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cartService } from '../../services/cartService';
 import { Product, ProductVariant } from '../../types';
+import { ScrollReveal } from '../motion/ScrollReveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -191,7 +192,8 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
   };
 
   return (
-    <div ref={sectionRef} className="relative group w-full" role="region" aria-roledescription="carousel">
+    <ScrollReveal direction="up" blur={true} duration={0.8} className="w-full">
+      <div ref={sectionRef} className="relative group w-full" role="region" aria-roledescription="carousel">
       <div className="overflow-hidden">
         <div
           className="flex m-0 transition-transform duration-700 ease-in-out"
@@ -515,6 +517,7 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
           <span className="sr-only">Next slide</span>
         </button>
       </div>
-    </div>
+      </div>
+    </ScrollReveal>
   );
 };

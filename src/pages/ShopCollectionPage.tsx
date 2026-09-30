@@ -5,6 +5,7 @@ import { searchService } from '../services/searchService';
 import { ProductCard } from '../components/product/ProductCard';
 import { BrandImage } from '../components/ui/BrandImage';
 import { Filter, SlidersHorizontal, RotateCcw, ChevronDown, Check, Sparkles } from 'lucide-react';
+import { ScrollReveal, StaggerContainer, StaggerItem } from '../components/motion/ScrollReveal';
 
 interface ShopCollectionPageProps {
   currentCategory: CategoryId | 'all';
@@ -116,7 +117,7 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
     <div className="w-full bg-white select-none">
       {/* Centered Editorial Masthead Banner (Matching Reference) */}
       <section className="relative w-full bg-[#FDF2F8] py-14 lg:py-20 border-b border-[#F0DEF7]/60 overflow-hidden">
-        <div className="max-w-[1440px] mx-auto px-4 lg:px-20 text-center relative z-10 space-y-4">
+        <ScrollReveal direction="up" blur={true} className="max-w-[1440px] mx-auto px-4 lg:px-20 text-center relative z-10 space-y-4">
           <div className="inline-flex items-center gap-2 bg-white/85 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-[#DFBEDB]/40 text-xs font-bold uppercase tracking-widest text-[#76416F] shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-[#A06A98]" />
             {heroInfo.kicker}
@@ -130,7 +131,7 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
           <p className="font-sans text-sm sm:text-base text-[#666666] max-w-2xl mx-auto leading-relaxed">
             {heroInfo.description}
           </p>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* Main Container */}
@@ -320,16 +321,21 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
 
             {/* Product Card Grid (2-column on mobile, responsive up to 3 columns) */}
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+              <StaggerContainer
+                key={`${currentCategory}-${sortBy}-${maxPrice}-${searchQuery}`}
+                stagger={0.06}
+                className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6"
+              >
                 {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onSelectProduct={onSelectProduct}
-                    onAddedToCart={onCartUpdated}
-                  />
+                  <StaggerItem key={product.id}>
+                    <ProductCard
+                      product={product}
+                      onSelectProduct={onSelectProduct}
+                      onAddedToCart={onCartUpdated}
+                    />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             ) : (
               <div className="py-20 text-center space-y-3 bg-[#FDF2F8]/30 rounded-brand p-8 border border-dashed border-[#DFBEDB]">
                 <p className="text-base font-bold text-[#333333]">

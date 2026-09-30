@@ -5,6 +5,7 @@ import { productService } from '../services/productService';
 import { BrandImage } from '../components/ui/BrandImage';
 import { ProductCard } from '../components/product/ProductCard';
 import { ChevronRight, Plus, Minus, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { ScrollReveal, StaggerContainer, StaggerItem } from '../components/motion/ScrollReveal';
 
 interface ProductDetailPageProps {
   product: Product;
@@ -295,19 +296,25 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
         {/* Suggested Products Section */}
         <div className="py-12 lg:py-16 space-y-8">
-          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold tracking-tight text-[#333333]">
-            Suggested Products
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+          <ScrollReveal direction="up" distance={20}>
+            <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold tracking-tight text-[#333333]">
+              Suggested Products
+            </h2>
+          </ScrollReveal>
+          <StaggerContainer
+            staggerDelay={0.08}
+            className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
+          >
             {suggestedProducts.map((p) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                onSelectProduct={onSelectProduct}
-                onAddedToCart={onCartUpdated}
-              />
+              <StaggerItem key={p.id} className="h-full">
+                <ProductCard
+                  product={p}
+                  onSelectProduct={onSelectProduct}
+                  onAddedToCart={onCartUpdated}
+                />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </div>
     </div>

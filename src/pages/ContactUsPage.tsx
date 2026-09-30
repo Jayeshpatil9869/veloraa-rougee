@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrandImage } from '../components/ui/BrandImage';
 import { BRAND_INFO } from '../data/content';
 import { Mail, Clock, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { ScrollReveal } from '../components/motion/ScrollReveal';
 
 export const ContactUsPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -36,21 +37,23 @@ export const ContactUsPage: React.FC = () => {
     <div className="w-full bg-white select-none">
       {/* Centered Editorial Masthead Banner */}
       <section className="relative w-full bg-[#FDF2F8] py-14 lg:py-20 border-b border-[#F0DEF7]/60 overflow-hidden">
-        <div className="max-w-[1440px] mx-auto px-4 lg:px-20 text-center relative z-10 space-y-4">
-          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-[#DFBEDB]/40 text-xs font-bold uppercase tracking-widest text-[#76416F]">
-            <Mail className="w-3.5 h-3.5 text-[#A06A98]" />
-            Customer Support &amp; Concierge
+        <ScrollReveal direction="up" distance={20}>
+          <div className="max-w-[1440px] mx-auto px-4 lg:px-20 text-center relative z-10 space-y-4">
+            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-[#DFBEDB]/40 text-xs font-bold uppercase tracking-widest text-[#76416F]">
+              <Mail className="w-3.5 h-3.5 text-[#A06A98]" />
+              Customer Support &amp; Concierge
+            </div>
+            <h1
+              className="font-serif text-6xl sm:text-7xl lg:text-8xl text-[#333333] leading-tight"
+              style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
+            >
+              Contact Us
+            </h1>
+            <p className="font-sans text-sm sm:text-base text-[#666666] max-w-2xl mx-auto leading-relaxed">
+              Have questions about formulations, order tracking, or shades? Our beauty concierge is here to assist.
+            </p>
           </div>
-          <h1
-            className="font-serif text-6xl sm:text-7xl lg:text-8xl text-[#333333] leading-tight"
-            style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
-          >
-            Contact Us
-          </h1>
-          <p className="font-sans text-sm sm:text-base text-[#666666] max-w-2xl mx-auto leading-relaxed">
-            Have questions about formulations, order tracking, or shades? Our beauty concierge is here to assist.
-          </p>
-        </div>
+        </ScrollReveal>
       </section>
 
       <div className="max-w-[1440px] mx-auto px-4 lg:px-20 py-12 lg:py-16">
