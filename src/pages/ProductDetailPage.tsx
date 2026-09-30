@@ -139,7 +139,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 {product.name}
               </h1>
               <div className="text-2xl font-bold text-[#A06A98] tabular-nums pt-1">
-                AED {selectedVariant.price.toFixed(2)}
+                ₹{selectedVariant.price.toFixed(2)}
               </div>
               <p className="text-sm text-[#666666] leading-relaxed pt-2">
                 {product.shortDescription || product.description}
@@ -220,14 +220,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     </span>
                   ) : (
                     <span>
-                      ADD TO BAG ─ <strong className="font-bold">AED {(selectedVariant.price * quantity).toFixed(2)}</strong>
+                      ADD TO BAG ─ <strong className="font-bold">₹{(selectedVariant.price * quantity).toFixed(2)}</strong>
                     </span>
                   )}
                 </button>
               </div>
 
               <div className="text-xs text-[#76416F] bg-[#FDF2F8] p-3 rounded-brand border border-[#F0DEF7] flex items-center justify-center">
-                ✨ Free International Shipping on orders over AED 440.00
+                ✨ Free Shipping on orders over ₹999.00
               </div>
             </div>
 

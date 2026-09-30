@@ -6,7 +6,7 @@ export const BRAND_INFO = {
   gst: '27BJKPG4947G1ZZ',
   supportEmail: 'support.veloraarougee@gmail.com',
   announcements: [
-    'Free International Shipping over 440 AED',
+    'Free Shipping across India over ₹999',
     'Our products are not tested on animals',
   ],
   claimTicker: [
@@ -175,7 +175,7 @@ export const LEGAL_PAGES_CONTENT = {
       },
       {
         heading: 'Pricing & Availability',
-        body: 'All product prices are quoted in AED (United Arab Emirates Dirham) and include applicable taxes where indicated. We reserve the right to correct typographical pricing discrepancies or update variant availability.',
+        body: 'All product prices are quoted in INR (₹) and include applicable taxes where indicated. We reserve the right to correct typographical pricing discrepancies or update variant availability.',
       },
       {
         heading: 'Support Concierge Hours',

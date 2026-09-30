@@ -1,7 +1,7 @@
 import { CartItem, Product, ProductVariant } from '../types';
 
 const CART_STORAGE_KEY = 'veloraa_rougee_cart_v1';
-export const FREE_SHIPPING_THRESHOLD = 440; // AED
+export const FREE_SHIPPING_THRESHOLD = 999; // INR (₹)
 
 export const cartService = {
   getCart: (): CartItem[] => {

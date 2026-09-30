@@ -1,6 +1,4 @@
 import React from 'react';
-import { BrandArrow } from '../brand/BrandIcons';
-import { BrandImage } from '../ui/BrandImage';
 import { CategoryId } from '../../types';
 
 interface ShopByCategoryProps {
@@ -8,81 +6,119 @@ interface ShopByCategoryProps {
   onNavigateToCollection: () => void;
 }
 
+interface CategoryItem {
+  id: CategoryId;
+  name: string;
+  href: string;
+  image: string;
+  alt: string;
+}
+
 export const ShopByCategory: React.FC<ShopByCategoryProps> = ({
   onSelectCategory,
   onNavigateToCollection,
 }) => {
-  const categoryTiles = [
+  const categories: CategoryItem[] = [
     {
-      id: 'face' as CategoryId,
+      id: 'face',
       name: 'Face',
+      href: '/en/collection/face',
       image: 'https://cdn.shopify.com/s/files/1/0669/7723/5199/collections/3af5c15f3fcbde5e0c08e2fac987e1db.png?v=1701093520',
       alt: 'Collection Face',
     },
     {
-      id: 'lips' as CategoryId,
+      id: 'lips',
       name: 'Lips',
+      href: '/en/collection/lips',
       image: 'https://cdn.shopify.com/s/files/1/0669/7723/5199/collections/87a3c8adb0ed018995037065d525a732.png?v=1701093474',
       alt: 'Collection Lips',
     },
     {
-      id: 'eyes' as CategoryId,
+      id: 'eyes',
       name: 'Eyes',
+      href: '/en/collection/eyes',
       image: 'https://cdn.shopify.com/s/files/1/0669/7723/5199/collections/1b9ceb75ddc74cfca13c79fc3e12ff41.png?v=1701093441',
       alt: 'Collection Eyes',
     },
     {
-      id: 'brows' as CategoryId,
+      id: 'brows',
       name: 'Brows',
+      href: '/en/collection/brows',
       image: 'https://cdn.shopify.com/s/files/1/0669/7723/5199/collections/64b92ceee7d9780028250bd5.jpg?v=1701093586',
       alt: 'Collection Brows',
     },
   ];
 
   return (
-    <section className="px-4 py-8 lg:px-20 lg:py-12 flex flex-col gap-8 lg:gap-12 bg-[#DFBEDB] select-none">
-      {/* Header */}
-      <div className="grid grid-cols-3 gap-2 items-end">
-        <h2 className="col-span-2 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#333333]">
-          Shop by Category
-        </h2>
-        <button
-          type="button"
-          onClick={onNavigateToCollection}
-          className="justify-self-end text-xs sm:text-sm md:text-base font-extrabold uppercase text-[#A06A98] hover:text-[#774170] transition-colors flex items-center gap-2 group cursor-pointer"
-        >
-          <span>SHOP ALL</span>
-          <BrandArrow />
-        </button>
+    <div className="px-4 py-8 lg:px-20 lg:py-12 flex flex-col gap-8 lg:gap-12 bg-tertiary">
+      <div className="space-y-4" style={{ opacity: 1, transform: 'none' }}>
+        <div className="grid grid-cols-3 gap-2">
+          <h2 className="text font-sans text-3xl lg:text-5xl leading-9 font-bold tracking-tight col-span-2">
+            Shop by Category
+          </h2>
+          <a
+            className="text font-sans font-extrabold flex items-center gap-2 justify-self-end text-sm uppercase text-primary transition-colors duration-200 hover:text-[#774170] md:text-base cursor-pointer"
+            href="/en/collection"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigateToCollection();
+            }}
+          >
+            Shop All
+            <svg
+              className="h-6 w-5 rtl:-rotate-180"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 22 14"
+              aria-label="Right arrow icon"
+            >
+              <g clipPath="url(#shop-by-cat-arrow)">
+                <path
+                  fill="currentColor"
+                  d="m18.568 6.1-4.81-4.827L15.028 0 22 7l-6.973 7-1.268-1.273L18.568 7.9H0V6.1h18.568Z"
+                />
+              </g>
+              <defs>
+                <clipPath id="shop-by-cat-arrow">
+                  <path fill="#fff" d="M0 0h22v14H0z" />
+                </clipPath>
+              </defs>
+            </svg>
+          </a>
+        </div>
       </div>
 
-      {/* Tiles Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {categoryTiles.map((tile) => (
+      <div className="grid auto-cols-[75%] grid-flow-col gap-x-2 overflow-x-auto lg:grid-cols-4 lg:gap-x-4">
+        {categories.map((category) => (
           <div
-            key={tile.id}
-            onClick={() => onSelectCategory(tile.id)}
-            className="group relative flex h-[28rem] sm:h-[32rem] lg:h-[28vw] w-full flex-none items-end overflow-hidden rounded-brand bg-white p-3 lg:p-4 cursor-pointer shadow-sm hover:shadow-md transition-shadow"
+            key={category.id}
+            className="group relative flex h-[29.5rem] w-full flex-none items-end overflow-hidden rounded-md bg-white p-2 lg:h-[30vw] lg:p-4"
+            style={{ opacity: 1, transform: 'none' }}
           >
-            <BrandImage
-              src={tile.image}
-              alt={tile.alt}
-              fallbackLabel={tile.name}
-              containerClassName="absolute inset-0 w-full h-full"
-              className="w-full h-full object-cover transition duration-500 ease-in-out group-hover:scale-105"
+            <img
+              alt={category.alt}
+              loading="lazy"
+              width="550"
+              height="450"
+              decoding="async"
+              className="absolute inset-0 z-0 h-full w-full object-cover transition duration-500 ease-in-out group-hover:scale-105 group-hover:opacity-100"
+              src={category.image}
             />
-
-            <div className="relative z-10 w-full">
-              <button
-                type="button"
-                className="w-full bg-white text-[#A06A98] group-hover:bg-[#A06A98] group-hover:text-white uppercase px-6 py-3.5 text-xs lg:text-sm font-bold tracking-wider rounded-brand transition-colors text-center shadow-xs"
-              >
-                {tile.name}
-              </button>
-            </div>
+            <a
+              className="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary bg-white hover:bg-primary hover:text-white uppercase px-8 py-3.5 z-[1] w-full font-bold cursor-pointer"
+              href={category.href}
+              onClick={(e) => {
+                e.preventDefault();
+                onSelectCategory(category.id);
+              }}
+            >
+              <h3>{category.name}</h3>
+              <div className="absolute inset-0" aria-hidden="true" />
+            </a>
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 };
+

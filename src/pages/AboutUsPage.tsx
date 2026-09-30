@@ -13,7 +13,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
         <div className="max-w-3xl space-y-6">
           <h1
             className="font-serif text-5xl sm:text-7xl lg:text-9xl text-[#333333] leading-none"
-            style={{ fontFamily: "'Alex Brush', 'Cormorant Garamond', serif" }}
+            style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
           >
             About VELORAA ROUGEE
           </h1>

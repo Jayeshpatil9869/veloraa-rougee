@@ -50,12 +50,14 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   return (
     <div
+      data-lenis-prevent
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center p-4 pt-16 sm:pt-24"
       role="dialog"
       aria-modal="true"
       aria-label="Search Catalog"
     >
       <div
+        data-lenis-prevent
         className="w-full max-w-2xl bg-white rounded-brand shadow-2xl overflow-hidden border border-[#E2E8F0] animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
@@ -142,7 +144,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                 </div>
                 <div className="text-right shrink-0">
                   <span className="text-sm font-bold text-[#333333] tabular-nums block">
-                    AED {product.variants[0]?.price.toFixed(2)}
+                    ₹{product.variants[0]?.price.toFixed(2)}
                   </span>
                   <span className="text-[11px] text-[#A06A98] flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     View <ArrowRight className="w-3 h-3" />

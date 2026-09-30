@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BrandImage } from '../ui/BrandImage';
 
 interface HeroCarouselProps {
-  onShopNow: () => void;
+  onShopNow?: () => void;
 }
 
 export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
@@ -71,8 +71,8 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
       <div className="relative z-[2] max-w-[1440px] w-full mx-auto px-6 py-12 lg:px-20 flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
         <div className="max-w-[45ch] space-y-4 lg:space-y-6">
           <h1
-            className="font-serif text-3xl sm:text-5xl lg:text-7xl leading-tight lg:leading-none text-white whitespace-pre-line drop-shadow-sm transition-all duration-500"
-            style={{ fontFamily: "'Alex Brush', 'Cormorant Garamond', serif" }}
+            className="font-serif text-4xl sm:text-6xl lg:text-7xl leading-tight lg:leading-none text-white whitespace-pre-line drop-shadow-sm transition-all duration-500"
+            style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
           >
             {slide.title}
           </h1>
@@ -94,7 +94,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
         type="button"
         onClick={prevSlide}
         aria-label="Previous slide"
-        className="absolute left-2 lg:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/20 hover:bg-black/40 rounded-full transition-all opacity-80 hover:opacity-100 focus:outline-none"
+        className="absolute left-2 lg:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/20 hover:bg-black/40 rounded-full transition-all opacity-80 hover:opacity-100 focus:outline-none cursor-pointer"
       >
         <ChevronLeft className="w-6 h-6 lg:w-8 lg:h-8" />
       </button>
@@ -103,7 +103,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
         type="button"
         onClick={nextSlide}
         aria-label="Next slide"
-        className="absolute right-2 lg:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/20 hover:bg-black/40 rounded-full transition-all opacity-80 hover:opacity-100 focus:outline-none"
+        className="absolute right-2 lg:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/20 hover:bg-black/40 rounded-full transition-all opacity-80 hover:opacity-100 focus:outline-none cursor-pointer"
       >
         <ChevronRight className="w-6 h-6 lg:w-8 lg:h-8" />
       </button>
@@ -115,7 +115,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
             key={i}
             onClick={() => setCurrentSlide(i)}
             aria-label={`Go to slide ${i + 1}`}
-            className={`w-2 h-2 rounded-full transition-all ${
+            className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
               currentSlide === i ? 'w-6 bg-white' : 'bg-white/50 hover:bg-white/80'
             }`}
           />

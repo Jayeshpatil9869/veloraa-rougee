@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ChevronRight, Globe } from 'lucide-react';
+import { X, ChevronRight } from 'lucide-react';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
 import { CATEGORIES } from '../../data/products';
 
@@ -19,12 +19,16 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
 
   return (
     <div
+      data-lenis-prevent
       className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex lg:hidden"
       role="dialog"
       aria-modal="true"
       aria-label="Mobile Navigation"
     >
-      <div className="w-[85vw] max-w-sm bg-white h-full shadow-2xl flex flex-col p-6 animate-in slide-in-from-left duration-300">
+      <div
+        data-lenis-prevent
+        className="w-[85vw] max-w-sm bg-white h-full shadow-2xl flex flex-col p-6 animate-in slide-in-from-left duration-300"
+      >
         {/* Header */}
         <div className="flex items-center justify-between pb-6 border-b border-[#E2E8F0]">
           <VeloraaRougeeLogo size="sm" onClick={() => handleNav('/en')} />
@@ -110,11 +114,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
         </div>
 
         {/* Footer info in drawer */}
-        <div className="pt-4 border-t border-[#E2E8F0] space-y-3">
-          <div className="flex items-center gap-2 text-xs font-medium text-[#666666]">
-            <Globe className="w-4 h-4 text-[#A06A98]" />
-            <span>Currency: AED | Language: English</span>
-          </div>
+        <div className="pt-4 border-t border-[#E2E8F0] space-y-1">
           <p className="text-[11px] text-[#888888]">
             GST: 27BJKPG4947G1ZZ
           </p>

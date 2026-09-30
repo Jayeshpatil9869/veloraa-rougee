@@ -59,7 +59,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({
         <div className="absolute inset-0 bg-stone-900/40 z-[1]" />
         <h1
           className="relative z-10 font-serif text-5xl sm:text-7xl lg:text-8xl text-[#F8FAFC] leading-none drop-shadow-md"
-          style={{ fontFamily: "'Alex Brush', 'Cormorant Garamond', serif" }}
+          style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
         >
           Stories
         </h1>
@@ -139,7 +139,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({
                             {prod.name}
                           </h4>
                           <span className="text-xs font-bold text-[#A06A98] block">
-                            AED {prod.variants[0]?.price.toFixed(2)}
+                            ₹{prod.variants[0]?.price.toFixed(2)}
                           </span>
                           <div className="flex items-center gap-2 mt-2">
                             <button

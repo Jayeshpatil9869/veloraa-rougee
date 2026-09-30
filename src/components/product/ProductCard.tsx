@@ -128,7 +128,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <span className="font-bold">ADDED TO BAG ✓</span>
           ) : (
             <span>
-              ADD TO BAG ─ <strong className="font-bold">AED {activeVariant.price.toFixed(2)}</strong>
+              ADD TO BAG ─ <strong className="font-bold">₹{activeVariant.price.toFixed(2)}</strong>
             </span>
           )}
         </button>

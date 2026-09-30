@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingBag, User, Globe, Menu, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, ChevronDown } from 'lucide-react';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
+import { TextRoll } from '../ui/TextRoll';
 import { cartService } from '../../services/cartService';
 
 interface SiteHeaderProps {
@@ -60,11 +61,11 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-bold uppercase text-[#333333]">
             <button
               onClick={() => onNavigate('/en')}
-              className={`h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] ${
+              className={`group h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
                 currentPath === '/' || currentPath === '/en' ? 'text-[#A06A98]' : ''
               }`}
             >
-              HOME
+              <TextRoll>HOME</TextRoll>
             </button>
 
             {/* SHOP Dropdown */}
@@ -76,18 +77,18 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
               <button
                 type="button"
                 onClick={() => onNavigate('/en/collection')}
-                className={`h-10 px-2.5 flex items-center gap-1 transition-colors hover:text-[#774170] ${
+                className={`group h-10 px-2.5 flex items-center gap-1 transition-colors hover:text-[#774170] cursor-pointer ${
                   currentPath.includes('/collection') || currentPath.includes('/shop')
                     ? 'text-[#A06A98]'
                     : ''
                 }`}
               >
-                <span>SHOP</span>
-                <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+                <TextRoll>SHOP</TextRoll>
+                <ChevronDown className="w-3.5 h-3.5 opacity-60 transition-transform duration-200 group-hover:rotate-180" />
               </button>
 
               {shopMenuOpen && (
-                <div className="absolute left-0 top-full w-48 bg-white border border-[#E2E8F0] shadow-md rounded-brand py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="absolute left-0 top-full w-52 bg-white border border-[#E2E8F0] shadow-md rounded-brand py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                   {shopItems.map((item) => (
                     <button
                       key={item.path}
@@ -95,9 +96,9 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                         onNavigate(item.path);
                         setShopMenuOpen(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#333333] hover:bg-[#FDF2F8] hover:text-[#A06A98] transition-colors"
+                      className="group w-full text-left px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#333333] hover:bg-[#FDF2F8] hover:text-[#A06A98] transition-colors cursor-pointer block"
                     >
-                      {item.label}
+                      <TextRoll>{item.label}</TextRoll>
                     </button>
                   ))}
                 </div>
@@ -106,29 +107,29 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
 
             <button
               onClick={() => onNavigate('/en/about-us')}
-              className={`h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] ${
+              className={`group h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
                 currentPath === '/en/about-us' ? 'text-[#A06A98]' : ''
               }`}
             >
-              ABOUT US
+              <TextRoll>ABOUT US</TextRoll>
             </button>
 
             <button
               onClick={() => onNavigate('/en/stories')}
-              className={`h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] ${
+              className={`group h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
                 currentPath.startsWith('/en/stories') ? 'text-[#A06A98]' : ''
               }`}
             >
-              STORIES
+              <TextRoll>STORIES</TextRoll>
             </button>
 
             <button
               onClick={() => onNavigate('/en/locations')}
-              className={`h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] ${
+              className={`group h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
                 currentPath === '/en/locations' ? 'text-[#A06A98]' : ''
               }`}
             >
-              LOCATIONS
+              <TextRoll>LOCATIONS</TextRoll>
             </button>
           </nav>
         </div>
@@ -177,12 +178,6 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
               </span>
             )}
           </button>
-
-          {/* Language / Currency (Desktop Only) */}
-          <div className="hidden lg:flex items-center gap-1 text-xs font-semibold text-[#666666] tracking-wider pl-2 border-l border-slate-200">
-            <Globe className="w-4 h-4 text-[#A06A98]" />
-            <span>EN / AED</span>
-          </div>
         </div>
       </div>
     </header>

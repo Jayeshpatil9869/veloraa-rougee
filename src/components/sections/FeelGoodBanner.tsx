@@ -1,16 +1,46 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FlowerShortSvg, FlowerTallSvg } from '../brand/BrandIcons';
 
 export const FeelGoodBanner: React.FC = () => {
+  const containerRef = useRef<HTMLElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current || !textRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(textRef.current?.children || [], {
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+        opacity: 0,
+        y: 24,
+        duration: 0.8,
+        stagger: 0.08,
+        ease: 'power3.out',
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
+      ref={containerRef}
       aria-label="Brand Philosophy"
       className="bg-white px-4 py-12 lg:px-20 lg:py-16 mx-auto flex max-w-[92vw] lg:max-w-[75vw] justify-center text-center select-none"
     >
-      <div className="inline-flex flex-wrap items-center justify-center font-bold gap-x-2.5 sm:gap-x-3 lg:gap-x-4 text-2xl sm:text-3xl lg:text-4xl text-[#333333] leading-snug lg:leading-[1.1]">
+      <div
+        ref={textRef}
+        className="inline-flex flex-wrap items-center justify-center font-bold gap-x-2.5 sm:gap-x-3 lg:gap-x-4 text-2xl sm:text-3xl lg:text-4xl text-[#333333] leading-snug lg:leading-[1.1]"
+      >
         <span
           className="font-serif text-[#DFBEDB] font-normal text-3xl sm:text-4xl lg:text-5xl -mb-1"
-          style={{ fontFamily: "'Alex Brush', 'Cormorant Garamond', serif" }}
+          style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
         >
           Feel-good
         </span>
@@ -37,7 +67,7 @@ export const FeelGoodBanner: React.FC = () => {
 
         <span
           className="font-serif text-[#DFBEDB] font-normal text-3xl sm:text-4xl lg:text-5xl -mb-1"
-          style={{ fontFamily: "'Alex Brush', 'Cormorant Garamond', serif" }}
+          style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
         >
           positive energy
         </span>
@@ -45,3 +75,4 @@ export const FeelGoodBanner: React.FC = () => {
     </section>
   );
 };
+

@@ -20,9 +20,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
     refresh();
     window.addEventListener('cart_updated', refresh);
     return () => window.removeEventListener('cart_updated', refresh);
-  }, [isOpen]);
-
-  if (!isOpen) return null;
+  }, []);
 
   const subtotal = cartService.getSubtotal(items);
   const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
@@ -48,40 +46,63 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end"
+      className={`fixed inset-0 z-50 ${
+        isOpen ? 'pointer-events-auto' : 'pointer-events-none'
+      }`}
       role="dialog"
       aria-modal="true"
       aria-label="Shopping Bag"
     >
-      <div className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-        {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-[#E2E8F0] flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-[#A06A98]" />
-            <h2 className="text-base font-bold uppercase tracking-wider text-[#333333]">
-              Your Bag ({cartService.getItemCount(items)})
-            </h2>
+      {/* Dimmed Backdrop */}
+      <div
+        className={`absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-1000 ${
+          isOpen ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          transitionTimingFunction: 'cubic-bezier(0.19, 1, 0.22, 1)',
+        }}
+        onClick={onClose}
+      />
+
+      {/* Luxury Cart Drawer Panel Expanding Right-to-Left (0% -> 40%) */}
+      <div
+        data-lenis-prevent
+        className="fixed top-0 right-0 h-full bg-white shadow-2xl flex flex-col z-50 overflow-hidden"
+        style={{
+          width: isOpen ? 'min(100%, max(360px, 40%))' : '0%',
+          transition: 'width 1s cubic-bezier(0.19, 1, 0.22, 1)',
+          willChange: 'width',
+        }}
+      >
+        <div className="w-full h-full flex flex-col min-w-[320px] sm:min-w-[380px] min-h-0 overflow-hidden">
+          {/* Header */}
+          <div className="p-4 sm:p-6 border-b border-[#E2E8F0] flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5 text-[#A06A98]" />
+              <h2 className="text-base font-bold uppercase tracking-wider text-[#333333]">
+                Your Bag ({cartService.getItemCount(items)})
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close bag"
+              className="p-1.5 text-[#666666] hover:text-[#333333] transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close bag"
-            className="p-1.5 text-[#666666] hover:text-[#333333] transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
 
         {/* Free Shipping Tier Banner */}
-        <div className="bg-[#FDF2F8] px-4 sm:px-6 py-3 border-b border-[#F0DEF7]">
+        <div className="bg-[#FDF2F8] px-4 sm:px-6 py-3 border-b border-[#F0DEF7] shrink-0">
           <div className="flex items-center justify-between text-xs font-semibold text-[#76416F] mb-1.5">
             <span>
               {remainingForFreeShipping > 0
-                ? `Add AED ${remainingForFreeShipping.toFixed(2)} for FREE International Shipping`
-                : '🎉 You have unlocked Free International Shipping!'}
+                ? `Add ₹${remainingForFreeShipping.toFixed(2)} for FREE Shipping`
+                : '🎉 You have unlocked Free Shipping!'}
             </span>
             <span className="tabular-nums font-mono text-[11px]">
-              AED {subtotal.toFixed(2)} / {FREE_SHIPPING_THRESHOLD}
+              ₹{subtotal.toFixed(2)} / ₹{FREE_SHIPPING_THRESHOLD}
             </span>
           </div>
           <div className="w-full h-1.5 bg-[#DFBEDB]/40 rounded-full overflow-hidden">
@@ -94,7 +115,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
 
         {/* Main Content Area */}
         {orderConfirmed ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4 overflow-y-auto">
             <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 mb-2">
               <CheckCircle2 className="w-8 h-8" />
             </div>
@@ -118,7 +139,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
             </button>
           </div>
         ) : items.length > 0 ? (
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 divide-y divide-slate-100">
+          <div
+            data-lenis-prevent
+            className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4 divide-y divide-slate-100 overscroll-contain"
+          >
             {items.map((item) => (
               <div key={item.variant.id} className="pt-4 first:pt-0 flex gap-4">
                 <div className="w-20 h-20 bg-white border border-[#E2E8F0] rounded-brand overflow-hidden shrink-0">
@@ -138,7 +162,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
                       Shade: <span className="font-medium text-[#333333]">{item.variant.name}</span>
                     </p>
                     <span className="text-xs font-bold text-[#A06A98] tabular-nums mt-1 block">
-                      AED {item.variant.price.toFixed(2)}
+                      ₹{item.variant.price.toFixed(2)}
                     </span>
                   </div>
 
@@ -205,11 +229,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
             <div className="flex items-center justify-between text-sm">
               <span className="font-semibold text-[#666666]">Subtotal</span>
               <span className="font-bold text-base text-[#333333] tabular-nums">
-                AED {subtotal.toFixed(2)}
+                ₹{subtotal.toFixed(2)}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs text-[#666666]">
-              <span>International Courier Shipping</span>
+              <span>Standard Courier Shipping</span>
               <span>{subtotal >= FREE_SHIPPING_THRESHOLD ? 'FREE' : 'Calculated at Checkout'}</span>
             </div>
 
@@ -217,16 +241,17 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
               type="button"
               disabled={isCheckingOut}
               onClick={handleCheckout}
-              className="w-full h-11 bg-[#A06A98] hover:bg-[#774170] text-[#F8FAFC] text-xs font-bold uppercase tracking-wider rounded-brand transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full h-11 bg-[#A06A98] hover:bg-[#774170] text-[#F8FAFC] text-xs font-bold uppercase tracking-wider rounded-brand transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
               {isCheckingOut ? (
                 <span>Securing Luxury Order...</span>
               ) : (
-                <span>Proceed to Checkout ─ AED {subtotal.toFixed(2)}</span>
+                <span>Proceed to Checkout ─ ₹{subtotal.toFixed(2)}</span>
               )}
             </button>
           </div>
         )}
+        </div>
       </div>
       <div className="fixed inset-0 -z-10" onClick={onClose} />
     </div>

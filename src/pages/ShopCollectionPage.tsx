@@ -109,7 +109,7 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
         <div className="relative z-10 px-4 max-w-3xl space-y-2">
           <h1
             className="font-serif text-5xl sm:text-7xl lg:text-9xl text-[#F8FAFC] leading-none drop-shadow-md"
-            style={{ fontFamily: "'Alex Brush', 'Cormorant Garamond', serif" }}
+            style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
           >
             {heroInfo.title}
           </h1>
@@ -183,8 +183,8 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
                   className="w-full accent-[#A06A98]"
                 />
                 <div className="flex items-center justify-between text-xs text-[#666666]">
-                  <span>From AED 60</span>
-                  <span className="font-bold text-[#A06A98]">Up to AED {maxPrice}</span>
+                  <span>From ₹60</span>
+                  <span className="font-bold text-[#A06A98]">Up to ₹{maxPrice}</span>
                 </div>
               </div>
             </div>

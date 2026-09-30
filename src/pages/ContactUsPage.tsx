@@ -46,7 +46,7 @@ export const ContactUsPage: React.FC = () => {
         <div className="absolute inset-0 bg-stone-900/40 z-[1]" />
         <h1
           className="relative z-10 font-serif text-5xl sm:text-7xl lg:text-8xl text-[#F8FAFC] leading-none drop-shadow-md"
-          style={{ fontFamily: "'Alex Brush', 'Cormorant Garamond', serif" }}
+          style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
         >
           Contact Us
         </h1>

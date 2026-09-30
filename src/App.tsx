@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AnnouncementBar } from './components/layout/AnnouncementBar';
+
+gsap.registerPlugin(ScrollTrigger);
 import { SiteHeader } from './components/layout/SiteHeader';
 import { MobileMenu } from './components/layout/MobileMenu';
-import { ClaimTicker } from './components/layout/ClaimTicker';
 import { SiteFooter } from './components/layout/SiteFooter';
 import { SearchModal } from './components/layout/SearchModal';
 import { CartDrawer } from './components/layout/CartDrawer';
@@ -37,7 +40,7 @@ export default function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Initialize Lenis smooth scroll with respect for reduced motion
+  // Initialize Lenis smooth scroll and integrate with GSAP ScrollTrigger
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
@@ -51,18 +54,22 @@ export default function App() {
         smoothWheel: true,
       });
 
-      function raf(time: number) {
-        lenis?.raf(time);
-        requestAnimationFrame(raf);
-      }
-      requestAnimationFrame(raf);
-    } catch (e) {
-      console.warn('Lenis initialization bypassed:', e);
-    }
+      lenis.on('scroll', ScrollTrigger.update);
 
-    return () => {
-      lenis?.destroy();
-    };
+      const updateTicker = (time: number) => {
+        lenis?.raf(time * 1000);
+      };
+
+      gsap.ticker.add(updateTicker);
+      gsap.ticker.lagSmoothing(0);
+
+      return () => {
+        gsap.ticker.remove(updateTicker);
+        lenis?.destroy();
+      };
+    } catch (e) {
+      console.warn('Lenis/GSAP initialization bypassed:', e);
+    }
   }, []);
 
   // Parse path and sync state
@@ -246,10 +253,7 @@ export default function App() {
       {/* Main Route Content */}
       <main className="flex-1 w-full">{renderPage()}</main>
 
-      {/* 10. Claim Ticker Marquee */}
-      <ClaimTicker />
-
-      {/* 11. Blush Footer */}
+      {/* Footer with Integrated Top Claim Marquee */}
       <SiteFooter onNavigate={navigate} />
 
       {/* Search Modal */}
