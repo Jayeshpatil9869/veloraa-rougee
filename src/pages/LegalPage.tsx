@@ -21,23 +21,20 @@ export const LegalPage: React.FC<LegalPageProps> = ({ currentTab, onSelectTab })
 
   return (
     <div className="w-full bg-white select-none">
-      {/* Hero */}
-      <div className="relative w-full h-[220px] sm:h-[280px] lg:h-[340px] overflow-hidden bg-[#DFBEDB] flex items-center justify-center text-center">
-        <BrandImage
-          src="https://cdn.sanity.io/images/03h1hklz/production/ff6e93f6880662c9fbcb1055fd48daa07d1aa9bd-1200x450.png"
-          alt={content.title}
-          fallbackLabel={content.title}
-          containerClassName="absolute inset-0 w-full h-full"
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-stone-900/40 z-[1]" />
-        <h1
-          className="relative z-10 font-serif text-5xl sm:text-7xl lg:text-9xl text-[#F8FAFC] leading-none drop-shadow-md"
-          style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
-        >
-          {content.title}
-        </h1>
-      </div>
+      {/* Centered Editorial Masthead Banner */}
+      <section className="relative w-full bg-[#FDF2F8] py-14 lg:py-20 border-b border-[#F0DEF7]/60 overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-20 text-center relative z-10 space-y-4">
+          <h1
+            className="font-serif text-6xl sm:text-7xl lg:text-8xl text-[#333333] leading-tight"
+            style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
+          >
+            {content.title}
+          </h1>
+          <p className="font-sans text-sm sm:text-base text-[#666666] max-w-2xl mx-auto leading-relaxed">
+            VELORAA ROUGEE customer terms, policies, and shopping guarantees.
+          </p>
+        </div>
+      </section>
 
       <div className="max-w-[1440px] mx-auto px-4 lg:px-20 py-10 lg:py-16 space-y-10">
         {/* Tabs Bar */}

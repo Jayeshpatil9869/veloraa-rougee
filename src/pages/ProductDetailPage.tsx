@@ -40,7 +40,9 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     setSelectedVariant(initialVariant);
     setSelectedImageIndex(0);
     setQuantity(1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, [product, initialVariantId]);
 
   const allImages = [
@@ -296,7 +298,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold tracking-tight text-[#333333]">
             Suggested Products
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {suggestedProducts.map((p) => (
               <ProductCard
                 key={p.id}

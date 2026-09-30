@@ -34,8 +34,8 @@ export const BestSellersSection: React.FC<BestSellersSectionProps> = ({
         </button>
       </div>
 
-      {/* Clean 4-column responsive grid with identical left and right padding */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Clean 2-column on mobile, responsive up to 4 columns */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {bestSellers.slice(0, 4).map((product) => (
           <div key={product.id} className="w-full">
             <ProductCard

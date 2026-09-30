@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -20,6 +20,9 @@ import { StoriesPage } from './pages/StoriesPage';
 import { LocationsPage } from './pages/LocationsPage';
 import { ContactUsPage } from './pages/ContactUsPage';
 import { LegalPage, LegalTab } from './pages/LegalPage';
+import { AuthPage } from './pages/AuthPage';
+
+import { PageTransition } from './components/motion/PageTransition';
 
 import { CategoryId, Product, StoryArticle } from './types';
 import { productService } from './services/productService';
@@ -39,25 +42,35 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const lenisRef = useRef<Lenis | null>(null);
+
+  const scrollToTop = () => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(0, { immediate: true });
+    }
+  };
 
   // Initialize Lenis smooth scroll and integrate with GSAP ScrollTrigger
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    let lenis: Lenis | null = null;
     try {
-      lenis = new Lenis({
+      const lenis = new Lenis({
         duration: 1.1,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: 'vertical',
         smoothWheel: true,
       });
 
+      lenisRef.current = lenis;
       lenis.on('scroll', ScrollTrigger.update);
 
       const updateTicker = (time: number) => {
-        lenis?.raf(time * 1000);
+        lenis.raf(time * 1000);
       };
 
       gsap.ticker.add(updateTicker);
@@ -65,7 +78,8 @@ export default function App() {
 
       return () => {
         gsap.ticker.remove(updateTicker);
-        lenis?.destroy();
+        lenis.destroy();
+        lenisRef.current = null;
       };
     } catch (e) {
       console.warn('Lenis/GSAP initialization bypassed:', e);
@@ -108,6 +122,7 @@ export default function App() {
 
   useEffect(() => {
     parsePath(currentPath);
+    scrollToTop();
   }, [currentPath]);
 
   // Handle browser back/forward buttons
@@ -116,21 +131,22 @@ export default function App() {
       const path = window.location.pathname || '/en';
       setCurrentPath(path);
       parsePath(path);
+      scrollToTop();
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const navigate = (path: string, shouldScrollTop: boolean = true) => {
+  const navigate = (path: string, shouldScroll: boolean = true) => {
     const target = path === '/' ? '/en' : path;
     if (window.location.pathname !== target) {
       window.history.pushState({}, '', target);
     }
     setCurrentPath(target);
     parsePath(target);
-    if (shouldScrollTop) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (shouldScroll) {
+      scrollToTop();
     }
   };
 
@@ -194,6 +210,29 @@ export default function App() {
       return <ContactUsPage />;
     }
 
+    if (currentPath === '/en/login' || currentPath === '/login') {
+      return (
+        <AuthPage
+          initialMode="login"
+          onNavigate={navigate}
+        />
+      );
+    }
+
+    if (
+      currentPath === '/en/signup' ||
+      currentPath === '/en/sign-up' ||
+      currentPath === '/signup' ||
+      currentPath === '/sign-up'
+    ) {
+      return (
+        <AuthPage
+          initialMode="signup"
+          onNavigate={navigate}
+        />
+      );
+    }
+
     if (currentPath.startsWith('/en/legal/')) {
       return (
         <LegalPage
@@ -253,8 +292,19 @@ export default function App() {
         onNavigate={navigate}
       />
 
-      {/* Main Route Content */}
-      <main className="flex-1 w-full">{renderPage()}</main>
+      {/* Main Route Content with Screen-Blur Page Transition */}
+      <main className="flex-1 w-full overflow-x-hidden">
+        <PageTransition
+          routeKey={currentPath}
+          onExitComplete={() => {
+            if (lenisRef.current) {
+              lenisRef.current.scrollTo(0, { immediate: true });
+            }
+          }}
+        >
+          {renderPage()}
+        </PageTransition>
+      </main>
 
       {/* Footer with Integrated Top Claim Marquee */}
       <SiteFooter onNavigate={navigate} />

@@ -4,7 +4,7 @@ import { CATEGORIES } from '../data/products';
 import { searchService } from '../services/searchService';
 import { ProductCard } from '../components/product/ProductCard';
 import { BrandImage } from '../components/ui/BrandImage';
-import { Filter, SlidersHorizontal, RotateCcw, ChevronDown, Check } from 'lucide-react';
+import { Filter, SlidersHorizontal, RotateCcw, ChevronDown, Check, Sparkles } from 'lucide-react';
 
 interface ShopCollectionPageProps {
   currentCategory: CategoryId | 'all';
@@ -51,44 +51,44 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
       case 'face':
         return {
           title: 'Face',
-          image: 'https://cdn.shopify.com/s/files/1/0669/7723/5199/collections/3af5c15f3fcbde5e0c08e2fac987e1db.png?v=1701093520',
+          kicker: 'Face Formulations & Complexion',
           description: 'High-coverage creamy concealers, velvety blushes, and luminous bronzers.',
         };
       case 'lips':
         return {
           title: 'Lips',
-          image: 'https://cdn.shopify.com/s/files/1/0669/7723/5199/collections/87a3c8adb0ed018995037065d525a732.png?v=1701093474',
+          kicker: 'Lip Ensembles & Liquid Velvets',
           description: 'Precision transfer-proof liners, 12h matte lipsticks, and nourishing glosses.',
         };
       case 'eyes':
         return {
           title: 'Eyes',
-          image: 'https://cdn.shopify.com/s/files/1/0669/7723/5199/collections/1b9ceb75ddc74cfca13c79fc3e12ff41.png?v=1701093441',
+          kicker: 'Eye Artistry & Kohl Essentials',
           description: 'Intense kohl kajal, lengthening mascaras, waterproof liners, and glam palettes.',
         };
       case 'brows':
         return {
           title: 'Brows',
-          image: 'https://cdn.shopify.com/s/files/1/0669/7723/5199/collections/64b92ceee7d9780028250bd5.jpg?v=1701093586',
+          kicker: 'Sculpt & Define Brow Systems',
           description: 'Micro-precision 16H brow pencils and ultra-hold fixing mascaras.',
         };
       case 'bundles':
         return {
           title: 'Special Offers',
-          image: 'https://cdn.shopify.com/s/files/1/0669/7723/5199/collections/3af5c15f3fcbde5e0c08e2fac987e1db.png?v=1701093520',
+          kicker: 'Curated Sets & Exclusive Duos',
           description: 'Curated beauty bundles, exclusive collaborations, and seasonal kits.',
         };
       case 'best-sellers':
         return {
           title: 'Best Sellers',
-          image: 'https://cdn.sanity.io/images/03h1hklz/production/fe85aca6f5624d80faa55cc0f2d78172181dd488-1400x800.png',
+          kicker: 'Most Loved & Celebrated Icons',
           description: 'Our most-loved formulas celebrated across the globe.',
         };
       default:
         return {
           title: 'Collections',
-          image: 'https://cdn.sanity.io/images/03h1hklz/production/fe85aca6f5624d80faa55cc0f2d78172181dd488-1400x800.png',
-          description: 'Explore the complete VELORAA ROUGEE cosmetic catalog.',
+          kicker: 'Veloraa Rougee Catalog & Curations',
+          description: 'Explore the complete VELORAA ROUGEE luxury cosmetic catalog.',
         };
     }
   }, [currentCategory]);
@@ -114,29 +114,24 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
 
   return (
     <div className="w-full bg-white select-none">
-      {/* Collection Hero Banner */}
-      <div className="relative w-full h-[260px] sm:h-[320px] lg:h-[400px] overflow-hidden bg-[#DFBEDB] flex items-center justify-center text-center">
-        <BrandImage
-          src={heroInfo.image}
-          alt={heroInfo.title}
-          fallbackLabel={heroInfo.title}
-          containerClassName="absolute inset-0 w-full h-full"
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-stone-900/40 z-[1]" />
-
-        <div className="relative z-10 px-4 max-w-3xl space-y-2">
+      {/* Centered Editorial Masthead Banner (Matching Reference) */}
+      <section className="relative w-full bg-[#FDF2F8] py-14 lg:py-20 border-b border-[#F0DEF7]/60 overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-20 text-center relative z-10 space-y-4">
+          <div className="inline-flex items-center gap-2 bg-white/85 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-[#DFBEDB]/40 text-xs font-bold uppercase tracking-widest text-[#76416F] shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#A06A98]" />
+            {heroInfo.kicker}
+          </div>
           <h1
-            className="font-serif text-5xl sm:text-7xl lg:text-9xl text-[#F8FAFC] leading-none drop-shadow-md"
+            className="font-serif text-6xl sm:text-7xl lg:text-8xl text-[#333333] leading-tight"
             style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
           >
             {heroInfo.title}
           </h1>
-          <p className="text-xs sm:text-sm lg:text-base text-white/90 font-medium max-w-xl mx-auto drop-shadow-xs">
+          <p className="font-sans text-sm sm:text-base text-[#666666] max-w-2xl mx-auto leading-relaxed">
             {heroInfo.description}
           </p>
         </div>
-      </div>
+      </section>
 
       {/* Main Container */}
       <div className="max-w-[1440px] mx-auto px-4 lg:px-20 py-8 lg:py-12">
@@ -323,9 +318,9 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
               </div>
             </div>
 
-            {/* Product Card Grid */}
+            {/* Product Card Grid (2-column on mobile, responsive up to 3 columns) */}
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                 {filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}

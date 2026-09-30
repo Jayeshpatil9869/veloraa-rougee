@@ -228,25 +228,25 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
         </div>
 
         {/* Right Column: Actions */}
-        <div className="col-span-2 flex items-center justify-end gap-3 lg:gap-6 text-[#333333]">
-          {/* Search Trigger */}
+        <div className="col-span-2 flex items-center justify-end gap-2.5 sm:gap-3 lg:gap-6 text-[#333333]">
+          {/* Search Trigger (Desktop Only) */}
           <button
             type="button"
             onClick={onOpenSearch}
             aria-label="Open search dialog"
-            className="p-2 text-[#333333] hover:text-[#A06A98] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
+            className="hidden lg:flex p-2 text-[#333333] hover:text-[#A06A98] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
           >
             <Search className="w-5 h-5 lg:w-6 lg:h-6" />
           </button>
 
-          {/* Account (Desktop Only) */}
+          {/* Account / Login Trigger (Shown on Mobile & Desktop) */}
           <button
             type="button"
-            onClick={() => onNavigate('/en/contact-us')}
+            onClick={() => onNavigate('/en/login')}
             aria-label="Customer account"
-            className="hidden lg:flex p-2 text-[#333333] hover:text-[#A06A98] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
+            className="flex p-2 text-[#333333] hover:text-[#A06A98] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
           >
-            <User className="w-6 h-6" />
+            <User className="w-5 h-5 lg:w-6 lg:h-6" />
           </button>
 
           {/* Cart Trigger */}

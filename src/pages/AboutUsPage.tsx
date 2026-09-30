@@ -4,7 +4,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Play, Pause } from 'lucide-react';
 import { BrandImage } from '../components/ui/BrandImage';
 
-export const AboutUsPage: React.FC = () => {
+interface AboutUsPageProps {
+  onNavigateToShop?: () => void;
+}
+
+export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);

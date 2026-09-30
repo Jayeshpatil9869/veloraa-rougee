@@ -244,3 +244,33 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Remove Browser Default Blue Autofill Background & Style with Luxury Theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #FAF5F8 inset !important;
+  box-shadow: 0 0 0 1000px #FAF5F8 inset !important;
+  -webkit-text-fill-color: #333333 !important;
+  color: #333333 !important;
+  caret-color: #A06A98 !important;
+  border-color: #DFBEDB !important;
+  transition: background-color 50000s ease-in-out 0s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  border-color: #A06A98 !important;
+}
+
