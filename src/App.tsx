@@ -122,14 +122,16 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const navigate = (path: string) => {
+  const navigate = (path: string, shouldScrollTop: boolean = true) => {
     const target = path === '/' ? '/en' : path;
     if (window.location.pathname !== target) {
       window.history.pushState({}, '', target);
     }
     setCurrentPath(target);
     parsePath(target);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (shouldScrollTop) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Nav actions
@@ -139,9 +141,10 @@ export default function App() {
     navigate(`/en/product/${product.slug}/${variantId || product.defaultVariantId || product.variants[0]?.id}`);
   };
 
-  const handleSelectCategory = (categoryId: CategoryId | 'all') => {
+  const handleSelectCategory = (categoryId: CategoryId | 'all', shouldScroll: boolean = false) => {
     setCollectionCategory(categoryId);
-    navigate(categoryId === 'all' ? '/en/collection' : `/en/collection/${categoryId}`);
+    const target = categoryId === 'all' ? '/en/collection' : `/en/collection/${categoryId}`;
+    navigate(target, shouldScroll);
   };
 
   const handleSelectArticle = (article: StoryArticle) => {
@@ -210,7 +213,7 @@ export default function App() {
       return (
         <ShopCollectionPage
           currentCategory={collectionCategory}
-          onSelectCategory={handleSelectCategory}
+          onSelectCategory={(cat) => handleSelectCategory(cat, false)}
           onSelectProduct={handleSelectProduct}
           onCartUpdated={() => setCartOpen(true)}
         />
@@ -221,7 +224,7 @@ export default function App() {
     return (
       <HomePage
         onSelectProduct={handleSelectProduct}
-        onSelectCategory={handleSelectCategory}
+        onSelectCategory={(cat) => handleSelectCategory(cat, true)}
         onSelectArticle={handleSelectArticle}
         onNavigate={navigate}
         onCartUpdated={() => setCartOpen(true)}

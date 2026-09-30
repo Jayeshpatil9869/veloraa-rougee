@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { CategoryId, Product } from '../types';
 import { CATEGORIES } from '../data/products';
 import { searchService } from '../services/searchService';
 import { ProductCard } from '../components/product/ProductCard';
 import { BrandImage } from '../components/ui/BrandImage';
-import { Filter, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Filter, SlidersHorizontal, RotateCcw, ChevronDown, Check } from 'lucide-react';
 
 interface ShopCollectionPageProps {
   currentCategory: CategoryId | 'all';
@@ -23,6 +23,25 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'name-asc'>('featured');
   const [maxPrice, setMaxPrice] = useState<number>(250);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
+        setSortDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const sortOptions = [
+    { value: 'featured', label: 'Featured Curations' },
+    { value: 'price-asc', label: 'Price: Low to High' },
+    { value: 'price-desc', label: 'Price: High to Low' },
+    { value: 'name-asc', label: 'Alphabetical' },
+  ] as const;
 
   const activeCategoryObj = CATEGORIES.find((c) => c.id === currentCategory);
 
@@ -137,9 +156,9 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
           </span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Desktop Left Sidebar (Cols 1-3) */}
-          <aside className="hidden lg:block lg:col-span-3 space-y-8 pr-6 border-r border-[#E2E8F0]">
+          <aside className="hidden lg:block lg:col-span-3 space-y-8 pr-6 border-r border-[#E2E8F0] sticky top-24 self-start">
             {/* Category Navigation */}
             <div>
               <h2 className="text-lg font-medium text-[#A06A98] mb-4">
@@ -253,22 +272,54 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
                 </span>
               </div>
 
-              {/* Sort By Dropdown */}
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-[#A06A98]" />
-                <span className="text-xs font-bold text-[#666666] uppercase tracking-wider">
-                  Sort:
-                </span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-white border border-[#E2E8F0] rounded-brand text-xs font-semibold py-1.5 px-2.5 text-[#333333] focus:outline-none focus:ring-1 focus:ring-[#A06A98]"
-                >
-                  <option value="featured">Featured Curations</option>
-                  <option value="price-asc">Price: Low to High</option>
-                  <option value="price-desc">Price: High to Low</option>
-                  <option value="name-asc">Alphabetical</option>
-                </select>
+              {/* Custom Luxury Sort Dropdown */}
+              <div className="relative" ref={sortDropdownRef}>
+                <div className="flex items-center gap-2">
+                  <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-[#666666] uppercase tracking-wider">
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-[#A06A98]" />
+                    Sort:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+                    className="flex items-center justify-between gap-3 bg-[#FDF2F8]/70 hover:bg-[#FDF2F8] border border-[#F0DEF7] hover:border-[#A06A98] rounded-xl text-xs font-bold py-2 px-3.5 text-[#333333] transition-all cursor-pointer shadow-2xs min-w-[180px]"
+                  >
+                    <span className="truncate">
+                      {sortOptions.find((opt) => opt.value === sortBy)?.label}
+                    </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-[#A06A98] transition-transform duration-200 ${
+                        sortDropdownOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {sortDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white/98 backdrop-blur-md border border-[#F0DEF7] shadow-[0_12px_32px_rgba(119,65,112,0.12)] rounded-2xl p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150">
+                    {sortOptions.map((opt) => {
+                      const isSelected = sortBy === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => {
+                            setSortBy(opt.value);
+                            setSortDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-colors text-left cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#FDF2F8] text-[#A06A98] font-bold'
+                              : 'text-[#444444] hover:bg-[#FDF2F8]/60 hover:text-[#A06A98]'
+                          }`}
+                        >
+                          <span>{opt.label}</span>
+                          {isSelected && <Check className="w-3.5 h-3.5 text-[#A06A98]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import { Search, ShoppingBag, User, Menu, ChevronDown } from 'lucide-react';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
 import { TextRoll } from '../ui/TextRoll';
@@ -19,8 +20,10 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
   onOpenCart,
   onOpenMobileMenu,
 }) => {
-  const [shopMenuOpen, setShopMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const chevronRef = useRef<SVGSVGElement>(null);
+  const itemsRef = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
     const updateCount = () => {
@@ -33,8 +36,81 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
     return () => window.removeEventListener('cart_updated', updateCount);
   }, []);
 
+  // Initialize dropdown hidden state
+  useEffect(() => {
+    if (dropdownRef.current) {
+      gsap.set(dropdownRef.current, {
+        autoAlpha: 0,
+        y: 10,
+        scale: 0.98,
+        pointerEvents: 'none',
+      });
+    }
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (!dropdownRef.current) return;
+
+    gsap.killTweensOf([dropdownRef.current, chevronRef.current, ...itemsRef.current]);
+
+    gsap.to(dropdownRef.current, {
+      autoAlpha: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.35,
+      ease: 'power3.out',
+      pointerEvents: 'auto',
+    });
+
+    if (chevronRef.current) {
+      gsap.to(chevronRef.current, {
+        rotate: 180,
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+    }
+
+    const validItems = itemsRef.current.filter(Boolean);
+    if (validItems.length > 0) {
+      gsap.fromTo(
+        validItems,
+        { y: 8, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.035,
+          duration: 0.25,
+          ease: 'power2.out',
+          overwrite: 'auto',
+        }
+      );
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!dropdownRef.current) return;
+
+    gsap.killTweensOf([dropdownRef.current, chevronRef.current, ...itemsRef.current]);
+
+    gsap.to(dropdownRef.current, {
+      autoAlpha: 0,
+      y: 8,
+      scale: 0.98,
+      duration: 0.22,
+      ease: 'power2.in',
+      pointerEvents: 'none',
+    });
+
+    if (chevronRef.current) {
+      gsap.to(chevronRef.current, {
+        rotate: 0,
+        duration: 0.25,
+        ease: 'power2.out',
+      });
+    }
+  };
+
   const shopItems = [
-    { label: 'Shop All', path: '/en/collection' },
     { label: 'Brows', path: '/en/collection/brows' },
     { label: 'Lips', path: '/en/collection/lips' },
     { label: 'Eyes', path: '/en/collection/eyes' },
@@ -68,41 +144,50 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
               <TextRoll>HOME</TextRoll>
             </button>
 
-            {/* SHOP Dropdown */}
+            {/* SHOP Dropdown with GSAP Smooth Hover */}
             <div
-              className="relative"
-              onMouseEnter={() => setShopMenuOpen(true)}
-              onMouseLeave={() => setShopMenuOpen(false)}
+              className="relative py-3"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <button
                 type="button"
                 onClick={() => onNavigate('/en/collection')}
-                className={`group h-10 px-2.5 flex items-center gap-1 transition-colors hover:text-[#774170] cursor-pointer ${
+                className={`group h-10 px-2.5 flex items-center gap-1.5 transition-colors hover:text-[#774170] cursor-pointer ${
                   currentPath.includes('/collection') || currentPath.includes('/shop')
                     ? 'text-[#A06A98]'
                     : ''
                 }`}
               >
                 <TextRoll>SHOP</TextRoll>
-                <ChevronDown className="w-3.5 h-3.5 opacity-60 transition-transform duration-200 group-hover:rotate-180" />
+                <ChevronDown
+                  ref={chevronRef}
+                  className="w-3.5 h-3.5 opacity-60 transition-colors"
+                />
               </button>
 
-              {shopMenuOpen && (
-                <div className="absolute left-0 top-full w-52 bg-white border border-[#E2E8F0] shadow-md rounded-brand py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                  {shopItems.map((item) => (
+              <div
+                ref={dropdownRef}
+                className="absolute left-0 top-full pt-1.5 w-56 z-50 origin-top-left"
+              >
+                <div className="bg-white border border-[#F0DEF7] shadow-[0_16px_40px_rgba(119,65,112,0.12)] rounded-2xl py-2 px-1.5 overflow-hidden">
+                  {shopItems.map((item, index) => (
                     <button
                       key={item.path}
+                      ref={(el) => {
+                        itemsRef.current[index] = el;
+                      }}
                       onClick={() => {
                         onNavigate(item.path);
-                        setShopMenuOpen(false);
+                        handleMouseLeave();
                       }}
-                      className="group w-full text-left px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#333333] hover:bg-[#FDF2F8] hover:text-[#A06A98] transition-colors cursor-pointer block"
+                      className="group w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-[#333333] hover:bg-[#FDF2F8] hover:text-[#A06A98] transition-colors cursor-pointer block"
                     >
                       <TextRoll>{item.label}</TextRoll>
                     </button>
                   ))}
                 </div>
-              )}
+              </div>
             </div>
 
             <button

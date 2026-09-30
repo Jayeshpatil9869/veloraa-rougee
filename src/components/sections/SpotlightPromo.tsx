@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cartService } from '../../services/cartService';
 import { Product, ProductVariant } from '../../types';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface SpotlightPromoProps {
   onSelectProduct?: (product: Product, variantId?: string) => void;
@@ -14,6 +18,36 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slide1Swatch, setSlide1Swatch] = useState<'petite' | 'tall'>('petite');
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const heroImageRef1 = useRef<HTMLImageElement>(null);
+  const heroImageRef2 = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      [heroImageRef1.current, heroImageRef2.current].forEach((img) => {
+        if (!img) return;
+        gsap.fromTo(
+          img,
+          { yPercent: -8, scale: 1.15 },
+          {
+            yPercent: 8,
+            scale: 1.15,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.2,
+            },
+          }
+        );
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const slides = [
     {
@@ -157,7 +191,7 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
   };
 
   return (
-    <div className="relative group w-full" role="region" aria-roledescription="carousel">
+    <div ref={sectionRef} className="relative group w-full" role="region" aria-roledescription="carousel">
       <div className="overflow-hidden">
         <div
           className="flex m-0 transition-transform duration-700 ease-in-out"
@@ -185,16 +219,17 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
                     {slides[0].headline}
                   </div>
                 </div>
-                <div className="absolute inset-0 h-full w-full" style={{ transform: 'none' }}>
+                <div className="absolute inset-0 h-full w-full overflow-hidden" style={{ transform: 'none' }}>
                   <div className="absolute inset-0 z-[1] rounded-md bg-gradient-to-b from-transparent to-stone-900 opacity-30" />
                   <img
+                    ref={heroImageRef1}
                     alt="Hero Image"
                     fetchPriority="high"
                     loading="eager"
                     width={1200}
                     height={700}
                     decoding="async"
-                    className="absolute inset-0 z-0 h-full w-full object-cover object-center"
+                    className="absolute inset-0 z-0 h-full w-full object-cover object-center will-change-transform"
                     src={slides[0].heroImage}
                   />
                 </div>
@@ -347,15 +382,16 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
                     {slides[1].headline}
                   </div>
                 </div>
-                <div className="absolute inset-0 h-full w-full" style={{ transform: 'none' }}>
+                <div className="absolute inset-0 h-full w-full overflow-hidden" style={{ transform: 'none' }}>
                   <div className="absolute inset-0 z-[1] rounded-md bg-gradient-to-b from-transparent to-stone-900 opacity-30" />
                   <img
+                    ref={heroImageRef2}
                     alt="Hero Image"
                     loading="lazy"
                     width={1200}
                     height={700}
                     decoding="async"
-                    className="absolute inset-0 z-0 h-full w-full object-cover object-center"
+                    className="absolute inset-0 z-0 h-full w-full object-cover object-center will-change-transform"
                     src={slides[1].heroImage}
                   />
                 </div>

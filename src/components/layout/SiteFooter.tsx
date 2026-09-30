@@ -404,7 +404,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                 Divines Code
               </a>
               <span>•</span>
-              <span>Designed and Developed by</span>
+              <span>Designed by</span>
               <a
                 href="https://jayeshbpatil.com/"
                 target="_blank"
@@ -413,14 +413,8 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
               >
                 Jayesh Patil
               </a>
-              <a
-                href="https://apurvahire.divinescode.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-bold text-[#A06A98] hover:text-[#774170] transition-colors underline underline-offset-2"
-              >
-                Apurv Ahire
-              </a>
+              <span>•</span>
+              <span>Developed with</span>
               <a
                 href="https://mahendranagpure.com/"
                 target="_blank"
@@ -428,6 +422,15 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                 className="font-bold text-[#A06A98] hover:text-[#774170] transition-colors underline underline-offset-2"
               >
                 Mahendra Nagpure
+              </a>
+              <span>&</span>
+              <a
+                href="https://apurvahire.divinescode.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-[#A06A98] hover:text-[#774170] transition-colors underline underline-offset-2"
+              >
+                Apurv Ahire
               </a>
             </p>
           </div>
