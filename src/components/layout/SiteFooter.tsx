@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
 import { TextRoll } from '../ui/TextRoll';
 import { FlowerTallSvg, FlowerShortSvg, MastercardSvg, VisaSvg } from '../brand/BrandIcons';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface SiteFooterProps {
   onNavigate: (path: string) => void;
@@ -117,6 +120,40 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
     };
   }, []);
 
+  // GSAP Flower Bottom-to-Top Rising Animation
+  const playFlowerRising = () => {
+    gsap.fromTo(
+      ['.flower-anim-left', '.flower-anim-center', '.flower-anim-right'],
+      {
+        y: 120,
+        opacity: 0,
+      },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1.6,
+        stagger: 0.16,
+        ease: 'power3.out',
+        overwrite: 'auto',
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (!footerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: footerRef.current,
+        start: 'top 92%',
+        onEnter: () => playFlowerRising(),
+        onEnterBack: () => playFlowerRising(),
+      });
+    }, footerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email && email.includes('@')) {
@@ -136,7 +173,12 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
   ];
 
   return (
-    <footer ref={footerRef} className="relative overflow-hidden bg-secondary">
+    <footer
+      ref={footerRef}
+      onMouseEnter={playFlowerRising}
+      onTouchStart={playFlowerRising}
+      className="relative overflow-hidden bg-secondary"
+    >
       {/* GSAP Wheel-Driven Interactive Marquee */}
       <div className="overflow-hidden bg-white border-y border-[#F3E8EE] py-6 select-none">
         <div ref={marqueeTrackRef} className="flex flex-nowrap w-max overflow-hidden">
@@ -437,30 +479,36 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Decorative Floating Floral Dandelion Illustrations with Multi-speed Parallax */}
+      {/* Decorative Floating Floral Dandelion Illustrations with Bottom-to-Top Reveal & Multi-speed Parallax */}
       <div className="pointer-events-none overflow-visible">
         {/* Left Dandelion */}
-        <div
-          className="pointer-events-none absolute -left-10 bottom-48 z-0 hidden lg:inline-block will-change-transform transition-transform duration-75 ease-out"
-          style={{ transform: `translate3d(0, ${parallaxOffset.left}px, 0)` }}
-        >
-          <FlowerTallSvg className="h-auto w-[10.5rem] -scale-x-100 transform text-[#D39DC7]" />
+        <div className="flower-anim-left pointer-events-none absolute -left-10 bottom-48 z-0 hidden lg:inline-block will-change-transform">
+          <div
+            className="will-change-transform transition-transform duration-75 ease-out"
+            style={{ transform: `translate3d(0, ${parallaxOffset.left}px, 0)` }}
+          >
+            <FlowerTallSvg className="h-auto w-[10.5rem] -scale-x-100 transform text-[#D39DC7]" />
+          </div>
         </div>
 
         {/* Center / Form Dandelion */}
-        <div
-          className="lg:absolute-center-x pointer-events-none absolute bottom-24 left-[30%] z-0 will-change-transform transition-transform duration-75 ease-out"
-          style={{ transform: `translate3d(0, ${parallaxOffset.center}px, 0)` }}
-        >
-          <FlowerShortSvg className="h-auto w-[6.25rem] -scale-x-100 transform text-[#D39DC7]" />
+        <div className="flower-anim-center lg:absolute-center-x pointer-events-none absolute bottom-24 left-[30%] z-0 will-change-transform">
+          <div
+            className="will-change-transform transition-transform duration-75 ease-out"
+            style={{ transform: `translate3d(0, ${parallaxOffset.center}px, 0)` }}
+          >
+            <FlowerShortSvg className="h-auto w-[6.25rem] -scale-x-100 transform text-[#D39DC7]" />
+          </div>
         </div>
 
         {/* Right Large Dandelion */}
-        <div
-          className="lg:bottom-70 pointer-events-none absolute -right-14 bottom-80 z-0 will-change-transform transition-transform duration-75 ease-out"
-          style={{ transform: `translate3d(0, ${parallaxOffset.right}px, 0)` }}
-        >
-          <FlowerTallSvg className="h-auto w-[16rem] text-[#9F6998]" />
+        <div className="flower-anim-right lg:bottom-70 pointer-events-none absolute -right-14 bottom-80 z-0 will-change-transform">
+          <div
+            className="will-change-transform transition-transform duration-75 ease-out"
+            style={{ transform: `translate3d(0, ${parallaxOffset.right}px, 0)` }}
+          >
+            <FlowerTallSvg className="h-auto w-[16rem] text-[#9F6998]" />
+          </div>
         </div>
       </div>
     </footer>

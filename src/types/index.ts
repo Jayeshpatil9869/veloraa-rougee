@@ -79,8 +79,13 @@ export interface StoryArticle {
 export interface StoreLocation {
   id: string;
   name: string;
-  country: 'uae' | 'saudiArabia' | 'qatar';
+  cityId: 'nashik' | 'pune' | string;
   mall: string;
   city: string;
+  state: string;
+  address?: string;
+  timing?: string;
+  phone?: string;
   mapUrl: string;
 }
+
