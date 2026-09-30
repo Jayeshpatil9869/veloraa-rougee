@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LEGAL_PAGES_CONTENT } from '../data/content';
 import { BrandImage } from '../components/ui/BrandImage';
 import { ScrollReveal, StaggerContainer, StaggerItem } from '../components/motion/ScrollReveal';
@@ -12,6 +12,11 @@ interface LegalPageProps {
 
 export const LegalPage: React.FC<LegalPageProps> = ({ currentTab, onSelectTab }) => {
   const content = LEGAL_PAGES_CONTENT[currentTab] || LEGAL_PAGES_CONTENT.shipping;
+
+  useEffect(() => {
+    document.title = `${content.title} | Veloraa Rougee`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentTab, content.title]);
 
   const tabs: { id: LegalTab; label: string }[] = [
     { id: 'shipping', label: 'Shipping' },

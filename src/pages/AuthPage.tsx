@@ -39,8 +39,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
   useEffect(() => {
     document.title = mode === 'login'
-      ? 'Sign In | Veloraa Rougee Luxury Cosmetics'
-      : 'Create an Account | Veloraa Rougee Luxury Cosmetics';
+      ? 'Sign In | Veloraa Rougee'
+      : 'Create an Account | Veloraa Rougee';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [mode]);
 

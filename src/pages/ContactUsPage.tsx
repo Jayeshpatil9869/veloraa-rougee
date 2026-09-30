@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrandImage } from '../components/ui/BrandImage';
 import { BRAND_INFO } from '../data/content';
 import { Mail, Clock, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { ScrollReveal } from '../components/motion/ScrollReveal';
 
 export const ContactUsPage: React.FC = () => {
+  useEffect(() => {
+    document.title = 'Contact Us | Veloraa Rougee';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

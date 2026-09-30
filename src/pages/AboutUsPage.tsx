@@ -14,7 +14,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
   const [isPlaying, setIsPlaying] = useState(true);
 
   useEffect(() => {
-    document.title = 'About us | Siella Beauty';
+    document.title = 'About Us | Veloraa Rougee';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -95,7 +95,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
                 className="font-serif text-6xl sm:text-7xl lg:text-9xl whitespace-pre text-[#333333] leading-none"
                 style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
               >
-                {'About\nSiella Beauty'}
+                {'About\nVELORAA ROUGEE'}
               </h1>
             </div>
             <div className="about-hero-text">
@@ -147,10 +147,10 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
               <h2 className="font-sans text-2xl font-bold text-[#333333]">Our Aim</h2>
               <div className="text-base text-[#333333] leading-[28px] max-w-[75ch] space-y-4 font-normal">
                 <p>
-                  At Siella Beauty, we are convinced that feeling beautiful starts with taking care of yourself. That&apos;s why we have chosen to share a different vision of makeup: offering feel-good products to celebrate all kinds of beauty &amp; share positive energy.
+                  At VELORAA ROUGEE, we are convinced that feeling beautiful starts with taking care of yourself. That&apos;s why we have chosen to share a different vision of makeup: offering feel-good products to celebrate all kinds of beauty &amp; share positive energy.
                 </p>
                 <p>
-                  Siella Beauty aims to motivate ladies from all age groups and personas to use makeup to highlight their natural features with confidence.
+                  VELORAA ROUGEE aims to motivate ladies from all age groups and personas to use makeup to highlight their natural features with confidence.
                 </p>
               </div>
             </div>
@@ -200,7 +200,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
               <h2 className="font-sans text-2xl font-bold text-[#333333]">Our Promise</h2>
               <div className="text-base text-[#333333] leading-[28px] max-w-[75ch] font-normal">
                 <p>
-                  Find your own beauty with Siella Beauty products: easy to use, instant beauty solutions embracing all kinds of skin tones, skin types, and beauty looks.
+                  Find your own beauty with VELORAA ROUGEE products: easy to use, instant beauty solutions embracing all kinds of skin tones, skin types, and beauty looks.
                 </p>
               </div>
             </div>
@@ -225,10 +225,10 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
               <h2 className="font-sans text-2xl font-bold text-[#333333]">About Our Founder</h2>
               <div className="text-base text-[#333333] leading-[28px] max-w-[75ch] space-y-4 font-normal">
                 <p>
-                  Sali Maher Zein is the founder and CEO of the brand Siella Beauty. entrepreneur with a strong passion for business and makeup. Educated in Lebanon and Dubai, with a degree in Finance &amp; Accounting and a master’s in international business. Sali has always been personally active and heavily involved in running all facets of the business.
+                  Sali Maher Zein is the founder and CEO of VELORAA ROUGEE. Entrepreneur with a strong passion for business and makeup. Educated in Lebanon and Dubai, with a degree in Finance &amp; Accounting and a master’s in international business. Sali has always been personally active and heavily involved in running all facets of the business.
                 </p>
                 <p>
-                  Sali&apos;s passion for makeup began early on. As a child, she was mesmerized by her mom doing her own makeup. Her love for makeup and business expertise led to establishing Siella Beauty in 2020 — a brand aimed to deliver high-quality products for women who want to celebrate their unique beauty with easy-to-use makeup products.
+                  Sali&apos;s passion for makeup began early on. As a child, she was mesmerized by her mom doing her own makeup. Her love for makeup and business expertise led to establishing VELORAA ROUGEE in 2020 — a brand aimed to deliver high-quality products for women who want to celebrate their unique beauty with easy-to-use makeup products.
                 </p>
                 <p>
                   Her quest for the best led her to Italy, where she found a manufacturer that shared her vision to produce products that can compete with the global market. And as they say, the rest is history.

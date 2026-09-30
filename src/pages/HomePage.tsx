@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HeroCarousel } from '../components/sections/HeroCarousel';
 import { BestSellersSection } from '../components/sections/BestSellersSection';
 import { FeelGoodBanner } from '../components/sections/FeelGoodBanner';
@@ -23,6 +23,10 @@ export const HomePage: React.FC<HomePageProps> = ({
   onNavigate,
   onCartUpdated,
 }) => {
+  useEffect(() => {
+    document.title = 'VELORAA ROUGEE';
+  }, []);
+
   return (
     <div className="w-full">
       {/* 3. Hero Carousel */}

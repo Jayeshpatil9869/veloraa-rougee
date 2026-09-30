@@ -28,6 +28,10 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
   const sortDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    document.title = 'Shop All | Veloraa Rougee';
+  }, [currentCategory]);
+
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
         setSortDropdownOpen(false);

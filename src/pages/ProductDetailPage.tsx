@@ -38,6 +38,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [openIngredients, setOpenIngredients] = useState(false);
 
   useEffect(() => {
+    document.title = `${product.name} | VELORAA ROUGEE`;
     setSelectedVariant(initialVariant);
     setSelectedImageIndex(0);
     setQuantity(1);
