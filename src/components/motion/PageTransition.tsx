@@ -9,27 +9,19 @@ interface PageTransitionProps {
 
 const pageVariants = {
   initial: {
-    opacity: 0.001,
-    y: 24,
-    filter: 'blur(12px)',
+    opacity: 0,
   },
   animate: {
     opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
     transition: {
-      duration: 0.55,
+      duration: 0.35,
       ease: [0.27, 0, 0.51, 1] as const,
-      staggerChildren: 0.08,
-      when: 'beforeChildren' as const,
     },
   },
   exit: {
     opacity: 0,
-    y: -16,
-    filter: 'blur(8px)',
     transition: {
-      duration: 0.35,
+      duration: 0.2,
       ease: [0.4, 0, 1, 1] as const,
     },
   },
@@ -56,10 +48,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
         initial="initial"
         animate="animate"
         exit="exit"
-        style={{
-          willChange: 'transform, filter, opacity',
-          width: '100%',
-        }}
+        className="w-full"
       >
         {children}
       </motion.div>

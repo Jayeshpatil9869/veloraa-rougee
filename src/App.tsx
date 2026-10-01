@@ -293,7 +293,7 @@ export default function App() {
       />
 
       {/* Main Route Content with Screen-Blur Page Transition */}
-      <main className="flex-1 w-full overflow-x-hidden">
+      <main className="flex-1 w-full">
         <PageTransition
           routeKey={currentPath}
           onExitComplete={() => {

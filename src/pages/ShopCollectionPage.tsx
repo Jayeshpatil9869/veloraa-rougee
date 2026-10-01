@@ -158,7 +158,7 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Desktop Left Sidebar (Cols 1-3) */}
-          <aside className="hidden lg:block lg:col-span-3 space-y-8 pr-6 border-r border-[#E2E8F0] sticky top-24 self-start">
+          <aside className="hidden lg:block lg:col-span-3 space-y-8 pr-6 border-r border-[#E2E8F0] sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar">
             {/* Category Navigation */}
             <div>
               <h2 className="text-lg font-medium text-[#A06A98] mb-4">

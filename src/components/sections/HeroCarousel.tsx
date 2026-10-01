@@ -14,8 +14,9 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
       id: 1,
       title: 'The Glam Eyes\nPalette💕',
       cta: 'Shop Now!🩷',
-      image: 'https://cdn.sanity.io/images/03h1hklz/production/fe85aca6f5624d80faa55cc0f2d78172181dd488-1400x800.png',
+      image: '/images/eyeshadow-swatches.jpg',
       alt: 'The Glam Eyes Palette💕',
+      align: 'center' as const,
     },
     {
       id: 2,
@@ -23,6 +24,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
       cta: 'Shop Now!🩷',
       image: 'https://cdn.sanity.io/images/03h1hklz/production/cf21fa5b3c44368ddc77fd6c50b6e23555e86bbb-1400x800.png',
       alt: 'The Glam Eyes is Here🩷',
+      align: 'left' as const,
     },
     {
       id: 3,
@@ -30,6 +32,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
       cta: 'Shop Collection →',
       image: 'https://cdn.sanity.io/images/03h1hklz/production/11c677ea9da701bf1bf07bc467a4e970ae37295b-1400x800.jpg',
       alt: 'Explore All Beauty Essentials💕',
+      align: 'left' as const,
     },
   ];
 
@@ -47,6 +50,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
   }, []);
 
   const slide = slides[currentSlide];
+  const isCentered = slide.align === 'center';
 
   return (
     <section
@@ -62,26 +66,38 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
           containerClassName="w-full h-full"
           className="w-full h-full object-cover object-center transition-all duration-700 ease-out"
         />
-        {/* Dark gradient for high contrast reading on large screens */}
-        <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-stone-900/60 via-stone-900/25 to-transparent z-[1]" />
-        <div className="lg:hidden absolute inset-0 bg-stone-900/40 z-[1]" />
+        {/* Contrast overlay */}
+        {isCentered ? (
+          <div className="absolute inset-0 bg-stone-900/30 z-[1]" />
+        ) : (
+          <>
+            <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-stone-900/60 via-stone-900/25 to-transparent z-[1]" />
+            <div className="lg:hidden absolute inset-0 bg-stone-900/40 z-[1]" />
+          </>
+        )}
       </div>
 
       {/* HTML Text Overlay */}
-      <div className="relative z-[2] max-w-[1440px] w-full mx-auto px-6 py-12 lg:px-20 flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
-        <div className="max-w-[45ch] space-y-4 lg:space-y-6">
+      <div
+        className={`relative z-[2] max-w-[1440px] w-full mx-auto px-6 py-12 lg:px-20 flex flex-col justify-center ${
+          isCentered
+            ? 'items-center text-center'
+            : 'items-center lg:items-start text-center lg:text-left'
+        }`}
+      >
+        <div className={`max-w-[45ch] space-y-4 lg:space-y-6 ${isCentered ? 'text-center mx-auto' : ''}`}>
           <h1
-            className="font-serif text-4xl sm:text-6xl lg:text-7xl leading-tight lg:leading-none text-white whitespace-pre-line drop-shadow-sm transition-all duration-500"
+            className="font-serif text-4xl sm:text-6xl lg:text-7xl leading-tight lg:leading-none text-white whitespace-pre-line drop-shadow-md transition-all duration-500"
             style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
           >
             {slide.title}
           </h1>
 
-          <div>
+          <div className={isCentered ? 'flex justify-center' : ''}>
             <button
               type="button"
               onClick={onShopNow}
-              className="inline-block text-lg sm:text-xl lg:text-2xl font-bold text-white hover:text-[#DFBEDB] transition-colors drop-shadow-sm cursor-pointer"
+              className="inline-block text-lg sm:text-xl lg:text-2xl font-bold text-white hover:text-[#DFBEDB] transition-colors drop-shadow-md cursor-pointer"
             >
               {slide.cta}
             </button>
