@@ -120,19 +120,20 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
     };
   }, []);
 
-  // GSAP Flower Bottom-to-Top Rising Animation
+  const hasAnimatedRef = useRef(false);
+
+  // GSAP Flower Bottom-to-Top Rising Animation (Executes strictly once on initial footer encounter)
   const playFlowerRising = () => {
-    gsap.fromTo(
+    if (hasAnimatedRef.current) return;
+    hasAnimatedRef.current = true;
+
+    gsap.to(
       ['.flower-anim-left', '.flower-anim-center', '.flower-anim-right'],
-      {
-        y: 120,
-        opacity: 0,
-      },
       {
         y: 0,
         opacity: 1,
-        duration: 1.6,
-        stagger: 0.16,
+        duration: 1.5,
+        stagger: 0.18,
         ease: 'power3.out',
         overwrite: 'auto',
       }
@@ -140,18 +141,38 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
   };
 
   useEffect(() => {
-    if (!footerRef.current) return;
+    const el = footerRef.current;
+    if (!el) return;
 
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: footerRef.current,
-        start: 'top 92%',
-        onEnter: () => playFlowerRising(),
-        onEnterBack: () => playFlowerRising(),
+    // Initially position flowers below and hidden
+    if (!hasAnimatedRef.current) {
+      gsap.set(['.flower-anim-left', '.flower-anim-center', '.flower-anim-right'], {
+        y: 130,
+        opacity: 0,
       });
-    }, footerRef);
+    }
 
-    return () => ctx.revert();
+    // Trigger reveal when user scrolls and reaches/touches the footer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasAnimatedRef.current) {
+            playFlowerRising();
+            observer.disconnect();
+          }
+        });
+      },
+      {
+        threshold: 0.05,
+        rootMargin: '0px 0px -30px 0px',
+      }
+    );
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -175,8 +196,6 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
   return (
     <footer
       ref={footerRef}
-      onMouseEnter={playFlowerRising}
-      onTouchStart={playFlowerRising}
       className="relative overflow-hidden bg-secondary"
     >
       {/* GSAP Wheel-Driven Interactive Marquee */}
