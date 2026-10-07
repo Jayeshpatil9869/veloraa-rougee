@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BrandImage } from '../ui/BrandImage';
 
@@ -8,6 +8,13 @@ interface HeroCarouselProps {
 
 export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Gesture drag/swipe state
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const [dragCurrentX, setDragCurrentX] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLElement>(null);
 
   const slides = [
     {
@@ -36,103 +43,230 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
     },
   ];
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
-  };
+  }, [slides.length]);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  }, [slides.length]);
+
+  // Automatic slideshow timer
+  useEffect(() => {
+    if (isPaused || isDragging) return;
+    const timer = setInterval(nextSlide, 6500);
+    return () => clearInterval(timer);
+  }, [nextSlide, isPaused, isDragging]);
+
+  // Touch & Mouse gesture handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setDragStartX(e.touches[0].clientX);
+    setDragCurrentX(e.touches[0].clientX);
   };
 
-  useEffect(() => {
-    const timer = setInterval(nextSlide, 7000);
-    return () => clearInterval(timer);
-  }, []);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || dragStartX === null) return;
+    setDragCurrentX(e.touches[0].clientX);
+  };
 
-  const slide = slides[currentSlide];
-  const isCentered = slide.align === 'center';
+  const handleTouchEnd = () => {
+    if (dragStartX !== null && dragCurrentX !== null) {
+      const diff = dragCurrentX - dragStartX;
+      const threshold = 45; // Gesture threshold in px
+      if (diff < -threshold) {
+        nextSlide();
+      } else if (diff > threshold) {
+        prevSlide();
+      }
+    }
+    setIsDragging(false);
+    setDragStartX(null);
+    setDragCurrentX(null);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStartX(e.clientX);
+    setDragCurrentX(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || dragStartX === null) return;
+    setDragCurrentX(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    if (dragStartX !== null && dragCurrentX !== null) {
+      const diff = dragCurrentX - dragStartX;
+      const threshold = 50;
+      if (diff < -threshold) {
+        nextSlide();
+      } else if (diff > threshold) {
+        prevSlide();
+      }
+    }
+    setIsDragging(false);
+    setDragStartX(null);
+    setDragCurrentX(null);
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      handleMouseUp();
+    }
+    setIsPaused(false);
+  };
+
+  const dragOffset = isDragging && dragStartX !== null && dragCurrentX !== null
+    ? dragCurrentX - dragStartX
+    : 0;
 
   return (
     <section
+      ref={containerRef}
       data-id="hero-promo"
       aria-label="Featured Hero Promotions"
-      className="relative w-full bg-[#DFBEDB] min-h-[460px] lg:min-h-[720px] overflow-hidden group select-none flex items-center"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      className={`relative w-full bg-[#DFBEDB] min-h-[460px] lg:min-h-[720px] overflow-hidden group select-none flex items-center ${
+        isDragging ? 'cursor-grabbing' : 'cursor-grab'
+      }`}
     >
-      {/* Background Image with slow crossfade */}
-      <div className="absolute inset-0 z-0">
-        <BrandImage
-          src={slide.image}
-          alt={slide.alt}
-          containerClassName="w-full h-full"
-          className="w-full h-full object-cover object-center transition-all duration-700 ease-out"
-        />
-        {/* Contrast overlay */}
-        {isCentered ? (
-          <div className="absolute inset-0 bg-stone-900/30 z-[1]" />
-        ) : (
-          <>
-            <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-stone-900/60 via-stone-900/25 to-transparent z-[1]" />
-            <div className="lg:hidden absolute inset-0 bg-stone-900/40 z-[1]" />
-          </>
-        )}
+      {/* Stacked Background Images with Smooth Crossfade & Gesture Parallax */}
+      <div
+        className="absolute inset-0 z-0 transition-transform duration-300 ease-out"
+        style={{
+          transform: dragOffset ? `translateX(${dragOffset * 0.25}px)` : 'none',
+        }}
+      >
+        {slides.map((s, index) => {
+          const isActive = currentSlide === index;
+          return (
+            <div
+              key={s.id}
+              className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+                isActive ? 'opacity-100 z-[1]' : 'opacity-0 z-0 pointer-events-none'
+              }`}
+            >
+              {/* Ken-Burns Slow Zoom & Panning Animation */}
+              <div
+                className={`w-full h-full transition-transform duration-[7000ms] ease-out ${
+                  isActive ? 'scale-105' : 'scale-100'
+                }`}
+              >
+                <BrandImage
+                  src={s.image}
+                  alt={s.alt}
+                  containerClassName="w-full h-full"
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+
+              {/* Dynamic Contrast Gradient Overlays */}
+              {s.align === 'center' ? (
+                <div className="absolute inset-0 bg-stone-900/35 transition-opacity duration-700" />
+              ) : (
+                <>
+                  <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-stone-900/70 via-stone-900/35 to-transparent transition-opacity duration-700" />
+                  <div className="lg:hidden absolute inset-0 bg-stone-900/45 transition-opacity duration-700" />
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      {/* HTML Text Overlay */}
-      <div
-        className={`relative z-[2] max-w-[1440px] w-full mx-auto px-6 py-12 lg:px-20 flex flex-col justify-center ${
-          isCentered
-            ? 'items-center text-center'
-            : 'items-center lg:items-start text-center lg:text-left'
-        }`}
-      >
-        <div className={`max-w-[45ch] space-y-4 lg:space-y-6 ${isCentered ? 'text-center mx-auto' : ''}`}>
-          <h1
-            className="font-serif text-4xl sm:text-6xl lg:text-7xl leading-tight lg:leading-none text-white whitespace-pre-line drop-shadow-md transition-all duration-500"
-            style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
-          >
-            {slide.title}
-          </h1>
+      {/* HTML Text Overlay with Smooth Fade and Slide Transitions */}
+      <div className="relative z-[2] max-w-[1440px] w-full mx-auto px-6 py-12 lg:px-20 pointer-events-none">
+        {slides.map((s, index) => {
+          const isActive = currentSlide === index;
+          const isCentered = s.align === 'center';
 
-          <div className={isCentered ? 'flex justify-center' : ''}>
-            <button
-              type="button"
-              onClick={onShopNow}
-              className="inline-block text-lg sm:text-xl lg:text-2xl font-bold text-white hover:text-[#DFBEDB] transition-colors drop-shadow-md cursor-pointer"
+          return (
+            <div
+              key={s.id}
+              className={`transition-all duration-700 ease-out flex flex-col justify-center ${
+                isActive
+                  ? 'opacity-100 translate-y-0 relative pointer-events-auto'
+                  : 'opacity-0 translate-y-4 absolute inset-0 pointer-events-none'
+              } ${
+                isCentered
+                  ? 'items-center text-center'
+                  : 'items-center lg:items-start text-center lg:text-left'
+              }`}
             >
-              {slide.cta}
-            </button>
-          </div>
-        </div>
+              <div className={`max-w-[45ch] space-y-4 lg:space-y-6 ${isCentered ? 'text-center mx-auto' : ''}`}>
+                <h1
+                  className="font-serif text-4xl sm:text-6xl lg:text-7xl leading-tight lg:leading-none text-white whitespace-pre-line drop-shadow-md transition-transform duration-700 ease-out"
+                  style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
+                >
+                  {s.title}
+                </h1>
+
+                <div className={isCentered ? 'flex justify-center' : ''}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onShopNow) onShopNow();
+                    }}
+                    className="inline-block text-lg sm:text-xl lg:text-2xl font-bold text-white hover:text-[#DFBEDB] transition-colors drop-shadow-md cursor-pointer hover:scale-105 active:scale-95 duration-200"
+                  >
+                    {s.cta}
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Controls: Left & Right Chevrons */}
       <button
         type="button"
-        onClick={prevSlide}
+        onClick={(e) => {
+          e.stopPropagation();
+          prevSlide();
+        }}
         aria-label="Previous slide"
-        className="absolute left-2 lg:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/20 hover:bg-black/40 rounded-full transition-all opacity-80 hover:opacity-100 focus:outline-none cursor-pointer"
+        className="absolute left-3 lg:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/25 hover:bg-black/50 backdrop-blur-xs rounded-full transition-all duration-300 opacity-75 hover:opacity-100 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer shadow-md"
       >
         <ChevronLeft className="w-6 h-6 lg:w-8 lg:h-8" />
       </button>
 
       <button
         type="button"
-        onClick={nextSlide}
+        onClick={(e) => {
+          e.stopPropagation();
+          nextSlide();
+        }}
         aria-label="Next slide"
-        className="absolute right-2 lg:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/20 hover:bg-black/40 rounded-full transition-all opacity-80 hover:opacity-100 focus:outline-none cursor-pointer"
+        className="absolute right-3 lg:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/25 hover:bg-black/50 backdrop-blur-xs rounded-full transition-all duration-300 opacity-75 hover:opacity-100 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer shadow-md"
       >
         <ChevronRight className="w-6 h-6 lg:w-8 lg:h-8" />
       </button>
 
-      {/* Slide Indicators */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+      {/* Slide Indicators with smooth expansion animation */}
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-black/20 backdrop-blur-xs">
         {slides.map((_, i) => (
           <button
             key={i}
-            onClick={() => setCurrentSlide(i)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentSlide(i);
+            }}
             aria-label={`Go to slide ${i + 1}`}
-            className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
-              currentSlide === i ? 'w-6 bg-white' : 'bg-white/50 hover:bg-white/80'
+            className={`h-2 rounded-full transition-all duration-500 cursor-pointer ${
+              currentSlide === i
+                ? 'w-7 bg-white shadow-xs'
+                : 'w-2 bg-white/50 hover:bg-white/80'
             }`}
           />
         ))}
@@ -140,3 +274,4 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
     </section>
   );
 };
+

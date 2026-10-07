@@ -121,15 +121,24 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               </div>
             )}
 
-            {/* Main Stage Image */}
+            {/* Main Stage Image with Smooth Crossfade Gallery */}
             <div className="flex-1 aspect-square rounded-brand overflow-hidden bg-white border border-[#E2E8F0] relative cursor-zoom-in group shadow-xs">
-              <BrandImage
-                src={currentImage?.src}
-                alt={currentImage?.alt || product.name}
-                fallbackLabel={product.name}
-                containerClassName="w-full h-full"
-                className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-              />
+              {allImages.map((img, idx) => (
+                <div
+                  key={idx}
+                  className={`absolute inset-0 w-full h-full transition-opacity duration-500 ease-in-out ${
+                    selectedImageIndex === idx ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                  }`}
+                >
+                  <BrandImage
+                    src={img.src}
+                    alt={img.alt || product.name}
+                    fallbackLabel={product.name}
+                    containerClassName="w-full h-full"
+                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
