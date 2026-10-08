@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { Eye, EyeOff, Lock, Mail, User, Phone, Check } from 'lucide-react';
 import { FlowerTallSvg, FlowerShortSvg } from '../components/brand/BrandIcons';
 import { VeloraaRougeeLogo } from '../components/brand/VeloraaRougeeLogo';
+import { api, hasApi } from '../lib/api';
 
 interface AuthPageProps {
   initialMode?: 'login' | 'signup';
@@ -20,6 +21,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Form states
@@ -113,36 +115,71 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     }));
   };
 
-  const handleAuthSubmit = (e: React.FormEvent) => {
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthError(null);
+    if (!hasApi()) {
+      setAuthError('Sign-in needs the store API.');
+      return;
+    }
+    if (mode === 'signup' && formData.password !== formData.confirmPassword) {
+      setAuthError('Passwords do not match.');
+      return;
+    }
     setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      const name = mode === 'signup' && formData.fullName ? formData.fullName : 'Beauty Connoisseur';
-      setAuthSuccess(
-        mode === 'login'
-          ? `Welcome back to Veloraa Rougee, ${name}!`
-          : `Welcome to the Veloraa Rougee Atelier, ${name}! Your membership is activated.`
-      );
-
-      setTimeout(() => {
+    try {
+      if (mode === 'signup') {
+        const result = await api<{ needsVerification: boolean }>('/auth/signup', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            fullName: formData.fullName,
+            phone: formData.phone,
+          }),
+        });
+        setAuthSuccess(result.needsVerification
+          ? 'Check your email to verify this account before signing in.'
+          : 'Your account is ready.');
+        if (!result.needsVerification) {
+          if (onSuccess) onSuccess();
+          onNavigate('/en/account');
+        }
+      } else {
+        await api('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ email: formData.email, password: formData.password }),
+        });
+        await api('/cart/merge', { method: 'POST' }).catch(() => undefined);
         if (onSuccess) onSuccess();
-        onNavigate('/en/collection');
-      }, 1500);
-    }, 1000);
+        onNavigate('/en/account');
+      }
+    } catch (reason) {
+      setAuthError(reason instanceof Error ? reason.message : 'auth_failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleGoogleAuth = () => {
+  const handleGoogleAuth = async () => {
+    setAuthError(null);
+    const url = import.meta.env.VITE_SUPABASE_URL;
+    const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    if (!url || !key) {
+      setAuthError('Google sign-in is not configured.');
+      return;
+    }
     setIsLoading(true);
-    setTimeout(() => {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(url, key);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/en/auth/callback` },
+    });
+    if (error) {
       setIsLoading(false);
-      setAuthSuccess('Successfully authenticated with Google. Welcome!');
-      setTimeout(() => {
-        if (onSuccess) onSuccess();
-        onNavigate('/en/collection');
-      }, 1200);
-    }, 900);
+      setAuthError(error.message);
+    }
   };
 
   return (
@@ -204,6 +241,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             </div>
             <span>{authSuccess}</span>
           </div>
+        )}
+        {authError && (
+          <p className="mb-6 text-sm text-[#EF4444]" role="alert">{authError}</p>
+        )}
+        {authError && (
+          <p className="mb-6 text-sm text-[#EF4444]" role="alert">{authError}</p>
         )}
 
         {/* Tab Switcher (Sign In vs Sign Up) */}

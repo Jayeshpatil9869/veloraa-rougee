@@ -3,7 +3,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cartService } from '../../services/cartService';
-import { Product, ProductVariant } from '../../types';
+import { productService } from '../../services/productService';
+import { Product } from '../../types';
 import { ScrollReveal } from '../motion/ScrollReveal';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -140,52 +141,14 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
   const handleAddToCart = (e: React.FormEvent, slideIndex: number) => {
     e.preventDefault();
     const item = slides[slideIndex].product;
-    const variant: ProductVariant = {
-      id:
-        slideIndex === 0
-          ? slide1Swatch === 'petite'
-            ? '44558150041855'
-            : '44558150074623'
-          : '44558145159423',
-      productId: item.id,
-      name:
-        slideIndex === 0
-          ? slide1Swatch === 'petite'
-            ? 'Curling Champ for Petite Travel Size'
-            : 'Curling Champ for Tall Travel Size'
-          : 'Lip Balm',
-      value:
-        slideIndex === 0
-          ? slide1Swatch === 'petite'
-            ? 'Petite'
-            : 'Tall'
-          : 'Default',
-      price: item.price,
-      sku: item.id,
-      stock: 50,
-      image: item.image,
-    };
-
-    const dummyProduct: Product = {
-      id: item.id,
-      slug: item.handle,
-      name: item.title,
-      description: item.description,
-      categoryId: item.category,
-      categoryName: item.category === 'eyes' ? 'Eyes' : 'Lips',
-      images: [
-        {
-          id: `${item.id}-img`,
-          src: item.image,
-          alt: item.title,
-        },
-      ],
-      variants: [variant],
-      rating: 4.9,
-      reviewCount: 120,
-    };
-
-    cartService.addItem(dummyProduct, variant, 1);
+    const catalogProduct = productService.getProductBySlug(item.handle);
+    if (!catalogProduct) return;
+    const wantedId = slideIndex === 0
+      ? slide1Swatch === 'petite' ? '44558150041855' : '44558150074623'
+      : '44558145159423';
+    const variant = catalogProduct.variants.find((entry) => entry.id === wantedId) || catalogProduct.variants[0];
+    if (!variant) return;
+    cartService.addItem(catalogProduct, variant, 1);
     if (onCartUpdated) {
       onCartUpdated();
     }

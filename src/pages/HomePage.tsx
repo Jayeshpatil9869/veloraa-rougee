@@ -7,6 +7,7 @@ import { SpotlightPromo } from '../components/sections/SpotlightPromo';
 import { OurBlogSection } from '../components/sections/OurBlogSection';
 import { ExploreFeedSection } from '../components/sections/ExploreFeedSection';
 import { CategoryId, Product, StoryArticle } from '../types';
+import { isHomepageSectionEnabled } from '../services/contentStore';
 
 interface HomePageProps {
   onSelectProduct: (product: Product, variantId?: string) => void;
@@ -30,38 +31,40 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="w-full">
       {/* 3. Hero Carousel */}
-      <HeroCarousel onShopNow={() => onNavigate('/en/collection')} />
+      {isHomepageSectionEnabled('hero') && <HeroCarousel onShopNow={() => onNavigate('/en/collection')} />}
 
-      {/* 4. Best Sellers on Blush */}
-      <BestSellersSection
-        onSelectProduct={onSelectProduct}
-        onNavigateToBestSellers={() => onNavigate('/en/collection/best-sellers')}
-        onCartUpdated={onCartUpdated}
-      />
+      {isHomepageSectionEnabled('best-sellers') && (
+        <BestSellersSection
+          onSelectProduct={onSelectProduct}
+          onNavigateToBestSellers={() => onNavigate('/en/collection/best-sellers')}
+          onCartUpdated={onCartUpdated}
+        />
+      )}
 
-      {/* 5. Feel-good script statement line on white */}
-      <FeelGoodBanner />
+      {isHomepageSectionEnabled('feel-good') && <FeelGoodBanner />}
 
-      {/* 6. Shop by Category on Lilac */}
-      <ShopByCategory
-        onSelectCategory={onSelectCategory}
-        onNavigateToCollection={() => onNavigate('/en/collection')}
-      />
+      {isHomepageSectionEnabled('shop-by-category') && (
+        <ShopByCategory
+          onSelectCategory={onSelectCategory}
+          onNavigateToCollection={() => onNavigate('/en/collection')}
+        />
+      )}
 
-      {/* 7. Spotlight pair carousel */}
-      <SpotlightPromo
-        onSelectProduct={onSelectProduct}
-        onCartUpdated={onCartUpdated}
-      />
+      {isHomepageSectionEnabled('spotlight') && (
+        <SpotlightPromo
+          onSelectProduct={onSelectProduct}
+          onCartUpdated={onCartUpdated}
+        />
+      )}
 
-      {/* 8. Our Blog on Blush */}
-      <OurBlogSection
-        onSelectArticle={onSelectArticle}
-        onNavigateToStories={() => onNavigate('/en/stories')}
-      />
+      {isHomepageSectionEnabled('stories') && (
+        <OurBlogSection
+          onSelectArticle={onSelectArticle}
+          onNavigateToStories={() => onNavigate('/en/stories')}
+        />
+      )}
 
-      {/* 9. Explore Our Feed */}
-      <ExploreFeedSection />
+      {isHomepageSectionEnabled('explore-feed') && <ExploreFeedSection />}
     </div>
   );
 };

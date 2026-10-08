@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { StoryArticle, Product } from '../types';
-import { STORY_ARTICLES } from '../data/content';
+import { getStoryArticles } from '../services/contentStore';
 import { productService } from '../services/productService';
 import { cartService } from '../services/cartService';
 import { BrandImage } from '../components/ui/BrandImage';
@@ -31,7 +31,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({
 
   const selectedArticle = useMemo(() => {
     return currentArticleSlug
-      ? STORY_ARTICLES.find((a) => a.slug === currentArticleSlug)
+      ? getStoryArticles().find((a) => a.slug === currentArticleSlug)
       : null;
   }, [currentArticleSlug]);
 
@@ -52,7 +52,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({
   ];
 
   const filteredArticles = useMemo(() => {
-    return STORY_ARTICLES.filter((article) => {
+    return getStoryArticles().filter((article) => {
       const matchesCategory =
         activeCategory === 'all' || article.chips.includes(activeCategory);
       const matchesSearch =
@@ -66,7 +66,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({
   }, [activeCategory, searchQuery]);
 
   // Featured Spotlight story (top article)
-  const featuredHeroStory = STORY_ARTICLES[0];
+  const featuredHeroStory = getStoryArticles()[0];
 
   const handleQuickAdd = (product: Product) => {
     const variant = product.variants[0];
@@ -269,7 +269,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({
                 Continue Reading
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {STORY_ARTICLES.filter((a) => a.slug !== selectedArticle.slug)
+                {getStoryArticles().filter((a) => a.slug !== selectedArticle.slug)
                   .slice(0, 3)
                   .map((article) => (
                     <div
@@ -389,8 +389,8 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({
                   {categories.map((cat) => {
                     const count =
                       cat.id === 'all'
-                        ? STORY_ARTICLES.length
-                        : STORY_ARTICLES.filter((a) => a.chips.includes(cat.id)).length;
+                        ? getStoryArticles().length
+                        : getStoryArticles().filter((a) => a.chips.includes(cat.id)).length;
 
                     return (
                       <button

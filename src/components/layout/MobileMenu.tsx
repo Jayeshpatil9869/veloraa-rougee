@@ -138,7 +138,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
               </button>
 
               <button
-                onClick={() => handleNav('/en/login')}
+                onClick={() => handleNav('/en/account')}
                 className="mobile-menu-item w-full text-left py-2.5 px-3 mt-2 bg-[#FDF2F8] rounded-xl text-xs font-bold uppercase tracking-widest text-[#76416F] hover:bg-[#FDF2F8]/80 flex items-center justify-between border border-[#F0DEF7] cursor-pointer"
               >
                 <span>Sign In / Register</span>

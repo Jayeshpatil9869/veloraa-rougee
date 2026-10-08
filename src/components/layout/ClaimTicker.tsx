@@ -1,8 +1,8 @@
 import React from 'react';
-import { BRAND_INFO } from '../../data/content';
+import { getClaimTicker } from '../../services/contentStore';
 
 export const ClaimTicker: React.FC = () => {
-  const phrases = BRAND_INFO.claimTicker;
+  const phrases = getClaimTicker();
   // Double list for seamless looping
   const loopList = [...phrases, ...phrases, ...phrases, ...phrases];
 

@@ -21,12 +21,19 @@ import { LocationsPage } from './pages/LocationsPage';
 import { ContactUsPage } from './pages/ContactUsPage';
 import { LegalPage, LegalTab } from './pages/LegalPage';
 import { AuthPage } from './pages/AuthPage';
+import { CheckoutPage, CheckoutReturnPage } from './pages/CheckoutPage';
+import { AccountPage, AuthCallbackPage, ResetPasswordPage } from './pages/AccountPage';
+import { AdminApp } from './admin/AdminApp';
 
 import { PageTransition } from './components/motion/PageTransition';
 
 import { CategoryId, Product, StoryArticle } from './types';
 import { productService } from './services/productService';
-import { STORY_ARTICLES } from './data/content';
+import { hydrateCatalog } from './services/productService';
+import { getStoryArticles, hydrateContent } from './services/contentStore';
+import { cartService } from './services/cartService';
+import { api, hasApi } from './lib/api';
+import { applySeoHead, SeoPayload } from './seo/head';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<string>(() => {
@@ -42,6 +49,7 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [catalogTick, setCatalogTick] = useState(0);
   const lenisRef = useRef<Lenis | null>(null);
 
   const scrollToTop = () => {
@@ -52,6 +60,22 @@ export default function App() {
       lenisRef.current.scrollTo(0, { immediate: true });
     }
   };
+
+  useEffect(() => {
+    Promise.all([hydrateCatalog(), hydrateContent()])
+      .then(() => cartService.refresh())
+      .finally(() => {
+        setCatalogTick((value) => value + 1);
+        parsePath(window.location.pathname || '/en');
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!hasApi() || currentPath.startsWith('/admin')) return;
+    api<SeoPayload>(`/seo/resolve?path=${encodeURIComponent(currentPath)}`)
+      .then(applySeoHead)
+      .catch(() => undefined);
+  }, [currentPath, catalogTick]);
 
   // Initialize Lenis smooth scroll and integrate with GSAP ScrollTrigger
   useEffect(() => {
@@ -101,7 +125,7 @@ export default function App() {
       }
     } else if (normalized.startsWith('/en/stories/')) {
       const slug = normalized.replace('/en/stories/', '');
-      const article = STORY_ARTICLES.find((a) => a.slug === slug);
+      const article = getStoryArticles().find((a) => a.slug === slug);
       if (article) {
         setActiveArticleSlug(slug);
       } else {
@@ -175,6 +199,13 @@ export default function App() {
 
   // Determine which page to render
   const renderPage = () => {
+    void catalogTick;
+    if (currentPath === '/en/checkout') return <CheckoutPage onNavigate={navigate} />;
+    if (currentPath.startsWith('/en/checkout/return')) return <CheckoutReturnPage />;
+    if (currentPath === '/en/account') return <AccountPage onNavigate={navigate} />;
+    if (currentPath === '/en/auth/callback') return <AuthCallbackPage onNavigate={navigate} />;
+    if (currentPath === '/en/reset-password') return <ResetPasswordPage onNavigate={navigate} />;
+
     if (currentPath.startsWith('/en/product/') && activeProduct) {
       return (
         <ProductDetailPage
@@ -271,6 +302,10 @@ export default function App() {
     );
   };
 
+  if (currentPath.startsWith('/admin')) {
+    return <AdminApp path={currentPath} onNavigate={navigate} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-white text-[#333333]">
       {/* 1. Announcement bar, 44px, blush #FDF2F8 */}
@@ -322,6 +357,10 @@ export default function App() {
         isOpen={cartOpen}
         onClose={() => setCartOpen(false)}
         onNavigateToShop={() => navigate('/en/collection')}
+        onCheckout={() => {
+          setCartOpen(false);
+          navigate('/en/checkout');
+        }}
       />
     </div>
   );

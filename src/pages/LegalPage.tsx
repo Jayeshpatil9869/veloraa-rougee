@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { LEGAL_PAGES_CONTENT } from '../data/content';
+import { getLegalPages } from '../services/contentStore';
 import { BrandImage } from '../components/ui/BrandImage';
 import { ScrollReveal, StaggerContainer, StaggerItem } from '../components/motion/ScrollReveal';
 
@@ -11,7 +11,7 @@ interface LegalPageProps {
 }
 
 export const LegalPage: React.FC<LegalPageProps> = ({ currentTab, onSelectTab }) => {
-  const content = LEGAL_PAGES_CONTENT[currentTab] || LEGAL_PAGES_CONTENT.shipping;
+  const content = getLegalPages()[currentTab] || getLegalPages().shipping;
 
   useEffect(() => {
     document.title = `${content.title} | Veloraa Rougee`;

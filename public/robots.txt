@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /en/account
+Disallow: /en/checkout
+Disallow: /en/login
+Disallow: /en/signup
+
+Sitemap: https://veloraarougee.com/sitemap.xml

@@ -1,43 +1,33 @@
 import { PRODUCTS, CATEGORIES } from '../data/products';
 import { Category, CategoryId, Product } from '../types';
+import { api, hasApi } from '../lib/api';
+
+let products: Product[] = PRODUCTS;
+let categories: Category[] = CATEGORIES;
+
+export async function hydrateCatalog() {
+  if (!hasApi()) return;
+  const [nextProducts, nextCategories] = await Promise.all([
+    api<Product[]>('/products'),
+    api<Category[]>('/categories'),
+  ]);
+  products = nextProducts;
+  categories = nextCategories;
+}
 
 export const productService = {
-  getProducts: (): Product[] => {
-    return [...PRODUCTS];
-  },
-
-  getProductBySlug: (slug: string): Product | undefined => {
-    return PRODUCTS.find((p) => p.slug === slug);
-  },
-
-  getProductById: (id: string): Product | undefined => {
-    return PRODUCTS.find((p) => p.id === id);
-  },
-
-  getFeaturedProducts: (): Product[] => {
-    return PRODUCTS.filter((p) => p.featured);
-  },
-
-  getBestSellers: (): Product[] => {
-    // 8 items for the Best Sellers row as per the brief
-    return PRODUCTS.slice(0, 8);
-  },
-
+  getProducts: (): Product[] => [...products],
+  getProductBySlug: (slug: string): Product | undefined => products.find((product) => product.slug === slug),
+  getProductById: (id: string): Product | undefined => products.find((product) => product.id === id),
+  getFeaturedProducts: (): Product[] => products.filter((product) => product.featured),
+  getBestSellers: (): Product[] => products.filter((product) => product.bestseller).slice(0, 8),
   getProductsByCategory: (categoryId: CategoryId | 'all'): Product[] => {
-    if (categoryId === 'all') return PRODUCTS;
-    if (categoryId === 'best-sellers') return PRODUCTS.slice(0, 8);
-    return PRODUCTS.filter((p) => p.categoryId === categoryId);
+    if (categoryId === 'all') return [...products];
+    if (categoryId === 'best-sellers') return products.filter((product) => product.bestseller);
+    return products.filter((product) => product.categoryId === categoryId);
   },
-
-  getCategories: (): Category[] => {
-    return [...CATEGORIES];
-  },
-
-  getCategoryBySlug: (slug: string): Category | undefined => {
-    return CATEGORIES.find((c) => c.slug === slug);
-  },
-
-  getSuggestedProducts: (currentProductId: string, limit = 6): Product[] => {
-    return PRODUCTS.filter((p) => p.id !== currentProductId).slice(0, limit);
-  },
+  getCategories: (): Category[] => [...categories],
+  getCategoryBySlug: (slug: string): Category | undefined => categories.find((category) => category.slug === slug),
+  getSuggestedProducts: (currentProductId: string, limit = 6): Product[] =>
+    products.filter((product) => product.id !== currentProductId).slice(0, limit),
 };

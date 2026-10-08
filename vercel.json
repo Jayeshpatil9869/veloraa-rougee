@@ -2,7 +2,7 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!robots\\.txt|sitemap\\.xml|assets/|fonts/|brand/|favicon\\.svg).*)",
       "destination": "/index.html"
     }
   ],

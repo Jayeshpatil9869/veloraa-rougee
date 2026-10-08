@@ -1,5 +1,5 @@
 import React from 'react';
-import { STORY_ARTICLES } from '../../data/content';
+import { getStoryArticles } from '../../services/contentStore';
 import { BrandArrow } from '../brand/BrandIcons';
 import { BrandImage } from '../ui/BrandImage';
 import { StoryArticle } from '../../types';
@@ -42,7 +42,7 @@ export const OurBlogSection: React.FC<OurBlogSectionProps> = ({
         staggerDelay={0.09}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
       >
-        {STORY_ARTICLES.map((article) => (
+        {getStoryArticles().map((article) => (
           <StaggerItem key={article.slug} className="h-full">
             <article
               onClick={() => onSelectArticle(article)}

@@ -1,4 +1,4 @@
-import { PRODUCTS } from '../data/products';
+import { productService } from './productService';
 import { Product } from '../types';
 
 export interface SearchOptions {
@@ -10,7 +10,7 @@ export interface SearchOptions {
 
 export const searchService = {
   search: (options: SearchOptions): Product[] => {
-    let results = [...PRODUCTS];
+    let results = productService.getProducts();
 
     if (options.query && options.query.trim().length > 0) {
       const q = options.query.toLowerCase().trim();

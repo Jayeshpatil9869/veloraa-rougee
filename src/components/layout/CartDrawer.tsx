@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { cartService, FREE_SHIPPING_THRESHOLD } from '../../services/cartService';
 import { CartItem } from '../../types';
 import { BrandImage } from '../ui/BrandImage';
@@ -8,12 +8,11 @@ interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateToShop: () => void;
+  onCheckout: () => void;
 }
 
-export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavigateToShop }) => {
+export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavigateToShop, onCheckout }) => {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [orderConfirmed, setOrderConfirmed] = useState<string | null>(null);
 
   useEffect(() => {
     const refresh = () => setItems(cartService.getCart());
@@ -35,13 +34,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
   };
 
   const handleCheckout = () => {
-    setIsCheckingOut(true);
-    setTimeout(() => {
-      const orderNum = 'VR-' + Math.floor(100000 + Math.random() * 900000);
-      setOrderConfirmed(orderNum);
-      cartService.clearCart();
-      setIsCheckingOut(false);
-    }, 1200);
+    onClose();
+    onCheckout();
   };
 
   return (
@@ -114,31 +108,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
         </div>
 
         {/* Main Content Area */}
-        {orderConfirmed ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4 overflow-y-auto">
-            <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 mb-2">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
-            <h3 className="text-xl font-bold text-[#333333]">Order Confirmed</h3>
-            <p className="text-sm text-[#666666]">
-              Thank you for ordering with VELORAA ROUGEE. Your order has been placed successfully.
-            </p>
-            <div className="p-3 bg-[#FDF2F8] rounded-brand border border-[#F0DEF7] w-full text-xs space-y-1">
-              <p className="text-[#76416F] font-bold">Order #{orderConfirmed}</p>
-              <p className="text-[#666666]">Fulfillment Status: Preparing Luxury Shipment</p>
-              <p className="text-[#666666]">Confirmation sent to your email.</p>
-            </div>
-            <button
-              onClick={() => {
-                setOrderConfirmed(null);
-                onClose();
-              }}
-              className="w-full py-3 bg-[#A06A98] text-white text-xs font-bold uppercase tracking-wider rounded-brand hover:bg-[#774170] transition-colors"
-            >
-              Continue Browsing
-            </button>
-          </div>
-        ) : items.length > 0 ? (
+        {items.length > 0 ? (
           <div
             data-lenis-prevent
             className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4 divide-y divide-slate-100 overscroll-contain"
@@ -224,7 +194,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
         )}
 
         {/* Footer Checkout Summary */}
-        {items.length > 0 && !orderConfirmed && (
+        {items.length > 0 && (
           <div className="p-4 sm:p-6 border-t border-[#E2E8F0] bg-[#FDF2F8]/40 space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="font-semibold text-[#666666]">Subtotal</span>
@@ -239,15 +209,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
 
             <button
               type="button"
-              disabled={isCheckingOut}
               onClick={handleCheckout}
-              className="w-full h-11 bg-[#A06A98] hover:bg-[#774170] text-[#F8FAFC] text-xs font-bold uppercase tracking-wider rounded-brand transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              className="w-full h-11 bg-[#A06A98] hover:bg-[#774170] text-[#F8FAFC] text-xs font-bold uppercase tracking-wider rounded-brand transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
-              {isCheckingOut ? (
-                <span>Securing Luxury Order...</span>
-              ) : (
-                <span>Proceed to Checkout ─ ₹{subtotal.toFixed(2)}</span>
-              )}
+              <span>Proceed to Checkout ─ ₹{subtotal.toFixed(2)}</span>
             </button>
           </div>
         )}

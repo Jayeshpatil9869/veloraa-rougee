@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { STORE_LOCATIONS } from '../data/content';
+import { getStoreLocations } from '../services/contentStore';
 import { MapPin, ExternalLink, Sparkles } from 'lucide-react';
 import { ScrollReveal, StaggerContainer, StaggerItem } from '../components/motion/ScrollReveal';
 
@@ -11,7 +11,7 @@ export const LocationsPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const filteredStores = STORE_LOCATIONS.filter((s) => {
+  const filteredStores = getStoreLocations().filter((s) => {
     if (activeTab === 'all') return true;
     return s.cityId === activeTab;
   });

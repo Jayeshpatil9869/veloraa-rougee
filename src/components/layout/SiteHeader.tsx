@@ -242,7 +242,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
           {/* Account / Login Trigger (Shown on Mobile & Desktop) */}
           <button
             type="button"
-            onClick={() => onNavigate('/en/login')}
+            onClick={() => onNavigate('/en/account')}
             aria-label="Customer account"
             className="flex p-2 text-[#333333] hover:text-[#A06A98] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
           >

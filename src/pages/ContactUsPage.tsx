@@ -3,6 +3,7 @@ import { BrandImage } from '../components/ui/BrandImage';
 import { BRAND_INFO } from '../data/content';
 import { Mail, Clock, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { ScrollReveal } from '../components/motion/ScrollReveal';
+import { api, hasApi } from '../lib/api';
 
 export const ContactUsPage: React.FC = () => {
   useEffect(() => {
@@ -20,22 +21,25 @@ export const ContactUsPage: React.FC = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    if (!hasApi()) {
+      setError('This form needs the store API.');
+      return;
+    }
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      await api('/contact', { method: 'POST', body: JSON.stringify(formData) });
       setSuccess(true);
-      setFormData({
-        firstName: '',
-        lastName: '',
-        phone: '',
-        email: '',
-        message: '',
-      });
-      setTimeout(() => setSuccess(false), 5000);
-    }, 1000);
+      setFormData({ firstName: '', lastName: '', phone: '', email: '', message: '' });
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'contact_failed');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -74,6 +78,7 @@ export const ContactUsPage: React.FC = () => {
               </p>
             </div>
 
+            {error && <p className="text-sm text-[#EF4444]" role="alert">{error}</p>}
             {success ? (
               <div className="p-6 bg-[#FDF2F8] border border-[#F0DEF7] rounded-brand text-center space-y-3">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />

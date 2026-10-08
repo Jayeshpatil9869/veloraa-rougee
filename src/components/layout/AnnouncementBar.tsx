@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { BRAND_INFO } from '../../data/content';
+import { getAnnouncements } from '../../services/contentStore';
 
 export const AnnouncementBar: React.FC = () => {
   const [index, setIndex] = useState(0);
-  const messages = BRAND_INFO.announcements;
+  const messages = getAnnouncements();
 
   useEffect(() => {
     const timer = setInterval(() => {

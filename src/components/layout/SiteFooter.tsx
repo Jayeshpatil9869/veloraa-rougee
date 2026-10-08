@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
 import { TextRoll } from '../ui/TextRoll';
 import { FlowerTallSvg, FlowerShortSvg, MastercardSvg, VisaSvg } from '../brand/BrandIcons';
+import { api, hasApi } from '../../lib/api';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,6 +15,7 @@ interface SiteFooterProps {
 export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [newsletterError, setNewsletterError] = useState('');
   const footerRef = useRef<HTMLElement>(null);
   const marqueeTrackRef = useRef<HTMLDivElement>(null);
   const [parallaxOffset, setParallaxOffset] = useState({ left: 100, center: 30, right: 180 });
@@ -175,12 +177,20 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && email.includes('@')) {
+    setNewsletterError('');
+    if (!email.includes('@')) return;
+    if (!hasApi()) {
+      setNewsletterError('Newsletter signup needs the store API.');
+      return;
+    }
+    try {
+      await api('/newsletter', { method: 'POST', body: JSON.stringify({ email, source: 'footer' }) });
       setSubmitted(true);
       setEmail('');
-      setTimeout(() => setSubmitted(false), 4000);
+    } catch (reason) {
+      setNewsletterError(reason instanceof Error ? reason.message : 'newsletter_failed');
     }
   };
 
@@ -286,6 +296,12 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                 <span className="text-xs text-[#76416F] font-medium block mt-2">
                   Thank you for subscribing!
                 </span>
+              )}
+              {newsletterError && (
+                <span className="text-xs text-[#EF4444] block mt-2" role="alert">{newsletterError}</span>
+              )}
+              {newsletterError && (
+                <span className="text-xs text-[#EF4444] block mt-2" role="alert">{newsletterError}</span>
               )}
             </div>
           </div>
