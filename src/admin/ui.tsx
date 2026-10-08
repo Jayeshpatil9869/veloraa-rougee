@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { LucideIcon, Search, AlertCircle, CheckCircle2, Info, X, TrendingUp, TrendingDown } from 'lucide-react';
 
@@ -414,8 +414,9 @@ export function Modal({
   subtitle,
   onClose,
   children,
-  maxWidth = 'max-w-2xl',
+  maxWidth = 'max-w-5xl',
   footer,
+  confirmOnClose = false,
 }: {
   title: string;
   subtitle?: string;
@@ -423,68 +424,141 @@ export function Modal({
   children: React.ReactNode;
   maxWidth?: string;
   footer?: React.ReactNode;
+  confirmOnClose?: boolean;
 }) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const requestClose = () => {
+    if (confirmOnClose) {
+      setShowConfirm(true);
+    } else {
+      onClose();
+    }
+  };
 
   useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // 1. Lock background scrolling on both documentElement and body
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalBodyPaddingRight = document.body.style.paddingRight;
+    const originalTouchAction = document.body.style.touchAction;
 
-    if (modalRef.current) {
-      gsap.fromTo(
-        modalRef.current,
-        { opacity: 0, scale: 0.95, y: 14 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.28, ease: 'power2.out' }
-      );
+    // Compensate for scrollbar layout shift
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
 
-    return () => {
-      document.body.style.overflow = originalOverflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+
+    // 2. Keyboard accessibility
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showConfirm) {
+          setShowConfirm(false);
+        } else if (confirmOnClose) {
+          setShowConfirm(true);
+        } else {
+          onClose();
+        }
+      }
     };
-  }, []);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.paddingRight = originalBodyPaddingRight;
+      document.body.style.touchAction = originalTouchAction;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose, confirmOnClose, showConfirm]);
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200 overflow-y-auto"
-      onClick={onClose}
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-5 lg:p-6 overflow-hidden overscroll-none"
+      onClick={requestClose}
     >
       <div
         ref={modalRef}
-        className={`w-full ${maxWidth} max-h-[88vh] h-auto flex flex-col bg-white border border-[#DFBEDB]/60 rounded-2xl shadow-[0_24px_64px_rgba(119,65,112,0.22)] overflow-hidden relative my-auto`}
+        className={`w-full ${maxWidth} max-h-[92vh] h-auto flex flex-col bg-white border border-[#DFBEDB]/80 rounded-xl sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.22)] overflow-hidden relative my-auto`}
         onClick={(event) => event.stopPropagation()}
+        onWheel={(event) => event.stopPropagation()}
       >
         {/* Top Luxury Gradient Accent Bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#A06A98] via-[#DFBEDB] to-[#76416F] absolute top-0 left-0 right-0 z-10 shrink-0" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#A06A98] via-[#DFBEDB] to-[#76416F] absolute top-0 left-0 right-0 z-20 shrink-0" />
 
-        <header className="px-6 py-4.5 border-b border-[#E2E8F0] bg-gradient-to-r from-[#FDF2F8]/95 via-[#FAF5F8]/70 to-white flex items-center justify-between shrink-0 pt-5">
-          <div>
-            <h2 className="text-lg sm:text-xl font-bold text-[#333333] tracking-tight font-sans">
+        <header className="px-5 sm:px-7 py-4 border-b border-[#E2E8F0] bg-gradient-to-r from-[#FDF2F8]/90 via-[#FAF5F8]/70 to-white flex items-center justify-between shrink-0 pt-4.5 z-10">
+          <div className="min-w-0 pr-4">
+            <h2 className="text-lg sm:text-xl font-bold text-[#333333] tracking-tight font-sans truncate">
               {title}
             </h2>
             {subtitle && (
-              <p className="text-xs text-[#666666] mt-0.5 font-medium leading-relaxed">
+              <p className="text-xs text-[#666666] mt-0.5 font-medium leading-relaxed truncate sm:whitespace-normal">
                 {subtitle}
               </p>
             )}
           </div>
           <button
             type="button"
-            onClick={onClose}
-            className="p-1.5 text-[#666666] hover:text-[#333333] hover:bg-white rounded-lg transition-colors cursor-pointer"
+            onClick={requestClose}
+            className="p-1.5 text-[#666666] hover:text-[#333333] hover:bg-white rounded-[0.3rem] transition-colors cursor-pointer border border-transparent hover:border-[#DFBEDB]/60 shrink-0"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
         </header>
 
-        <div className="p-6 overflow-y-auto flex-1 min-h-0 modal-luxury-scroll overscroll-contain space-y-6">
+        <div className="p-5 sm:p-7 overflow-y-auto flex-1 min-h-0 modal-luxury-scroll overscroll-contain">
           {children}
         </div>
 
         {footer && (
-          <footer className="px-6 py-3.5 border-t border-[#E2E8F0] bg-[#FAF5F8]/90 flex items-center justify-end gap-3 shrink-0">
+          <footer className="px-5 sm:px-7 py-3.5 border-t border-[#E2E8F0] bg-[#FAF5F8] flex items-center justify-between gap-3 shrink-0 z-10">
             {footer}
           </footer>
+        )}
+
+        {/* Confirmation Dialog Overlay - Instant, Clean, Industry Standard */}
+        {showConfirm && (
+          <div
+            className="absolute inset-0 z-50 bg-black/40 flex items-center justify-center p-4 transition-opacity"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-white border border-[#DFBEDB] rounded-xl p-5 sm:p-6 max-w-sm w-full shadow-2xl text-center space-y-4">
+              <div className="w-11 h-11 rounded-full bg-[#FDF2F8] border border-[#DFBEDB] text-[#A06A98] mx-auto flex items-center justify-center">
+                <AlertCircle className="w-5 h-5 text-[#A06A98]" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-sm sm:text-base font-bold text-[#333333]">Discard Unsaved Changes?</h3>
+                <p className="text-xs text-[#666666] leading-relaxed">
+                  Are you sure you want to exit? Any changes made to this formula will not be saved.
+                </p>
+              </div>
+              <div className="flex items-center justify-center gap-2.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowConfirm(false);
+                    onClose();
+                  }}
+                  className="flex-1 py-2 px-3 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-[0.3rem] transition-colors cursor-pointer"
+                >
+                  Discard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(false)}
+                  className="flex-1 py-2 px-3 text-xs font-bold text-white bg-gradient-to-r from-[#A06A98] to-[#76416F] hover:opacity-95 rounded-[0.3rem] transition-opacity cursor-pointer shadow-xs"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
