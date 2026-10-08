@@ -4,6 +4,7 @@ import { cartService } from '../services/cartService';
 import { productService } from '../services/productService';
 import { BrandImage } from '../components/ui/BrandImage';
 import { ProductCard } from '../components/product/ProductCard';
+import { ProductImageZoom } from '../components/product/ProductImageZoom';
 import { ChevronRight, Plus, Minus, Check, ChevronDown, ChevronUp, Heart } from 'lucide-react';
 import { ScrollReveal, StaggerContainer, StaggerItem } from '../components/motion/ScrollReveal';
 import { api, hasApi } from '../lib/api';
@@ -146,53 +147,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
         {/* Two-Column Purchase Area */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 pb-16 border-b border-[#E2E8F0]">
-          {/* Left Column: Gallery (Cols 1-7) */}
-          <div className="lg:col-span-7 flex flex-col-reverse sm:flex-row gap-4">
-            {/* Thumbnails list */}
-            {allImages.length > 1 && (
-              <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-y-auto sm:overflow-x-hidden sm:w-20 shrink-0 no-scrollbar">
-                {allImages.map((img, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setSelectedImageIndex(idx)}
-                    aria-label={`Product Image ${idx + 1}`}
-                    className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-brand overflow-hidden border transition-all duration-300 ${
-                      selectedImageIndex === idx
-                        ? 'border-[#A06A98] scale-105 opacity-100 ring-1 ring-[#A06A98]'
-                        : 'border-[#E2E8F0] opacity-85 hover:opacity-100'
-                    }`}
-                  >
-                    <BrandImage
-                      src={img.src}
-                      alt={img.alt}
-                      containerClassName="w-full h-full"
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Main Stage Image with Smooth Crossfade Gallery */}
-            <div className="flex-1 aspect-square rounded-brand overflow-hidden bg-white border border-[#E2E8F0] relative cursor-zoom-in group shadow-xs">
-              {allImages.map((img, idx) => (
-                <div
-                  key={idx}
-                  className={`absolute inset-0 w-full h-full transition-opacity duration-500 ease-in-out ${
-                    selectedImageIndex === idx ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-                  }`}
-                >
-                  <BrandImage
-                    src={img.src}
-                    alt={img.alt || product.name}
-                    fallbackLabel={product.name}
-                    containerClassName="w-full h-full"
-                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
-              ))}
-            </div>
+          {/* Left Column: Gallery with Amazon-style Zoom Lens (Cols 1-7) */}
+          <div className="lg:col-span-7">
+            <ProductImageZoom
+              images={allImages}
+              selectedIndex={selectedImageIndex}
+              onSelectIndex={setSelectedImageIndex}
+              productName={product.name}
+            />
           </div>
 
           {/* Right Column: Buy Box & Product Info (Cols 8-12) */}

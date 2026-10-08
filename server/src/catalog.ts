@@ -110,7 +110,7 @@ export async function loadProducts(options: {
       product_images ( id, url, alt, width, height, sort_order ),
       product_tags ( tag ),
       reviews ( rating, status )
-    `).order('updated_at', { ascending: false }),
+    `).order('created_at', { ascending: true }),
   );
   const filtered = loaded.filter((row) => {
     const category = asOne(row.categories);

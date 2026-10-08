@@ -205,8 +205,8 @@
 
 /* Sleek Luxury Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -214,12 +214,41 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E2CEE0;
+  background: #DFBEDB;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #A06A98;
+}
+
+/* Modal Luxury Smooth Scrollbar */
+.modal-luxury-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #A06A98 #FDF2F8;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-luxury-scroll::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.modal-luxury-scroll::-webkit-scrollbar-track {
+  background: #FDF2F8;
+  border-radius: 9999px;
+  margin: 6px 0;
+}
+
+.modal-luxury-scroll::-webkit-scrollbar-thumb {
+  background: #A06A98;
+  border-radius: 9999px;
+  border: 1.5px solid #FDF2F8;
+}
+
+.modal-luxury-scroll::-webkit-scrollbar-thumb:hover {
+  background: #76416F;
 }
 
 /* Hide scrollbar utility */

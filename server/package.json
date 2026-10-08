@@ -3,10 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts",
+    "dev": "node node_modules/tsx/dist/cli.mjs watch src/index.ts",
+    "start": "node node_modules/tsx/dist/cli.mjs src/index.ts",
     "lint": "tsc --noEmit",
-    "seed": "tsx src/seed.ts"
+    "seed": "node node_modules/tsx/dist/cli.mjs src/seed.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

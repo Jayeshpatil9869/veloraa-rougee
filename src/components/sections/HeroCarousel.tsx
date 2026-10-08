@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BrandImage } from '../ui/BrandImage';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface HeroCarouselProps {
   onShopNow?: () => void;
@@ -15,6 +19,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
   const [dragCurrentX, setDragCurrentX] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
 
   const slides = [
     {
@@ -24,6 +29,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
       image: '/images/eyeshadow-swatches.jpg',
       alt: 'The Glam Eyes Palette💕',
       align: 'center' as const,
+      desktopTitleSize: 'lg:text-8xl xl:text-9xl 2xl:text-[7rem]',
     },
     {
       id: 2,
@@ -118,6 +124,31 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
     setIsPaused(false);
   };
 
+  // GSAP Scroll Parallax on Hero Background
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion || !containerRef.current || !bgRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        bgRef.current,
+        { yPercent: -8 },
+        {
+          yPercent: 12,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.8,
+          },
+        }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   const dragOffset = isDragging && dragStartX !== null && dragCurrentX !== null
     ? dragCurrentX - dragStartX
     : 0;
@@ -139,11 +170,12 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
     >
-      {/* Stacked Background Images with Smooth Crossfade & Gesture Parallax */}
+      {/* Stacked Background Images with Smooth Crossfade, Gesture Parallax & Scroll Parallax */}
       <div
-        className="absolute inset-0 z-0 transition-transform duration-300 ease-out"
+        ref={bgRef}
+        className="absolute -top-[12%] -bottom-[12%] inset-x-0 z-0 will-change-transform pointer-events-none"
         style={{
-          transform: dragOffset ? `translateX(${dragOffset * 0.25}px)` : 'none',
+          transform: dragOffset ? `translateX(${dragOffset * 0.25}px)` : undefined,
         }}
       >
         {slides.map((s, index) => {
@@ -202,9 +234,9 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
                   : 'items-center lg:items-start text-center lg:text-left'
               }`}
             >
-              <div className={`max-w-[45ch] space-y-4 lg:space-y-6 ${isCentered ? 'text-center mx-auto' : ''}`}>
+              <div className={`max-w-[45ch] lg:max-w-[55ch] space-y-4 lg:space-y-6 ${isCentered ? 'text-center mx-auto' : ''}`}>
                 <h1
-                  className="font-serif text-4xl sm:text-6xl lg:text-7xl leading-tight lg:leading-none text-white whitespace-pre-line drop-shadow-md transition-transform duration-700 ease-out"
+                  className={`font-serif text-4xl sm:text-6xl ${s.desktopTitleSize || 'lg:text-7xl'} leading-tight lg:leading-none text-white whitespace-pre-line drop-shadow-md transition-transform duration-700 ease-out`}
                   style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
                 >
                   {s.title}

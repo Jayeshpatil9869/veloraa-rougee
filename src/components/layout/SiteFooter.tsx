@@ -316,26 +316,35 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
               <ul className="leading-loose space-y-1">
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/about-us')}
                   >
-                    <TextRoll>About us</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>About us</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/legal/terms-and-conditions')}
                   >
-                    <TextRoll>Terms And Conditions</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Terms And Conditions</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/legal/privacy-policy')}
                   >
-                    <TextRoll>Privacy Policy</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Privacy Policy</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
               </ul>
@@ -349,34 +358,46 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
               <ul className="leading-loose space-y-1">
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/collection/best-sellers')}
                   >
-                    <TextRoll>Best Sellers</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Best Sellers</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/collection')}
                   >
-                    <TextRoll>Collections</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Collections</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/locations')}
                   >
-                    <TextRoll>Locations</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Locations</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/collection/bundles')}
                   >
-                    <TextRoll>Special Offers</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Special Offers</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
               </ul>
@@ -390,26 +411,35 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
               <ul className="leading-loose space-y-1">
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/legal/return-policy')}
                   >
-                    <TextRoll>Return Policy</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Return Policy</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/legal/shipping')}
                   >
-                    <TextRoll>Shipping</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Shipping</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/contact-us')}
                   >
-                    <TextRoll>Contact Us</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Contact Us</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
               </ul>
@@ -423,42 +453,54 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
               <ul className="leading-loose space-y-1">
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors inline-flex items-start"
                     href="https://www.instagram.com/veloraa_rougee"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <TextRoll>Instagram</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Instagram</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors inline-flex items-start"
                     href="https://www.facebook.com/veloraarougee"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <TextRoll>Facebook</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Facebook</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors inline-flex items-start"
                     href="https://www.youtube.com/@veloraarougee"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <TextRoll>Youtube</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>Youtube</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group text-sm font-medium hover:text-primary transition-colors inline-flex items-center"
+                    className="group relative text-sm font-medium hover:text-primary transition-colors inline-flex items-start"
                     href="https://www.tiktok.com/@veloraarougee"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <TextRoll>TikTok</TextRoll>
+                    <span className="relative inline-flex flex-col">
+                      <TextRoll>TikTok</TextRoll>
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                    </span>
                   </a>
                 </li>
               </ul>

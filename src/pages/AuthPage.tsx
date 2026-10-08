@@ -52,7 +52,33 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     if (prefersReducedMotion || !containerRef.current) return;
 
     const ctx = gsap.context(() => {
-      // 1. Top-Left Flower - slow gentle drift
+      // 1. Initial luxury fade reveal entrance for the 4 corner flowers
+      gsap.fromTo(
+        '.flower-reveal-1',
+        { opacity: 0, x: -40, y: -30, scale: 0.82, rotate: -8 },
+        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.3, ease: 'power3.out' }
+      );
+
+      gsap.fromTo(
+        '.flower-reveal-3',
+        { opacity: 0, x: 40, y: -30, scale: 0.82, rotate: 8 },
+        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.3, delay: 0.12, ease: 'power3.out' }
+      );
+
+      gsap.fromTo(
+        '.flower-reveal-2',
+        { opacity: 0, x: -35, y: 35, scale: 0.82, rotate: 6 },
+        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.4, delay: 0.2, ease: 'power3.out' }
+      );
+
+      gsap.fromTo(
+        '.flower-reveal-4',
+        { opacity: 0, x: 40, y: 40, scale: 0.82, rotate: -6 },
+        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.4, delay: 0.28, ease: 'power3.out' }
+      );
+
+      // 2. Continuous organic smooth floating motion
+      // Top-Left Flower - slow gentle drift
       gsap.to('.flower-float-1', {
         x: '+=22',
         y: '-=26',
@@ -64,7 +90,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         ease: 'sine.inOut',
       });
 
-      // 2. Bottom-Left Flower - slow organic sway
+      // Bottom-Left Flower - slow organic sway
       gsap.to('.flower-float-2', {
         x: '-=18',
         y: '+=20',
@@ -77,7 +103,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         delay: 0.6,
       });
 
-      // 3. Top-Right Flower - slow diagonal float
+      // Top-Right Flower - slow diagonal float
       gsap.to('.flower-float-3', {
         x: '-=25',
         y: '+=28',
@@ -90,7 +116,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         delay: 0.3,
       });
 
-      // 4. Bottom-Right Flower - slow deep float
+      // Bottom-Right Flower - slow deep float
       gsap.to('.flower-float-4', {
         x: '+=24',
         y: '-=30',
@@ -102,6 +128,51 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         ease: 'sine.inOut',
         delay: 1.1,
       });
+
+      // 3. Multi-layer interactive cursor parallax & scroll parallax
+      const xTo1 = gsap.quickTo('.flower-parallax-1', 'x', { duration: 0.9, ease: 'power2.out' });
+      const yTo1 = gsap.quickTo('.flower-parallax-1', 'y', { duration: 0.9, ease: 'power2.out' });
+      const xTo2 = gsap.quickTo('.flower-parallax-2', 'x', { duration: 1.2, ease: 'power2.out' });
+      const yTo2 = gsap.quickTo('.flower-parallax-2', 'y', { duration: 1.2, ease: 'power2.out' });
+      const xTo3 = gsap.quickTo('.flower-parallax-3', 'x', { duration: 1.0, ease: 'power2.out' });
+      const yTo3 = gsap.quickTo('.flower-parallax-3', 'y', { duration: 1.0, ease: 'power2.out' });
+      const xTo4 = gsap.quickTo('.flower-parallax-4', 'x', { duration: 1.3, ease: 'power2.out' });
+      const yTo4 = gsap.quickTo('.flower-parallax-4', 'y', { duration: 1.3, ease: 'power2.out' });
+
+      const handleMouseMove = (e: MouseEvent) => {
+        const { innerWidth, innerHeight } = window;
+        const normX = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
+        const normY = (e.clientY / innerHeight - 0.5) * 2; // -1 to 1
+
+        xTo1(normX * -32);
+        yTo1(normY * -26);
+
+        xTo2(normX * -24);
+        yTo2(normY * 30);
+
+        xTo3(normX * 28);
+        yTo3(normY * -28);
+
+        xTo4(normX * 36);
+        yTo4(normY * 34);
+      };
+
+      const handleScroll = () => {
+        const scrollY = window.scrollY || window.pageYOffset;
+        // Move all flowers in the same single direction (upward on scroll) with layered speeds
+        gsap.to('.flower-reveal-1', { y: scrollY * -0.15, duration: 0.4, ease: 'power1.out', overwrite: 'auto' });
+        gsap.to('.flower-reveal-3', { y: scrollY * -0.13, duration: 0.4, ease: 'power1.out', overwrite: 'auto' });
+        gsap.to('.flower-reveal-2', { y: scrollY * -0.20, duration: 0.4, ease: 'power1.out', overwrite: 'auto' });
+        gsap.to('.flower-reveal-4', { y: scrollY * -0.24, duration: 0.4, ease: 'power1.out', overwrite: 'auto' });
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('scroll', handleScroll, { passive: true });
+
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('scroll', handleScroll);
+      };
     }, containerRef);
 
     return () => ctx.revert();
@@ -191,24 +262,40 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       {/*             DECORATIVE BOTANICAL FLOWER ILLUSTRATIONS (THEME)             */}
       {/* ========================================================================= */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-        {/* Top-Left Botanical Flower with continuous motion */}
-        <div className="flower-float-1 will-change-transform absolute -left-12 -top-10 lg:left-4 lg:top-8 opacity-45 lg:opacity-65">
-          <FlowerTallSvg className="w-36 sm:w-52 lg:w-64 h-auto text-[#D39DC7] -scale-x-100 drop-shadow-xs" />
+        {/* Top-Left Botanical Flower with fade reveal, parallax & continuous motion */}
+        <div className="flower-reveal-1 absolute -left-12 -top-10 lg:left-4 lg:top-8 pointer-events-none">
+          <div className="flower-parallax-1 will-change-transform">
+            <div className="flower-float-1 will-change-transform opacity-45 lg:opacity-65">
+              <FlowerTallSvg className="w-36 sm:w-52 lg:w-64 h-auto text-[#D39DC7] -scale-x-100 drop-shadow-xs" />
+            </div>
+          </div>
         </div>
 
-        {/* Bottom-Left Botanical Flower with continuous motion */}
-        <div className="flower-float-2 will-change-transform absolute -left-8 -bottom-12 lg:left-8 lg:bottom-4 opacity-35 lg:opacity-55">
-          <FlowerShortSvg className="w-28 sm:w-40 lg:w-48 h-auto text-[#A06A98] drop-shadow-xs" />
+        {/* Bottom-Left Botanical Flower with fade reveal, parallax & continuous motion */}
+        <div className="flower-reveal-2 absolute -left-8 -bottom-12 lg:left-8 lg:bottom-4 pointer-events-none">
+          <div className="flower-parallax-2 will-change-transform">
+            <div className="flower-float-2 will-change-transform opacity-35 lg:opacity-55">
+              <FlowerShortSvg className="w-28 sm:w-40 lg:w-48 h-auto text-[#A06A98] drop-shadow-xs" />
+            </div>
+          </div>
         </div>
 
-        {/* Top-Right Botanical Flower with continuous motion */}
-        <div className="flower-float-3 will-change-transform absolute -right-12 -top-8 lg:right-6 lg:top-12 opacity-40 lg:opacity-60">
-          <FlowerShortSvg className="w-32 sm:w-44 lg:w-56 h-auto text-[#D39DC7] -scale-x-100 drop-shadow-xs" />
+        {/* Top-Right Botanical Flower with fade reveal, parallax & continuous motion */}
+        <div className="flower-reveal-3 absolute -right-12 -top-8 lg:right-6 lg:top-12 pointer-events-none">
+          <div className="flower-parallax-3 will-change-transform">
+            <div className="flower-float-3 will-change-transform opacity-40 lg:opacity-60">
+              <FlowerShortSvg className="w-32 sm:w-44 lg:w-56 h-auto text-[#D39DC7] -scale-x-100 drop-shadow-xs" />
+            </div>
+          </div>
         </div>
 
-        {/* Bottom-Right Large Botanical Flower with continuous motion */}
-        <div className="flower-float-4 will-change-transform absolute -right-16 -bottom-16 lg:right-4 lg:bottom-2 opacity-50 lg:opacity-70">
-          <FlowerTallSvg className="w-44 sm:w-60 lg:w-80 h-auto text-[#9F6998] drop-shadow-xs" />
+        {/* Bottom-Right Large Botanical Flower with fade reveal, parallax & continuous motion */}
+        <div className="flower-reveal-4 absolute -right-16 -bottom-16 lg:right-4 lg:bottom-2 pointer-events-none">
+          <div className="flower-parallax-4 will-change-transform">
+            <div className="flower-float-4 will-change-transform opacity-50 lg:opacity-70">
+              <FlowerTallSvg className="w-44 sm:w-60 lg:w-80 h-auto text-[#9F6998] drop-shadow-xs" />
+            </div>
+          </div>
         </div>
 
         {/* Soft Ambient Radial Blurs */}

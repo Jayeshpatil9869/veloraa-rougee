@@ -162,6 +162,9 @@ export const StaggerItem: React.FC<StaggerItemProps> = ({
   return (
     <motion.div
       variants={itemVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-40px' }}
       className={className}
       style={{ willChange: 'transform, opacity, filter' }}
       {...props}

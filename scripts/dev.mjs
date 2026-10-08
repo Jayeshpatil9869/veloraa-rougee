@@ -14,10 +14,9 @@ const processes = [
   },
   {
     name: 'api',
-    command: npm,
-    args: ['run', 'dev'],
+    command: process.execPath,
+    args: ['node_modules/tsx/dist/cli.mjs', 'watch', 'src/index.ts'],
     cwd: path.join(root, 'server'),
-    shell: true,
   },
 ];
 

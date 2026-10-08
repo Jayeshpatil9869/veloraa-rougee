@@ -137,11 +137,20 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-bold uppercase text-[#333333]">
             <button
               onClick={() => onNavigate('/en')}
-              className={`group h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
+              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
                 currentPath === '/' || currentPath === '/en' ? 'text-[#A06A98]' : ''
               }`}
             >
-              <TextRoll>HOME</TextRoll>
+              <span className="relative inline-flex flex-col items-center">
+                <TextRoll>HOME</TextRoll>
+                <span
+                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                    currentPath === '/' || currentPath === '/en'
+                      ? 'scale-x-100'
+                      : 'scale-x-0 group-hover:scale-x-100'
+                  }`}
+                />
+              </span>
             </button>
 
             {/* SHOP Dropdown with GSAP Smooth Hover */}
@@ -153,17 +162,26 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
               <button
                 type="button"
                 onClick={() => onNavigate('/en/collection')}
-                className={`group h-10 px-2.5 flex items-center gap-1.5 transition-colors hover:text-[#774170] cursor-pointer ${
+                className={`group relative h-10 px-2.5 flex items-center gap-1.5 transition-colors hover:text-[#774170] cursor-pointer ${
                   currentPath.includes('/collection') || currentPath.includes('/shop')
                     ? 'text-[#A06A98]'
                     : ''
                 }`}
               >
-                <TextRoll>SHOP</TextRoll>
-                <ChevronDown
-                  ref={chevronRef}
-                  className="w-3.5 h-3.5 opacity-60 transition-colors"
-                />
+                <span className="relative inline-flex items-center gap-1.5">
+                  <TextRoll>SHOP</TextRoll>
+                  <ChevronDown
+                    ref={chevronRef}
+                    className="w-3.5 h-3.5 opacity-60 transition-colors group-hover:opacity-100"
+                  />
+                  <span
+                    className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                      currentPath.includes('/collection') || currentPath.includes('/shop')
+                        ? 'scale-x-100'
+                        : 'scale-x-0 group-hover:scale-x-100'
+                    }`}
+                  />
+                </span>
               </button>
 
               <div
@@ -171,50 +189,91 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                 className="absolute left-0 top-full pt-1.5 w-56 z-50 origin-top-left"
               >
                 <div className="bg-white border border-[#F0DEF7] shadow-[0_16px_40px_rgba(119,65,112,0.12)] rounded-2xl py-2 px-1.5 overflow-hidden">
-                  {shopItems.map((item, index) => (
-                    <button
-                      key={item.path}
-                      ref={(el) => {
-                        itemsRef.current[index] = el;
-                      }}
-                      onClick={() => {
-                        onNavigate(item.path);
-                        handleMouseLeave();
-                      }}
-                      className="group w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-[#333333] hover:bg-[#FDF2F8] hover:text-[#A06A98] transition-colors cursor-pointer block"
-                    >
-                      <TextRoll>{item.label}</TextRoll>
-                    </button>
-                  ))}
+                  {shopItems.map((item, index) => {
+                    const isItemActive = currentPath === item.path;
+                    return (
+                      <button
+                        key={item.path}
+                        ref={(el) => {
+                          itemsRef.current[index] = el;
+                        }}
+                        onClick={() => {
+                          onNavigate(item.path);
+                          handleMouseLeave();
+                        }}
+                        className={`group relative w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center justify-between ${
+                          isItemActive
+                            ? 'bg-[#FDF2F8] text-[#A06A98]'
+                            : 'text-[#333333] hover:bg-[#FDF2F8] hover:text-[#A06A98]'
+                        }`}
+                      >
+                        <span className="relative inline-flex flex-col">
+                          <TextRoll>{item.label}</TextRoll>
+                          <span
+                            className={`absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left ${
+                              isItemActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                            }`}
+                          />
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
             <button
               onClick={() => onNavigate('/en/about-us')}
-              className={`group h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
+              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
                 currentPath === '/en/about-us' ? 'text-[#A06A98]' : ''
               }`}
             >
-              <TextRoll>ABOUT US</TextRoll>
+              <span className="relative inline-flex flex-col items-center">
+                <TextRoll>ABOUT US</TextRoll>
+                <span
+                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                    currentPath === '/en/about-us'
+                      ? 'scale-x-100'
+                      : 'scale-x-0 group-hover:scale-x-100'
+                  }`}
+                />
+              </span>
             </button>
 
             <button
               onClick={() => onNavigate('/en/stories')}
-              className={`group h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
+              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
                 currentPath.startsWith('/en/stories') ? 'text-[#A06A98]' : ''
               }`}
             >
-              <TextRoll>STORIES</TextRoll>
+              <span className="relative inline-flex flex-col items-center">
+                <TextRoll>STORIES</TextRoll>
+                <span
+                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                    currentPath.startsWith('/en/stories')
+                      ? 'scale-x-100'
+                      : 'scale-x-0 group-hover:scale-x-100'
+                  }`}
+                />
+              </span>
             </button>
 
             <button
               onClick={() => onNavigate('/en/locations')}
-              className={`group h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
+              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
                 currentPath === '/en/locations' ? 'text-[#A06A98]' : ''
               }`}
             >
-              <TextRoll>LOCATIONS</TextRoll>
+              <span className="relative inline-flex flex-col items-center">
+                <TextRoll>LOCATIONS</TextRoll>
+                <span
+                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                    currentPath === '/en/locations'
+                      ? 'scale-x-100'
+                      : 'scale-x-0 group-hover:scale-x-100'
+                  }`}
+                />
+              </span>
             </button>
           </nav>
         </div>
