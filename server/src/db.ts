@@ -8,6 +8,13 @@ export const supabase: SupabaseClient | null =
       })
     : null;
 
+export const authGateway: SupabaseClient | null =
+  env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY
+    ? createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      })
+    : null;
+
 export function db(): SupabaseClient {
   if (!supabase) throw new Error('database_unconfigured');
   return supabase;

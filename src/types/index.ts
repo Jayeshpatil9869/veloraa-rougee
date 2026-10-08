@@ -12,6 +12,7 @@ export interface ProductImage {
 
 export interface ProductVariant {
   id: string;
+  databaseId?: string;
   productId: string;
   name: string;
   value: string;
@@ -35,6 +36,7 @@ export interface Category {
 
 export interface Product {
   id: string;
+  databaseId?: string;
   slug: string;
   name: string;
   shortDescription?: string;
@@ -53,6 +55,7 @@ export interface Product {
   featured?: boolean;
   bestseller?: boolean;
   newArrival?: boolean;
+  status?: string;
   rating?: number;
   reviewCount?: number;
 }

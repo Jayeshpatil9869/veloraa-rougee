@@ -19,6 +19,7 @@ const apiPaths = [
   '/locations',
   '/legal',
   '/contact',
+  '/reviews',
   '/newsletter',
   '/seo',
   '/health',

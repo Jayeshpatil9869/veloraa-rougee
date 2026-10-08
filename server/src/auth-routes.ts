@@ -12,10 +12,18 @@ const credentials = z.object({
   phone: z.string().max(30).optional(),
 });
 
-async function upsertCustomer(input: { authUserId: string; email: string; fullName?: string; phone?: string; verified: boolean }) {
+async function upsertCustomer(input: {
+  authUserId: string;
+  email: string;
+  fullName?: string;
+  phone?: string;
+  verified: boolean;
+  provider?: 'email' | 'google';
+  avatarUrl?: string | null;
+}) {
   const email = input.email.toLowerCase();
-  const existing = await one<{ id: string; full_name: string; phone: string | null; email_verified: boolean }>(
-    db().from('customers').select('id, full_name, phone, email_verified').eq('email', email).maybeSingle(),
+  const existing = await one<{ id: string; full_name: string; phone: string | null; email_verified: boolean; avatar_url: string | null }>(
+    db().from('customers').select('id, full_name, phone, email_verified, avatar_url').eq('email', email).maybeSingle(),
   );
   if (!existing) {
     const created = await rows<{ id: string }>(
@@ -25,6 +33,8 @@ async function upsertCustomer(input: { authUserId: string; email: string; fullNa
         full_name: input.fullName ?? '',
         phone: input.phone ?? null,
         email_verified: input.verified,
+        auth_provider: input.provider ?? 'email',
+        avatar_url: input.avatarUrl || null,
       }).select('id'),
     );
     return created[0]?.id;
@@ -34,8 +44,18 @@ async function upsertCustomer(input: { authUserId: string; email: string; fullNa
     full_name: existing.full_name === '' ? (input.fullName ?? '') : existing.full_name,
     phone: existing.phone ?? input.phone ?? null,
     email_verified: existing.email_verified || input.verified,
+    avatar_url: existing.avatar_url || input.avatarUrl || null,
+    ...(input.provider === 'google' ? { auth_provider: 'google' } : {}),
   }).eq('id', existing.id));
   return existing.id;
+}
+
+function googleAvatar(metadata: Record<string, unknown> | undefined) {
+  const avatar = metadata?.avatar_url;
+  const picture = metadata?.picture;
+  if (typeof avatar === 'string' && avatar) return avatar;
+  if (typeof picture === 'string' && picture) return picture;
+  return null;
 }
 
 function setSessionCookies(reply: { setCookie: Function }, access: string, refresh: string, expiresIn: number) {
@@ -61,6 +81,7 @@ export async function registerAuth(app: FastifyInstance) {
       fullName: body.fullName,
       phone: body.phone,
       verified: Boolean(data.user.email_confirmed_at),
+      provider: 'email',
     });
     await notify({
       type: 'customer.registered',
@@ -87,6 +108,7 @@ export async function registerAuth(app: FastifyInstance) {
       email: data.user.email || body.email,
       fullName: String(data.user.user_metadata?.full_name ?? ''),
       verified: Boolean(data.user.email_confirmed_at),
+      provider: 'email',
     });
     setSessionCookies(reply, data.session.access_token, data.session.refresh_token, data.session.expires_in ?? 3600);
     return { ok: true, email: (data.user.email || body.email).toLowerCase() };
@@ -120,6 +142,8 @@ export async function registerAuth(app: FastifyInstance) {
       email: data.user.email,
       fullName: String(data.user.user_metadata?.full_name ?? data.user.user_metadata?.name ?? ''),
       verified: true,
+      provider: 'google',
+      avatarUrl: googleAvatar(data.user.user_metadata),
     });
     setSessionCookies(reply, data.session.access_token, data.session.refresh_token, data.session.expires_in ?? 3600);
     await notify({
@@ -268,6 +292,8 @@ export async function registerAuth(app: FastifyInstance) {
       email: user.data.user.email,
       fullName: String(user.data.user.user_metadata?.full_name ?? user.data.user.user_metadata?.name ?? ''),
       verified: Boolean(user.data.user.email_confirmed_at || google),
+      provider: google ? 'google' : 'email',
+      avatarUrl: google ? googleAvatar(user.data.user.user_metadata) : null,
     });
     setSessionCookies(reply, body.accessToken, body.refreshToken, 3600);
     if (google) {

@@ -4,8 +4,9 @@ import { cartService } from '../services/cartService';
 import { productService } from '../services/productService';
 import { BrandImage } from '../components/ui/BrandImage';
 import { ProductCard } from '../components/product/ProductCard';
-import { ChevronRight, Plus, Minus, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronRight, Plus, Minus, Check, ChevronDown, ChevronUp, Heart } from 'lucide-react';
 import { ScrollReveal, StaggerContainer, StaggerItem } from '../components/motion/ScrollReveal';
+import { api, hasApi } from '../lib/api';
 
 interface ProductDetailPageProps {
   product: Product;
@@ -31,6 +32,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+  const [reviews, setReviews] = useState<{ rating: number; body: string; author: string }[]>([]);
+  const [stars, setStars] = useState(5);
+  const [comment, setComment] = useState('');
+  const [reviewNote, setReviewNote] = useState('');
 
   // Accordion open states
   const [openStory, setOpenStory] = useState(true);
@@ -46,6 +53,52 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, [product, initialVariantId]);
+
+  useEffect(() => {
+    if (!hasApi()) return;
+    api<{ rating: number; body: string; author: string }[]>(`/products/${product.slug}/reviews`)
+      .then(setReviews)
+      .catch(() => setReviews([]));
+    api<{ customer: { email: string } | null }>('/auth/me')
+      .then(async (result) => {
+        setSignedIn(Boolean(result.customer));
+        if (!result.customer) return;
+        const savedItems = await api<{ variantId: string; databaseVariantId: string }[]>('/account/wishlist');
+        const ids = new Set(savedItems.flatMap((item) => [item.variantId, item.databaseVariantId]));
+        setSaved(ids.has(selectedVariant.databaseId || '') || ids.has(selectedVariant.id));
+      })
+      .catch(() => setSignedIn(false));
+  }, [product.slug, selectedVariant.id, selectedVariant.databaseId]);
+
+  const toggleWishlist = async () => {
+    if (!signedIn) {
+      onNavigate('/en/login');
+      return;
+    }
+    const variantId = selectedVariant.databaseId || selectedVariant.id;
+    if (saved) {
+      await api(`/account/wishlist/${variantId}`, { method: 'DELETE' });
+      setSaved(false);
+      return;
+    }
+    await api('/account/wishlist', { method: 'POST', body: JSON.stringify({ variantId }) });
+    setSaved(true);
+  };
+
+  const submitReview = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!signedIn) {
+      onNavigate('/en/login');
+      return;
+    }
+    setReviewNote('');
+    await api('/reviews', {
+      method: 'POST',
+      body: JSON.stringify({ productSlug: product.slug, rating: stars, body: comment }),
+    });
+    setComment('');
+    setReviewNote('Thank you. Your review is waiting for approval.');
+  };
 
   const allImages = [
     ...(selectedVariant.image ? [{ id: 'var-img', src: selectedVariant.image, alt: selectedVariant.name }] : []),
@@ -224,6 +277,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
                 <button
                   type="button"
+                  onClick={() => void toggleWishlist()}
+                  aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'}
+                  className={`h-12 w-12 border rounded-brand flex items-center justify-center transition-colors ${saved ? 'border-[#A06A98] text-[#A06A98] bg-[#FDF2F8]' : 'border-[#E2E8F0] text-[#666666] hover:text-[#A06A98]'}`}
+                >
+                  <Heart className={`w-5 h-5 ${saved ? 'fill-[#A06A98]' : ''}`} />
+                </button>
+                <button
+                  type="button"
                   onClick={handleAddToCart}
                   className="flex-1 h-12 bg-[#A06A98] hover:bg-[#774170] text-[#F8FAFC] text-sm uppercase tracking-tight font-medium rounded-brand transition-colors flex items-center justify-center gap-2 shadow-xs"
                 >
@@ -303,6 +364,31 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             </div>
           </div>
         </div>
+
+        <section className="py-12 border-b border-[#E2E8F0] grid gap-6">
+          <h2 className="text-2xl font-bold text-[#333333]">Reviews</h2>
+          <ul className="grid gap-4">
+            {reviews.map((review, index) => (
+              <li key={`${review.author}-${index}`} className="text-sm">
+                <p className="font-bold text-[#A06A98]">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)} · {review.author}</p>
+                <p className="text-[#555555] mt-1">{review.body}</p>
+              </li>
+            ))}
+            {reviews.length === 0 && <li className="text-sm text-[#666666]">No approved reviews yet.</li>}
+          </ul>
+          <form className="grid gap-3 max-w-xl" onSubmit={(event) => void submitReview(event)}>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((value) => (
+                <button key={value} type="button" onClick={() => setStars(value)} className={`w-9 h-9 rounded-[0.3rem] border ${stars >= value ? 'bg-[#A06A98] text-white border-[#A06A98]' : 'border-[#E2E8F0] text-[#666666]'}`} aria-label={`${value} stars`}>
+                  {value}
+                </button>
+              ))}
+            </div>
+            <textarea required minLength={4} value={comment} onChange={(event) => setComment(event.target.value)} placeholder={signedIn ? 'Share how this shade wore' : 'Sign in to write a review'} className="min-h-24 px-3 py-2 border border-[#F0DEF7] rounded-[0.3rem] text-sm" />
+            <button className="h-11 w-fit px-5 bg-[#A06A98] text-white rounded-[0.3rem] text-sm">{signedIn ? 'Submit review' : 'Sign in to review'}</button>
+            {reviewNote && <p className="text-sm text-[#76416F]">{reviewNote}</p>}
+          </form>
+        </section>
 
         {/* Suggested Products Section */}
         <div className="py-12 lg:py-16 space-y-8">

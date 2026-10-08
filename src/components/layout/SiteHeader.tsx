@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { Search, ShoppingBag, User, Menu, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, ChevronDown, Heart } from 'lucide-react';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
 import { TextRoll } from '../ui/TextRoll';
 import { cartService } from '../../services/cartService';
@@ -237,6 +237,17 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
             className="hidden lg:flex p-2 text-[#333333] hover:text-[#A06A98] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
           >
             <Search className="w-5 h-5 lg:w-6 lg:h-6" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onNavigate('/en/wishlist')}
+            aria-label="Wishlist"
+            className={`flex p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98] ${
+              currentPath === '/en/wishlist' ? 'text-[#A06A98]' : 'text-[#333333] hover:text-[#A06A98]'
+            }`}
+          >
+            <Heart className="w-5 h-5 lg:w-6 lg:h-6" />
           </button>
 
           {/* Account / Login Trigger (Shown on Mobile & Desktop) */}

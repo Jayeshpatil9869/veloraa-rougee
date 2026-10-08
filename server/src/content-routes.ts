@@ -81,6 +81,22 @@ export async function registerCatalogAdmin(app: FastifyInstance) {
     return products[0];
   });
 
+  app.get('/products/:slug/reviews', async (request) => {
+    const params = z.object({ slug: z.string() }).parse(request.params);
+    const product = await one<{ id: string }>(db().from('products').select('id').eq('slug', params.slug).maybeSingle());
+    if (!product) return [];
+    const reviews = await rows<{ rating: number; title: string; body: string; created_at: string; customers: { full_name: string } | { full_name: string }[] | null }>(
+      db().from('reviews').select('rating, title, body, created_at, customers ( full_name )').eq('product_id', product.id).eq('status', 'approved').order('created_at', { ascending: false }),
+    );
+    return reviews.map((review) => ({
+      rating: review.rating,
+      title: review.title,
+      body: review.body,
+      createdAt: review.created_at,
+      author: asOne(review.customers)?.full_name || 'Customer',
+    }));
+  });
+
   app.get('/categories', async () => {
     const categories = await loadCategories();
     return categories.filter((category) => category.active);
@@ -92,8 +108,9 @@ export async function registerCatalogAdmin(app: FastifyInstance) {
       q: z.string().optional(),
       status: z.string().optional(),
       page: z.coerce.number().optional().default(1),
+      pageSize: z.coerce.number().int().min(1).max(200).optional().default(20),
     }).parse(request.query);
-    const pageSize = 20;
+    const pageSize = query.pageSize;
     const products = await loadProducts({
       status: query.status || null,
       q: query.q,
@@ -237,6 +254,8 @@ export async function registerCatalogAdmin(app: FastifyInstance) {
     const params = z.object({ id: z.string().uuid() }).parse(request.params);
     const { count } = await db().from('order_items').select('id', { count: 'exact', head: true }).eq('product_id', params.id);
     if ((count ?? 0) > 0) return reply.status(409).send({ error: 'product_has_orders' });
+    const variants = await rows<{ id: string }>(db().from('product_variants').select('id').eq('product_id', params.id));
+    await clearVariantDependents(variants.map((variant) => variant.id));
     await ok(db().from('products').delete().eq('id', params.id));
     await audit({
       actorType: 'admin', actorId: admin.id, actorLabel: admin.email, action: 'product.deleted',
@@ -276,6 +295,13 @@ export async function registerCatalogAdmin(app: FastifyInstance) {
   });
 }
 
+async function clearVariantDependents(variantIds: string[]) {
+  if (!variantIds.length) return;
+  await ok(db().from('inventory_movements').delete().in('variant_id', variantIds));
+  await ok(db().from('cart_items').delete().in('variant_id', variantIds));
+  await ok(db().from('reviews').update({ variant_id: null }).in('variant_id', variantIds));
+}
+
 async function categoryId(slug: string) {
   const match = await one<{ id: string }>(
     db().from('categories').select('id').or(`slug.eq.${slug},legacy_id.eq.${slug}`).limit(1).maybeSingle(),
@@ -304,8 +330,10 @@ async function saveImagesAndVariants(productId: string, body: z.infer<typeof pro
   for (const row of existing) {
     if (keep.has(row.id)) continue;
     const { count } = await db().from('order_items').select('id', { count: 'exact', head: true }).eq('variant_id', row.id);
-    if ((count ?? 0) === 0) await ok(db().from('product_variants').delete().eq('id', row.id));
-    else await ok(db().from('product_variants').update({ active: false }).eq('id', row.id));
+    if ((count ?? 0) === 0) {
+      await clearVariantDependents([row.id]);
+      await ok(db().from('product_variants').delete().eq('id', row.id));
+    } else await ok(db().from('product_variants').update({ active: false }).eq('id', row.id));
   }
   for (const variant of body.variants) {
     const pricePaise = Math.round(variant.price * 100);
@@ -449,7 +477,7 @@ export async function registerContent(app: FastifyInstance) {
   app.get('/admin/customers', async (request) => {
     await requireAdmin(request, 'customers.read');
     const query = z.object({ q: z.string().optional() }).parse(request.query);
-    let requestQuery = db().from('customers').select('id, email, full_name, phone, email_verified, created_at, auth_user_id').order('created_at', { ascending: false }).limit(100);
+    let requestQuery = db().from('customers').select('id, email, full_name, phone, email_verified, auth_provider, avatar_url, created_at').order('created_at', { ascending: false }).limit(200);
     if (query.q) {
       const term = query.q.replace(/[,()]/g, '');
       requestQuery = requestQuery.or(`email.ilike.%${term}%,full_name.ilike.%${term}%`);

@@ -138,6 +138,14 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
               </button>
 
               <button
+                onClick={() => handleNav('/en/wishlist')}
+                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[#333333] hover:text-[#A06A98] flex items-center justify-between cursor-pointer"
+              >
+                <span>Wishlist</span>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
+              </button>
+
+              <button
                 onClick={() => handleNav('/en/account')}
                 className="mobile-menu-item w-full text-left py-2.5 px-3 mt-2 bg-[#FDF2F8] rounded-xl text-xs font-bold uppercase tracking-widest text-[#76416F] hover:bg-[#FDF2F8]/80 flex items-center justify-between border border-[#F0DEF7] cursor-pointer"
               >

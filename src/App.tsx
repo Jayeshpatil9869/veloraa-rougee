@@ -23,6 +23,7 @@ import { LegalPage, LegalTab } from './pages/LegalPage';
 import { AuthPage } from './pages/AuthPage';
 import { CheckoutPage, CheckoutReturnPage } from './pages/CheckoutPage';
 import { AccountPage, AuthCallbackPage, ResetPasswordPage } from './pages/AccountPage';
+import { WishlistPage } from './pages/WishlistPage';
 import { AdminApp } from './admin/AdminApp';
 
 import { PageTransition } from './components/motion/PageTransition';
@@ -203,6 +204,7 @@ export default function App() {
     if (currentPath === '/en/checkout') return <CheckoutPage onNavigate={navigate} />;
     if (currentPath.startsWith('/en/checkout/return')) return <CheckoutReturnPage />;
     if (currentPath === '/en/account') return <AccountPage onNavigate={navigate} />;
+    if (currentPath === '/en/wishlist') return <WishlistPage onNavigate={navigate} />;
     if (currentPath === '/en/auth/callback') return <AuthCallbackPage onNavigate={navigate} />;
     if (currentPath === '/en/reset-password') return <ResetPasswordPage onNavigate={navigate} />;
 

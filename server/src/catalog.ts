@@ -2,6 +2,7 @@ import { asOne, db, rows } from './db';
 
 export interface StoreVariant {
   id: string;
+  databaseId?: string;
   productId: string;
   name: string;
   value: string;
@@ -143,6 +144,7 @@ export async function loadProducts(options: {
         .map((image) => ({ id: image.id, src: image.url, alt: image.alt }));
       return {
         id: variant.legacy_variant_id || variant.id,
+        databaseId: variant.id,
         productId: row.legacy_id || row.id,
         name: variant.name,
         value: variant.name,

@@ -325,15 +325,36 @@ export async function registerOps(app: FastifyInstance) {
     const paidStatuses = ['confirmed', 'processing', 'packed', 'shipped', 'delivered'];
     const salesOrders = await rows<{ total_paise: number; status: string }>(db().from('orders').select('total_paise, status').in('status', paidStatuses));
     const revenue = salesOrders.reduce((sum, order) => sum + Number(order.total_paise), 0);
-    const orderCount = salesOrders.length;
+    const paidOrderCount = salesOrders.length;
     const { count: customerCount } = await db().from('customers').select('id', { count: 'exact', head: true });
+    const { count: allOrderCount } = await db().from('orders').select('id', { count: 'exact', head: true });
+    const paidPaymentRows = await rows<{ amount_paise: number }>(db().from('payments').select('amount_paise').eq('status', 'paid'));
+    const paymentTotalPaise = paidPaymentRows.reduce((sum, payment) => sum + Number(payment.amount_paise), 0);
     const { count: productCount } = await db().from('products').select('id', { count: 'exact', head: true }).eq('status', 'published');
     const variants = await rows<{ stock_on_hand: number; stock_reserved: number; low_stock_threshold: number }>(db().from('product_variants').select('stock_on_hand, stock_reserved, low_stock_threshold'));
     const lowStock = variants.filter((variant) => variant.stock_on_hand - variant.stock_reserved <= variant.low_stock_threshold).length;
     const outOfStock = variants.filter((variant) => variant.stock_on_hand - variant.stock_reserved <= 0).length;
     const { count: pendingPayments } = await db().from('payments').select('id', { count: 'exact', head: true }).eq('status', 'pending');
     const { count: paidPayments } = await db().from('payments').select('id', { count: 'exact', head: true }).eq('status', 'paid');
-    const recentOrders = await rows(db().from('orders').select('order_number, email, status, total_paise, created_at').order('created_at', { ascending: false }).limit(8));
+    const recent = await rows<{ id: string; order_number: string; email: string; status: string; total_paise: number; created_at: string }>(
+      db().from('orders').select('id, order_number, email, status, total_paise, created_at').order('created_at', { ascending: false }).limit(5),
+    );
+    const recentIds = recent.map((order) => order.id);
+    const recentItems = recentIds.length
+      ? await rows<{ order_id: string; product_name: string; quantity: number }>(db().from('order_items').select('order_id, product_name, quantity').in('order_id', recentIds))
+      : [];
+    const recentAddresses = recentIds.length
+      ? await rows<{ order_id: string; full_name: string }>(db().from('order_addresses').select('order_id, full_name').in('order_id', recentIds))
+      : [];
+    const recentPayments = recentIds.length
+      ? await rows<{ order_id: string; status: string }>(db().from('payments').select('order_id, status').in('order_id', recentIds).order('created_at', { ascending: false }))
+      : [];
+    const recentOrders = recent.map((order) => ({
+      ...order,
+      customer_name: recentAddresses.find((address) => address.order_id === order.id)?.full_name ?? '',
+      payment_status: recentPayments.find((payment) => payment.order_id === order.id)?.status ?? null,
+      items: recentItems.filter((item) => item.order_id === order.id),
+    }));
     const sold = await rows<{ quantity: number; products: { name: string } | { name: string }[] | null; orders: { status: string } | { status: string }[] | null }>(
       db().from('order_items').select('quantity, products ( name ), orders!inner ( status )').in('orders.status', paidStatuses),
     );
@@ -346,9 +367,11 @@ export async function registerOps(app: FastifyInstance) {
     const bestSellers = [...totals.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, quantity]) => ({ name, quantity }));
     return {
       revenuePaise: revenue,
-      orders: orderCount,
-      averageOrderPaise: orderCount > 0 ? Math.round(revenue / orderCount) : 0,
+      orders: paidOrderCount,
+      averageOrderPaise: paidOrderCount > 0 ? Math.round(revenue / paidOrderCount) : 0,
       customers: customerCount ?? 0,
+      orderCount: allOrderCount ?? 0,
+      paymentTotalPaise,
       products: productCount ?? 0,
       lowStock,
       outOfStock,

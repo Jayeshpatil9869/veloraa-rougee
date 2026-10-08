@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { env } from './env';
-import { db, ok, one, rows, supabase } from './db';
+import { authGateway, db, ok, one, rows, supabase } from './db';
 import { sha256 } from './password';
 
 const KNOWN = new Set([
@@ -56,7 +56,7 @@ export function cookieBase() {
 }
 
 export function supabaseAdmin() {
-  return supabase;
+  return authGateway;
 }
 
 export interface AdminPrincipal {
@@ -111,6 +111,8 @@ export interface CustomerPrincipal {
   fullName: string;
   phone: string | null;
   emailVerified: boolean;
+  avatarUrl: string | null;
+  authProvider: string;
 }
 
 export async function readCustomer(request: FastifyRequest): Promise<CustomerPrincipal | null> {
@@ -128,8 +130,10 @@ export async function readCustomer(request: FastifyRequest): Promise<CustomerPri
     phone: string | null;
     email_verified: boolean;
     auth_user_id: string | null;
+    avatar_url: string | null;
+    auth_provider: string | null;
   }>(
-    db().from('customers').select('id, email, full_name, phone, email_verified, auth_user_id').or(`auth_user_id.eq.${data.user.id},email.eq.${email}`).limit(1),
+    db().from('customers').select('id, email, full_name, phone, email_verified, auth_user_id, avatar_url, auth_provider').or(`auth_user_id.eq.${data.user.id},email.eq.${email}`).limit(1),
   );
   const customer = matches[0];
   if (!customer) return null;
@@ -139,6 +143,8 @@ export async function readCustomer(request: FastifyRequest): Promise<CustomerPri
     fullName: customer.full_name,
     phone: customer.phone,
     emailVerified: customer.email_verified || Boolean(data.user.email_confirmed_at),
+    avatarUrl: customer.avatar_url,
+    authProvider: customer.auth_provider || 'email',
   };
 }
 

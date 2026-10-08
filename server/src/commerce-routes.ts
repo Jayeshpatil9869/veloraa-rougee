@@ -325,6 +325,59 @@ export async function registerCommerce(app: FastifyInstance) {
     return { order, items, address, payments };
   });
 
+  app.get('/account/payments', async (request) => {
+    const customer = await requireCustomer(request);
+    const orders = await rows<{ id: string; order_number: string }>(db().from('orders').select('id, order_number').eq('customer_id', customer.id));
+    if (!orders.length) return [];
+    const payments = await rows<{ id: string; order_id: string; status: string; amount_paise: number; gateway: string; created_at: string }>(
+      db().from('payments').select('id, order_id, status, amount_paise, gateway, created_at').in('order_id', orders.map((order) => order.id)).order('created_at', { ascending: false }),
+    );
+    return payments.map((payment) => ({
+      ...payment,
+      order_number: orders.find((order) => order.id === payment.order_id)?.order_number ?? '',
+    }));
+  });
+
+  app.get('/account/wishlist', async (request) => {
+    const customer = await requireCustomer(request);
+    const saved = await rows<{ variant_id: string; created_at: string; product_variants: { id: string; legacy_variant_id: string | null; name: string; products: { name: string; slug: string } | { name: string; slug: string }[] | null } | { id: string; legacy_variant_id: string | null; name: string; products: { name: string; slug: string } | { name: string; slug: string }[] | null }[] | null }>(
+      db().from('wishlists').select('variant_id, created_at, product_variants ( id, legacy_variant_id, name, products ( name, slug ) )').eq('customer_id', customer.id).order('created_at', { ascending: false }),
+    );
+    return saved.map((row) => {
+      const variant = asOne(row.product_variants);
+      const product = asOne(variant?.products ?? null);
+      return {
+        variantId: variant?.legacy_variant_id || variant?.id || row.variant_id,
+        databaseVariantId: row.variant_id,
+        shade: variant?.name ?? '',
+        productName: product?.name ?? '',
+        slug: product?.slug ?? '',
+        createdAt: row.created_at,
+      };
+    });
+  });
+
+  app.post('/account/wishlist', async (request, reply) => {
+    const customer = await requireCustomer(request);
+    const body = z.object({ variantId: z.string().min(1) }).parse(request.body);
+    const variant = await one<{ id: string }>(
+      db().from('product_variants').select('id').or(`id.eq.${body.variantId},legacy_variant_id.eq.${body.variantId}`).limit(1).maybeSingle(),
+    );
+    if (!variant) return reply.status(404).send({ error: 'not_found' });
+    await ok(db().from('wishlists').upsert({ customer_id: customer.id, variant_id: variant.id }, { onConflict: 'customer_id,variant_id', ignoreDuplicates: true }));
+    return { ok: true };
+  });
+
+  app.delete('/account/wishlist/:variantId', async (request) => {
+    const customer = await requireCustomer(request);
+    const params = z.object({ variantId: z.string().min(1) }).parse(request.params);
+    const variant = await one<{ id: string }>(
+      db().from('product_variants').select('id').or(`id.eq.${params.variantId},legacy_variant_id.eq.${params.variantId}`).limit(1).maybeSingle(),
+    );
+    if (variant) await ok(db().from('wishlists').delete().eq('customer_id', customer.id).eq('variant_id', variant.id));
+    return { ok: true };
+  });
+
   app.post('/orders/:orderNumber/retry', async (request, reply) => {
     const params = z.object({ orderNumber: z.string() }).parse(request.params);
     const body = z.object({ token: z.string().min(10) }).parse(request.body);
@@ -391,13 +444,34 @@ export async function registerCommerce(app: FastifyInstance) {
       orderQuery = orderQuery.or(`order_number.ilike.%${term}%,email.ilike.%${term}%`);
     }
     const orders = await rows<Record<string, unknown> & { id: string }>(orderQuery);
-    const payments = orders.length
-      ? await rows<{ order_id: string; status: string; created_at: string }>(db().from('payments').select('order_id, status, created_at').in('order_id', orders.map((order) => order.id)).order('created_at', { ascending: false }))
+    const orderIds = orders.map((order) => order.id);
+    const payments = orderIds.length
+      ? await rows<{ order_id: string; status: string; created_at: string }>(db().from('payments').select('order_id, status, created_at').in('order_id', orderIds).order('created_at', { ascending: false }))
+      : [];
+    const addresses = orderIds.length
+      ? await rows<{ order_id: string; full_name: string; phone: string; line1: string; city: string; postal_code: string }>(db().from('order_addresses').select('order_id, full_name, phone, line1, city, postal_code').in('order_id', orderIds))
+      : [];
+    const items = orderIds.length
+      ? await rows<{ order_id: string; product_name: string; variant_name: string; quantity: number; line_total_paise: number }>(db().from('order_items').select('order_id, product_name, variant_name, quantity, line_total_paise').in('order_id', orderIds))
       : [];
     return orders.map((order) => ({
       ...order,
       payment_status: payments.find((payment) => payment.order_id === order.id)?.status ?? null,
+      customer_name: addresses.find((address) => address.order_id === order.id)?.full_name ?? '',
+      address: addresses.find((address) => address.order_id === order.id) ?? null,
+      items: items.filter((item) => item.order_id === order.id),
     }));
+  });
+
+  app.get('/admin/orders/:id', async (request, reply) => {
+    await requireAdmin(request, 'orders.read');
+    const params = z.object({ id: z.string().uuid() }).parse(request.params);
+    const order = await one<Record<string, unknown> & { id: string }>(db().from('orders').select('*').eq('id', params.id).maybeSingle());
+    if (!order) return reply.status(404).send({ error: 'not_found' });
+    const items = await rows(db().from('order_items').select('*').eq('order_id', order.id));
+    const address = await one(db().from('order_addresses').select('*').eq('order_id', order.id).maybeSingle());
+    const payments = await rows(db().from('payments').select('id, status, amount_paise, gateway, gateway_txn_id, failure_reason, created_at').eq('order_id', order.id).order('created_at', { ascending: false }));
+    return { order, items, address, payments };
   });
 
   app.patch('/admin/orders/:id/status', async (request) => {
@@ -439,6 +513,12 @@ export async function registerCommerce(app: FastifyInstance) {
 
   app.get('/admin/payments', async (request) => {
     await requireAdmin(request, 'payments.read');
+    const query = z.object({ days: z.enum(['7', '15', '30']).optional() }).parse(request.query);
+    let paymentQuery = db().from('payments').select('id, status, amount_paise, currency, gateway, gateway_txn_id, failure_reason, created_at, order_id').order('created_at', { ascending: false }).limit(500);
+    if (query.days) {
+      const since = new Date(Date.now() - Number(query.days) * 24 * 60 * 60 * 1000).toISOString();
+      paymentQuery = paymentQuery.gte('created_at', since);
+    }
     const payments = await rows<{
       id: string;
       status: string;
@@ -449,7 +529,7 @@ export async function registerCommerce(app: FastifyInstance) {
       failure_reason: string | null;
       created_at: string;
       order_id: string;
-    }>(db().from('payments').select('id, status, amount_paise, currency, gateway, gateway_txn_id, failure_reason, created_at, order_id').order('created_at', { ascending: false }).limit(100));
+    }>(paymentQuery);
     const orderIds = [...new Set(payments.map((payment) => payment.order_id))];
     const orders = orderIds.length
       ? await rows<{ id: string; order_number: string; email: string }>(db().from('orders').select('id, order_number, email').in('id', orderIds))
@@ -545,7 +625,8 @@ export async function registerCommerce(app: FastifyInstance) {
     const body = z.object({
       code: z.string().min(2).max(40),
       discountType: z.enum(['percent', 'fixed']),
-      discountValue: z.number().int().positive(),
+      discountValue: z.number().positive(),
+      productIds: z.array(z.string().uuid()).min(1),
       minOrderPaise: z.number().int().min(0).default(0),
       maxDiscountPaise: z.number().int().positive().nullable().optional(),
       startsAt: z.string().nullable().optional(),
@@ -554,11 +635,14 @@ export async function registerCommerce(app: FastifyInstance) {
       perCustomerLimit: z.number().int().positive().nullable().optional(),
       active: z.boolean().default(true),
     }).parse(request.body);
+    const discountValue = body.discountType === 'percent'
+      ? Math.round(body.discountValue)
+      : Math.round(body.discountValue * 100);
     const created = await rows<{ id: string }>(
       db().from('coupons').insert({
         code: body.code.toUpperCase(),
         discount_type: body.discountType,
-        discount_value: body.discountValue,
+        discount_value: discountValue,
         min_order_paise: body.minOrderPaise,
         max_discount_paise: body.maxDiscountPaise ?? null,
         starts_at: body.startsAt ?? null,
@@ -566,6 +650,7 @@ export async function registerCommerce(app: FastifyInstance) {
         usage_limit: body.usageLimit ?? null,
         per_customer_limit: body.perCustomerLimit ?? null,
         active: body.active,
+        applicable_product_ids: body.productIds,
       }).select('*'),
     );
     await audit({
