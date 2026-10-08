@@ -7,32 +7,27 @@ const NAV = [
   ['categories', 'Categories'],
   ['orders', 'Orders'],
   ['payments', 'Payments'],
-  ['inventory', 'Inventory'],
   ['customers', 'Customers'],
   ['coupons', 'Coupons'],
   ['reviews', 'Reviews'],
-  ['stories', 'Stories'],
-  ['homepage', 'Homepage'],
-  ['locations', 'Locations'],
   ['enquiries', 'Enquiries'],
-  ['newsletter', 'Newsletter'],
-  ['legal', 'Legal'],
-  ['media', 'Media'],
-  ['seo', 'SEO'],
-  ['activity', 'Activity'],
-  ['settings', 'Settings'],
 ] as const;
 
 type ModuleId = (typeof NAV)[number][0];
 
+function moduleFromPath(path: string): ModuleId {
+  const requested = path.split('/')[2] || 'dashboard';
+  const match = NAV.find(([id]) => id === requested);
+  return match ? match[0] : 'dashboard';
+}
+
 export const AdminApp: React.FC<{ path: string; onNavigate: (path: string) => void }> = ({ path, onNavigate }) => {
-  const module = (path.split('/')[2] || 'dashboard') as ModuleId;
+  const module = moduleFromPath(path);
   const [admin, setAdmin] = useState<{ email: string; roleId: string } | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [data, setData] = useState<unknown>(null);
-  const [unread, setUnread] = useState(0);
 
   useEffect(() => {
     api<{ admin: { email: string; roleId: string } }>('/admin/auth/me')
@@ -41,36 +36,24 @@ export const AdminApp: React.FC<{ path: string; onNavigate: (path: string) => vo
   }, []);
 
   useEffect(() => {
-    if (!admin) return;
-    const source = new EventSource(`${(import.meta.env.VITE_API_URL || '').replace(/\/$/, '')}/admin/notifications/stream`, { withCredentials: true });
-    source.onmessage = () => setUnread((count) => count + 1);
-    return () => source.close();
-  }, [admin]);
+    const requested = path.split('/')[2] || 'dashboard';
+    if (!NAV.some(([id]) => id === requested)) onNavigate('/admin/dashboard');
+  }, [path, onNavigate]);
 
   useEffect(() => {
     if (!admin) return;
-    const endpoints: Record<string, string> = {
+    const endpoints: Record<ModuleId, string> = {
       dashboard: '/admin/analytics',
       products: '/admin/products',
       categories: '/admin/categories',
       orders: '/admin/orders',
       payments: '/admin/payments',
-      inventory: '/admin/inventory',
       customers: '/admin/customers',
       coupons: '/admin/coupons',
       reviews: '/admin/reviews',
-      stories: '/admin/stories',
-      homepage: '/admin/homepage',
-      locations: '/admin/locations',
       enquiries: '/admin/enquiries',
-      newsletter: '/admin/newsletter',
-      legal: '/admin/legal',
-      media: '/admin/media',
-      seo: '/admin/seo/issues',
-      activity: '/admin/activity',
-      settings: '/admin/settings',
     };
-    api(endpoints[module] || '/admin/analytics').then(setData).catch((reason) => setError(reason instanceof Error ? reason.message : 'load_failed'));
+    api(endpoints[module]).then(setData).catch((reason) => setError(reason instanceof Error ? reason.message : 'load_failed'));
   }, [admin, module]);
 
   const login = async (event: React.FormEvent) => {
@@ -123,7 +106,6 @@ export const AdminApp: React.FC<{ path: string; onNavigate: (path: string) => vo
           <h1 className="font-bold capitalize">{module}</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-[#666666]">{admin.email}</span>
-            <button onClick={() => onNavigate('/admin/activity')} className="text-sm font-bold">Notifications {unread}</button>
             <button
               onClick={async () => {
                 await api('/admin/auth/logout', { method: 'POST' });
@@ -139,7 +121,6 @@ export const AdminApp: React.FC<{ path: string; onNavigate: (path: string) => vo
           {error && <p className="text-[#EF4444] mb-4">{error}</p>}
           <RecordView data={data} />
           {module === 'products' && <ProductCreator onCreated={() => onNavigate('/admin/products')} />}
-          {module === 'seo' && <SeoEditor />}
         </div>
       </section>
     </div>
@@ -226,29 +207,3 @@ const RecordView: React.FC<{ data: unknown }> = ({ data }) => {
   );
 };
 
-const SeoEditor: React.FC = () => {
-  const [path, setPath] = useState('/en');
-  const [seoTitle, setSeoTitle] = useState('');
-  const [metaDescription, setMetaDescription] = useState('');
-  const [primaryTopic, setPrimaryTopic] = useState('');
-  const [message, setMessage] = useState('');
-  const save = async (event: React.FormEvent) => {
-    event.preventDefault();
-    await api('/admin/seo/metadata', {
-      method: 'PUT',
-      body: JSON.stringify({ path, seoTitle, metaDescription, primaryTopic }),
-    });
-    setMessage('SEO record saved.');
-  };
-  return (
-    <form onSubmit={save} className="mt-6 grid gap-2 max-w-2xl bg-white border border-[#E2E8F0] rounded-[0.3rem] p-4">
-      <h2 className="font-bold">Page SEO</h2>
-      <input value={path} onChange={(event) => setPath(event.target.value)} required className="h-11 px-3 border border-[#E2E8F0] rounded-[0.3rem]" placeholder="Path" />
-      <input value={primaryTopic} onChange={(event) => setPrimaryTopic(event.target.value)} className="h-11 px-3 border border-[#E2E8F0] rounded-[0.3rem]" placeholder="Primary topic" />
-      <input value={seoTitle} onChange={(event) => setSeoTitle(event.target.value)} className="h-11 px-3 border border-[#E2E8F0] rounded-[0.3rem]" placeholder="Title" />
-      <textarea value={metaDescription} onChange={(event) => setMetaDescription(event.target.value)} className="min-h-24 px-3 py-2 border border-[#E2E8F0] rounded-[0.3rem]" placeholder="Description" />
-      <button className="h-11 bg-[#A06A98] text-white rounded-[0.3rem]">Save SEO</button>
-      {message && <p>{message}</p>}
-    </form>
-  );
-};
