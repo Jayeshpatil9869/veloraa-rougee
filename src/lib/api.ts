@@ -1,7 +1,7 @@
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
 export function hasApi() {
-  return import.meta.env.VITE_DATA_SOURCE !== 'static' && API_URL.length > 0;
+  return import.meta.env.VITE_DATA_SOURCE !== 'static';
 }
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {

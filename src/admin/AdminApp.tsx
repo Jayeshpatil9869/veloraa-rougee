@@ -99,11 +99,17 @@ export const AdminApp: React.FC<{
     if (prefersReducedMotion || !containerRef.current) return;
 
     const ctx = gsap.context(() => {
-      // 1. Initial luxury fade reveal entrance for login card and corner flowers
+      // 1. Initial luxury fade reveal entrance for login card, items, and corner flowers
       gsap.fromTo(
         '.admin-login-card',
-        { opacity: 0, y: 28, scale: 0.96 },
+        { opacity: 0, y: 32, scale: 0.96 },
         { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: 'power3.out' }
+      );
+
+      gsap.fromTo(
+        '.login-anim-item',
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: 'power2.out', delay: 0.25 }
       );
 
       gsap.fromTo(
@@ -130,7 +136,28 @@ export const AdminApp: React.FC<{
         { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.4, delay: 0.28, ease: 'power3.out' }
       );
 
-      // 2. Continuous organic smooth floating motion
+      // 2. Continuous ambient floating orbs
+      gsap.to('.ambient-orb-1', {
+        scale: 1.15,
+        x: '+=25',
+        y: '-=20',
+        duration: 8,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      });
+
+      gsap.to('.ambient-orb-2', {
+        scale: 1.12,
+        x: '-=25',
+        y: '+=20',
+        duration: 9.5,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      });
+
+      // 3. Continuous organic smooth floating motion for flowers
       gsap.to('.flower-float-1', {
         x: '+=24',
         y: '-=28',
@@ -178,7 +205,7 @@ export const AdminApp: React.FC<{
         delay: 1.1,
       });
 
-      // 3. Multi-layer interactive cursor parallax & scroll parallax
+      // 4. Multi-layer interactive cursor parallax & scroll parallax
       const xTo1 = gsap.quickTo('.flower-parallax-1', 'x', { duration: 0.9, ease: 'power2.out' });
       const yTo1 = gsap.quickTo('.flower-parallax-1', 'y', { duration: 0.9, ease: 'power2.out' });
       const xTo2 = gsap.quickTo('.flower-parallax-2', 'x', { duration: 1.2, ease: 'power2.out' });
@@ -219,11 +246,16 @@ export const AdminApp: React.FC<{
         gsap.to('.flower-reveal-4', { y: scrollY * -0.24, duration: 0.4, ease: 'power1.out', overwrite: 'auto' });
       };
 
-      window.addEventListener('mousemove', handleMouseMove);
+      const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+      if (isFinePointer) {
+        window.addEventListener('mousemove', handleMouseMove);
+      }
       window.addEventListener('scroll', handleScroll, { passive: true });
 
       return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
+        if (isFinePointer) {
+          window.removeEventListener('mousemove', handleMouseMove);
+        }
         window.removeEventListener('scroll', handleScroll);
       };
     }, containerRef);
@@ -284,155 +316,176 @@ export const AdminApp: React.FC<{
   };
 
   // ---------------------------------------------------------------------------
-  // 1. Unauthenticated Login Screen with Botanical Floating & Parallax Effects
+  // 1. Redesigned Luxury Unauthenticated Login Screen
   // ---------------------------------------------------------------------------
   if (!admin) {
     return (
       <main
         ref={containerRef}
-        className="min-h-screen w-full bg-gradient-to-b from-[#FAF5F8] via-[#FDF2F8]/80 to-white flex items-center justify-center p-4 sm:p-6 select-none relative overflow-hidden"
+        className="min-h-screen min-h-dvh w-full bg-gradient-to-br from-[#FAF5F8] via-[#FCF1F7] to-[#F7EBF4] flex items-center justify-center p-4 sm:p-6 md:p-8 relative overflow-x-hidden overflow-y-auto"
       >
-        {/* ========================================================================= */}
-        {/*             DECORATIVE BOTANICAL FLOWER ILLUSTRATIONS (THEME)             */}
-        {/* ========================================================================= */}
+        {/* Soft Ambient Dynamic Blurs & Light Sheens */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+          <div className="ambient-orb-1 absolute -top-24 left-1/2 -translate-x-1/2 w-[350px] sm:w-[600px] lg:w-[800px] h-[350px] sm:h-[600px] lg:h-[800px] bg-gradient-to-br from-[#DFBEDB]/45 via-[#F3D5EB]/30 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="ambient-orb-2 absolute -bottom-28 right-10 w-[300px] sm:w-[500px] lg:w-[650px] h-[300px] sm:h-[500px] lg:h-[650px] bg-gradient-to-tl from-[#EBD1E7]/40 via-[#FDF2F8]/60 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-1/3 -left-20 w-[260px] sm:w-[400px] h-[260px] sm:h-[400px] bg-[#FAF0F7]/80 rounded-full blur-2xl pointer-events-none" />
+
           {/* Top-Left Botanical Flower */}
-          <div className="flower-reveal-1 absolute -left-12 -top-10 lg:left-6 lg:top-8 pointer-events-none">
+          <div className="flower-reveal-1 absolute -left-8 -top-8 sm:-left-4 sm:-top-4 lg:left-8 lg:top-10 pointer-events-none">
             <div className="flower-parallax-1 will-change-transform">
-              <div className="flower-float-1 will-change-transform opacity-45 lg:opacity-65">
-                <FlowerTallSvg className="w-36 sm:w-52 lg:w-64 h-auto text-[#D39DC7] -scale-x-100 drop-shadow-xs" />
+              <div className="flower-float-1 will-change-transform opacity-35 sm:opacity-50 lg:opacity-75">
+                <FlowerTallSvg className="w-28 sm:w-44 md:w-56 lg:w-72 h-auto text-[#D39DC7] -scale-x-100 drop-shadow-sm" />
               </div>
             </div>
           </div>
 
           {/* Bottom-Left Botanical Flower */}
-          <div className="flower-reveal-2 absolute -left-8 -bottom-12 lg:left-8 lg:bottom-4 pointer-events-none">
+          <div className="flower-reveal-2 absolute -left-6 -bottom-8 sm:-left-4 sm:-bottom-4 lg:left-10 lg:bottom-6 pointer-events-none">
             <div className="flower-parallax-2 will-change-transform">
-              <div className="flower-float-2 will-change-transform opacity-35 lg:opacity-55">
-                <FlowerShortSvg className="w-28 sm:w-40 lg:w-48 h-auto text-[#A06A98] drop-shadow-xs" />
+              <div className="flower-float-2 will-change-transform opacity-30 sm:opacity-40 lg:opacity-65">
+                <FlowerShortSvg className="w-24 sm:w-36 md:w-48 lg:w-56 h-auto text-[#A06A98] drop-shadow-sm" />
               </div>
             </div>
           </div>
 
           {/* Top-Right Botanical Flower */}
-          <div className="flower-reveal-3 absolute -right-12 -top-8 lg:right-6 lg:top-12 pointer-events-none">
+          <div className="flower-reveal-3 absolute -right-8 -top-8 sm:-right-4 sm:-top-4 lg:right-10 lg:top-14 pointer-events-none">
             <div className="flower-parallax-3 will-change-transform">
-              <div className="flower-float-3 will-change-transform opacity-40 lg:opacity-60">
-                <FlowerShortSvg className="w-32 sm:w-44 lg:w-56 h-auto text-[#DFBEDB] -scale-x-100 drop-shadow-xs" />
+              <div className="flower-float-3 will-change-transform opacity-30 sm:opacity-45 lg:opacity-70">
+                <FlowerShortSvg className="w-24 sm:w-40 md:w-52 lg:w-64 h-auto text-[#DFBEDB] -scale-x-100 drop-shadow-sm" />
               </div>
             </div>
           </div>
 
           {/* Bottom-Right Large Botanical Flower */}
-          <div className="flower-reveal-4 absolute -right-16 -bottom-16 lg:right-6 lg:bottom-2 pointer-events-none">
+          <div className="flower-reveal-4 absolute -right-10 -bottom-10 sm:-right-6 sm:-bottom-6 lg:right-10 lg:bottom-4 pointer-events-none">
             <div className="flower-parallax-4 will-change-transform">
-              <div className="flower-float-4 will-change-transform opacity-50 lg:opacity-70">
-                <FlowerTallSvg className="w-44 sm:w-60 lg:w-80 h-auto text-[#9F6998] drop-shadow-xs" />
+              <div className="flower-float-4 will-change-transform opacity-35 sm:opacity-55 lg:opacity-80">
+                <FlowerTallSvg className="w-32 sm:w-52 md:w-68 lg:w-92 h-auto text-[#9F6998] drop-shadow-sm" />
               </div>
             </div>
           </div>
-
-          {/* Soft Ambient Radial Blurs */}
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[650px] bg-[#DFBEDB]/30 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[#FDF2F8] rounded-full blur-2xl pointer-events-none" />
         </div>
 
-        {/* ========================================================================= */}
-        {/*                         LOGIN CONTAINER CARD                              */}
-        {/* ========================================================================= */}
-        <div className="admin-login-card w-full max-w-md bg-white/95 backdrop-blur-md border border-[#F0DEF7] rounded-2xl sm:rounded-3xl shadow-[0_20px_60px_rgba(119,65,112,0.16)] p-6 sm:p-10 relative z-10 overflow-hidden">
-          {/* Top Luxury Gradient Accent Bar */}
-          <div className="h-1.5 w-full bg-gradient-to-r from-[#A06A98] via-[#DFBEDB] to-[#76416F] absolute top-0 left-0 right-0" />
+        {/* Center Luxury Card with Double Border Glow & Glassmorphism */}
+        <div className="admin-login-card w-full max-w-[440px] relative z-10 my-auto">
+          {/* Outer Glassmorphic Border Wrap */}
+          <div className="p-[1px] rounded-3xl bg-gradient-to-b from-white via-[#F3DFEE]/80 to-[#DFBEDB]/50 shadow-[0_24px_70px_-12px_rgba(118,65,111,0.2),0_10px_24px_-4px_rgba(160,106,152,0.08)]">
+            <div className="bg-white/92 backdrop-blur-2xl rounded-3xl p-7 sm:p-9 md:p-10 relative overflow-hidden">
+              {/* Top Luxury Shimmer Jewel Bar */}
+              <div className="h-1 w-full bg-gradient-to-r from-transparent via-[#A06A98] to-transparent absolute top-0 left-0 right-0 opacity-80" />
 
-          <div className="text-center mb-8 pt-2">
-            <div className="flex justify-center mb-3">
-              <VeloraaRougeeLogo
-                size="md"
-                color="#A06A98"
-                onClick={() => onNavigate('/en')}
-                className="cursor-pointer hover:opacity-90 transition-opacity"
-              />
+              {/* Brand Logo Header */}
+              <div className="login-anim-item flex flex-col items-center justify-center mb-7 pt-1">
+                <VeloraaRougeeLogo
+                  size="md"
+                  color="#262626"
+                  onClick={() => onNavigate('/en')}
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                />
+                {/* Subtle Luxury Divider */}
+                <div className="flex items-center gap-3 w-full max-w-[180px] mt-4 opacity-70">
+                  <span className="flex-1 h-[1px] bg-gradient-to-r from-transparent to-[#DFBEDB]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#A06A98]/60" />
+                  <span className="flex-1 h-[1px] bg-gradient-to-l from-transparent to-[#DFBEDB]" />
+                </div>
+              </div>
+
+              {/* Login Form */}
+              <form onSubmit={(event) => void login(event)} className="space-y-4 sm:space-y-5">
+                {/* Email Field */}
+                <div className="login-anim-item space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#666666] flex items-center justify-between">
+                    <span>Admin Email / Username</span>
+                  </label>
+                  <div className="relative group/field">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9E7398] group-focus-within/field:text-[#76416F] transition-colors pointer-events-none">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <input
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      type="text"
+                      inputMode="email"
+                      required
+                      autoComplete="username"
+                      className="w-full bg-[#FAF6F9]/90 border border-[#E8DAE5] hover:border-[#D5B8D1] focus:border-[#A06A98] focus:bg-white focus:ring-4 focus:ring-[#A06A98]/12 text-base sm:text-sm text-[#2A2A2A] placeholder-[#A0939F] rounded-xl py-3 sm:py-2.5 pl-10 pr-3.5 transition-all duration-200 outline-none"
+                      placeholder="admin@veloraarougee.com"
+                    />
+                  </div>
+                </div>
+
+                {/* Password Field */}
+                <div className="login-anim-item space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#666666] flex items-center justify-between">
+                    <span>Password</span>
+                  </label>
+                  <div className="relative group/field">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9E7398] group-focus-within/field:text-[#76416F] transition-colors pointer-events-none">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      autoComplete="current-password"
+                      className="w-full bg-[#FAF6F9]/90 border border-[#E8DAE5] hover:border-[#D5B8D1] focus:border-[#A06A98] focus:bg-white focus:ring-4 focus:ring-[#A06A98]/12 text-base sm:text-sm text-[#2A2A2A] placeholder-[#A0939F] rounded-xl py-3 sm:py-2.5 pl-10 pr-11 transition-all duration-200 outline-none"
+                      placeholder="••••••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#76416F] hover:bg-[#FAF2F8] transition-all p-2 rounded-lg cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Error Notice */}
+                {error && (
+                  <div className="login-anim-item">
+                    <Notice variant="error">{error}</Notice>
+                  </div>
+                )}
+
+                {/* CTA Submit Button */}
+                <div className="login-anim-item pt-1">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full py-3.5 font-bold uppercase tracking-widest text-xs sm:text-[13px] rounded-xl bg-gradient-to-r from-[#76416F] via-[#8C4E84] to-[#A06A98] hover:brightness-105 active:scale-[0.98] text-white shadow-[0_10px_25px_-5px_rgba(118,65,111,0.35)] hover:shadow-[0_14px_30px_-5px_rgba(118,65,111,0.45)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 relative overflow-hidden touch-manipulation group"
+                  >
+                    {/* Shimmer Sweep Effect */}
+                    <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 pointer-events-none" />
+                    <ShieldCheck className="w-4 h-4 transition-transform group-hover:scale-110" />
+                    <span>{isLoading ? 'Authenticating Studio…' : 'Enter Studio Portal'}</span>
+                  </button>
+                </div>
+
+                {/* Footer Security Badge & Storefront Link */}
+                <div className="login-anim-item pt-4 border-t border-[#F1E6EE]/80 space-y-3 text-center">
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#888888]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>256-Bit TLS Encrypted Gateway</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('/en')}
+                    className="group text-xs font-bold text-[#A06A98] hover:text-[#76416F] transition-colors inline-flex items-center gap-1.5 py-1 cursor-pointer touch-manipulation"
+                  >
+                    <span className="transition-transform group-hover:-translate-x-1 duration-200">←</span>
+                    <span className="underline underline-offset-4 decoration-[#DFBEDB] group-hover:decoration-[#76416F] transition-all">
+                      Return to Customer Storefront
+                    </span>
+                  </button>
+                </div>
+              </form>
             </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FDF2F8] border border-[#DFBEDB]/60 mb-2">
-              <Sparkles className="w-3 h-3 text-[#A06A98]" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#76416F]">
-                Backoffice Studio Portal
-              </span>
-            </div>
-            <p
-              className="text-2xl text-[#333333] leading-none pt-1"
-              style={{ fontFamily: "'Amithen', cursive" }}
-            >
-              Studio Access
-            </p>
           </div>
-
-          <form onSubmit={(event) => void login(event)} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#666666] block">
-                Admin Email
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-[#A06A98] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  type="email"
-                  required
-                  className="w-full bg-[#FAF5F8] border border-[#E2E8F0] focus:border-[#A06A98] focus:ring-2 focus:ring-[#A06A98]/20 focus:bg-white text-sm text-[#333333] placeholder-[#999999] rounded-[0.35rem] py-2.5 pl-10 pr-3.5 transition-all outline-none"
-                  placeholder="admin@veloraarougee.com"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#666666] block">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-[#A06A98] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  className="w-full bg-[#FAF5F8] border border-[#E2E8F0] focus:border-[#A06A98] focus:ring-2 focus:ring-[#A06A98]/20 focus:bg-white text-sm text-[#333333] placeholder-[#999999] rounded-[0.35rem] py-2.5 pl-10 pr-10 transition-all outline-none"
-                  placeholder="••••••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#76416F] transition-colors p-1"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {error && <Notice variant="error">{error}</Notice>}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 mt-2 font-bold uppercase tracking-widest text-xs rounded-[0.35rem] bg-gradient-to-r from-[#76416F] via-[#8E5385] to-[#A06A98] hover:opacity-95 active:scale-[0.98] text-white shadow-md shadow-[#76416F]/25 hover:shadow-lg hover:shadow-[#76416F]/35 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span>{isLoading ? 'Authenticating Studio…' : 'Enter Studio Portal'}</span>
-            </button>
-
-            <div className="pt-4 border-t border-[#F1F5F9] text-center">
-              <button
-                type="button"
-                onClick={() => onNavigate('/en')}
-                className="group text-xs font-bold text-[#A06A98] hover:text-[#76416F] transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-              >
-                <span className="transition-transform group-hover:-translate-x-1">←</span>
-                <span className="underline underline-offset-4 decoration-[#DFBEDB] group-hover:decoration-[#76416F]">
-                  Return to Customer Storefront
-                </span>
-              </button>
-            </div>
-          </form>
         </div>
       </main>
     );

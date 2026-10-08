@@ -236,10 +236,14 @@ export async function registerAuth(app: FastifyInstance) {
     return { ok: true };
   });
 
-  app.post('/admin/auth/login', { config: { rateLimit: { max: 8, timeWindow: '1 minute' } } }, async (request, reply) => {
-    const body = z.object({ email: z.string().email(), password: z.string().min(1).max(200) }).parse(request.body);
+  app.post('/admin/auth/login', { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } }, async (request, reply) => {
+    const body = z.object({
+      email: z.string().min(1).max(200),
+      password: z.string().min(1).max(200),
+    }).parse(request.body);
+    const inputEmail = body.email.trim().toLowerCase();
     const admin = await one<{ id: string; email: string; full_name: string; password_hash: string; role_id: string; active: boolean }>(
-      db().from('admin_users').select('id, email, full_name, password_hash, role_id, active').eq('email', body.email.toLowerCase()).maybeSingle(),
+      db().from('admin_users').select('id, email, full_name, password_hash, role_id, active').eq('email', inputEmail).maybeSingle(),
     );
     if (!admin || !admin.active || !(await verifyPassword(body.password, admin.password_hash))) {
       return reply.status(401).send({ error: 'invalid_credentials' });

@@ -215,7 +215,8 @@ async function main() {
       full_name: env.ADMIN_NAME,
       password_hash: await hashPassword(env.ADMIN_PASSWORD),
       role_id: 'super_admin',
-    }, { onConflict: 'email', ignoreDuplicates: true }));
+      active: true,
+    }, { onConflict: 'email' }));
   }
 
   console.log(`Seeded ${PRODUCTS.length} products and ${CATEGORIES.length} categories.`);

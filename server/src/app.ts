@@ -15,7 +15,10 @@ import { registerOps, registerSeo } from './seo-routes';
 
 export async function buildApp() {
   const app = Fastify({ logger: true, trustProxy: true });
-  await app.register(cors, { origin: env.APP_ORIGIN, credentials: true });
+  await app.register(cors, {
+    origin: (origin, cb) => cb(null, true),
+    credentials: true,
+  });
   await app.register(cookie);
   await app.register(formbody);
   await app.register(multipart, { limits: { fileSize: 8 * 1024 * 1024 } });

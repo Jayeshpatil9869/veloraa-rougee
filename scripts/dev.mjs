@@ -48,9 +48,26 @@ function pipe(stream, label) {
   });
 }
 
-console.log('Storefront  http://localhost:3000');
-console.log('Admin       http://localhost:3000/admin');
-console.log('API         http://localhost:4000');
+import os from 'node:os';
+
+function getLocalIp() {
+  const nets = os.networkInterfaces();
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name] ?? []) {
+      if (net.family === 'IPv4' && !net.internal) {
+        return net.address;
+      }
+    }
+  }
+  return 'localhost';
+}
+
+const localIp = getLocalIp();
+
+console.log(`Storefront  http://localhost:3000`);
+console.log(`Admin       http://localhost:3000/admin`);
+console.log(`Mobile/LAN  http://${localIp}:3000/admin`);
+console.log(`API         http://localhost:4000`);
 
 for (const entry of processes) {
   const child = entry.shell
