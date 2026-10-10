@@ -62,7 +62,26 @@ export const AdminApp: React.FC<{
   onNavigate: (path: string) => void;
 }> = ({ path, onNavigate }) => {
   const module = moduleFromPath(path);
-  const [admin, setAdmin] = useState<{ email: string; fullName?: string } | null>(null);
+  // Synchronous session hydration from localStorage prevents flash of login screen on page reload
+  const [admin, setAdmin] = useState<{ email: string; fullName?: string } | null>(() => {
+    try {
+      const cached = localStorage.getItem('vr_admin_session');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Track whether we are verifying authentication on initial mount
+  const [isCheckingAuth, setIsCheckingAuth] = useState(() => {
+    try {
+      // If we already have a cached session, we don't block the UI with a full splash
+      return !localStorage.getItem('vr_admin_session');
+    } catch {
+      return true;
+    }
+  });
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -94,7 +113,7 @@ export const AdminApp: React.FC<{
 
   // Continuous organic smooth floating motion and multi-layer parallax for botanical flowers
   useEffect(() => {
-    if (admin) return;
+    if (admin || isCheckingAuth) return;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion || !containerRef.current) return;
 
@@ -102,38 +121,38 @@ export const AdminApp: React.FC<{
       // 1. Initial luxury fade reveal entrance for login card, items, and corner flowers
       gsap.fromTo(
         '.admin-login-card',
-        { opacity: 0, y: 32, scale: 0.96 },
-        { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: 'power3.out' }
+        { opacity: 0, y: 24, scale: 0.98 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' }
       );
 
       gsap.fromTo(
         '.login-anim-item',
-        { opacity: 0, y: 14 },
-        { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: 'power2.out', delay: 0.25 }
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: 'power2.out', delay: 0.1 }
       );
 
       gsap.fromTo(
         '.flower-reveal-1',
         { opacity: 0, x: -40, y: -30, scale: 0.82, rotate: -8 },
-        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.3, ease: 'power3.out' }
+        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.1, ease: 'power3.out' }
       );
 
       gsap.fromTo(
         '.flower-reveal-3',
         { opacity: 0, x: 40, y: -30, scale: 0.82, rotate: 8 },
-        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.3, delay: 0.12, ease: 'power3.out' }
+        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.1, delay: 0.1, ease: 'power3.out' }
       );
 
       gsap.fromTo(
         '.flower-reveal-2',
         { opacity: 0, x: -35, y: 35, scale: 0.82, rotate: 6 },
-        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.4, delay: 0.2, ease: 'power3.out' }
+        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.2, delay: 0.15, ease: 'power3.out' }
       );
 
       gsap.fromTo(
         '.flower-reveal-4',
         { opacity: 0, x: 40, y: 40, scale: 0.82, rotate: -6 },
-        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.4, delay: 0.28, ease: 'power3.out' }
+        { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, duration: 1.2, delay: 0.2, ease: 'power3.out' }
       );
 
       // 2. Continuous ambient floating orbs
@@ -261,12 +280,38 @@ export const AdminApp: React.FC<{
     }, containerRef);
 
     return () => ctx.revert();
-  }, [admin]);
+  }, [admin, isCheckingAuth]);
 
   useEffect(() => {
+    let isMounted = true;
     api<{ admin: { email: string; fullName?: string } }>('/admin/auth/me')
-      .then((result) => setAdmin(result.admin))
-      .catch(() => setAdmin(null));
+      .then((result) => {
+        if (!isMounted) return;
+        setAdmin(result.admin);
+        try {
+          localStorage.setItem('vr_admin_session', JSON.stringify(result.admin));
+        } catch {
+          // ignore
+        }
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setAdmin(null);
+        try {
+          localStorage.removeItem('vr_admin_session');
+        } catch {
+          // ignore
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsCheckingAuth(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -289,6 +334,11 @@ export const AdminApp: React.FC<{
       });
       const result = await api<{ admin: { email: string; fullName?: string } }>('/admin/auth/me');
       setAdmin(result.admin);
+      try {
+        localStorage.setItem('vr_admin_session', JSON.stringify(result.admin));
+      } catch {
+        // ignore
+      }
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : 'invalid_credentials';
       setError(
@@ -311,12 +361,50 @@ export const AdminApp: React.FC<{
     } catch {
       // Ignore
     } finally {
+      try {
+        localStorage.removeItem('vr_admin_session');
+      } catch {
+        // ignore
+      }
       setAdmin(null);
     }
   };
 
   // ---------------------------------------------------------------------------
-  // 1. Redesigned Luxury Unauthenticated Login Screen
+  // 1. Sleek Branded Session Verification Loading Screen (Prevents Auth Glitch)
+  // ---------------------------------------------------------------------------
+  if (isCheckingAuth) {
+    return (
+      <main className="min-h-screen min-h-dvh w-full bg-gradient-to-br from-[#FAF5F8] via-[#FCF1F7] to-[#F7EBF4] flex items-center justify-center p-6 relative overflow-hidden">
+        {/* Soft Ambient Dynamic Blurs */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gradient-to-br from-[#DFBEDB]/40 via-[#F3D5EB]/25 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-28 right-10 w-[450px] h-[450px] bg-gradient-to-tl from-[#EBD1E7]/35 via-[#FDF2F8]/50 to-transparent rounded-full blur-3xl pointer-events-none" />
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center justify-center p-8 sm:p-10 rounded-3xl bg-white/95 backdrop-blur-xl border border-[#DEC8DA]/80 shadow-[0_20px_50px_-10px_rgba(118,65,111,0.18)] max-w-sm w-full text-center">
+          <VeloraaRougeeLogo size="md" color="#76416F" className="mb-6" />
+
+          {/* Luxury Animated Loader */}
+          <div className="relative w-11 h-11 mb-5 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full border-2 border-[#F3DFEE]" />
+            <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#76416F] border-r-[#A06A98] animate-spin" />
+            <Sparkles className="w-4 h-4 text-[#A06A98] animate-pulse" />
+          </div>
+
+          <p className="text-xs font-bold uppercase tracking-widest text-[#76416F]">
+            Veloraa Rougee Studio
+          </p>
+          <p className="text-[11px] text-[#777777] mt-1 font-medium">
+            Verifying secure credentials…
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 2. High-Contrast Luxury Unauthenticated Login Screen
   // ---------------------------------------------------------------------------
   if (!admin) {
     return (
@@ -370,24 +458,24 @@ export const AdminApp: React.FC<{
         {/* Center Luxury Card with Double Border Glow & Glassmorphism */}
         <div className="admin-login-card w-full max-w-[440px] relative z-10 my-auto">
           {/* Outer Glassmorphic Border Wrap */}
-          <div className="p-[1px] rounded-3xl bg-gradient-to-b from-white via-[#F3DFEE]/80 to-[#DFBEDB]/50 shadow-[0_24px_70px_-12px_rgba(118,65,111,0.2),0_10px_24px_-4px_rgba(160,106,152,0.08)]">
-            <div className="bg-white/92 backdrop-blur-2xl rounded-3xl p-7 sm:p-9 md:p-10 relative overflow-hidden">
+          <div className="p-[1px] rounded-3xl bg-gradient-to-b from-white via-[#F3DFEE] to-[#DFBEDB]/70 shadow-[0_24px_70px_-12px_rgba(118,65,111,0.22),0_10px_24px_-4px_rgba(160,106,152,0.1)]">
+            <div className="bg-white/98 backdrop-blur-2xl rounded-3xl p-7 sm:p-9 md:p-10 relative overflow-hidden border border-[#DEC8DA]/70">
               {/* Top Luxury Shimmer Jewel Bar */}
-              <div className="h-1 w-full bg-gradient-to-r from-transparent via-[#A06A98] to-transparent absolute top-0 left-0 right-0 opacity-80" />
+              <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-[#A06A98] to-transparent absolute top-0 left-0 right-0 opacity-90" />
 
               {/* Brand Logo Header */}
               <div className="login-anim-item flex flex-col items-center justify-center mb-7 pt-1">
                 <VeloraaRougeeLogo
                   size="md"
-                  color="#262626"
+                  color="#1A1A1A"
                   onClick={() => onNavigate('/en')}
                   className="cursor-pointer hover:opacity-80 transition-opacity"
                 />
                 {/* Subtle Luxury Divider */}
-                <div className="flex items-center gap-3 w-full max-w-[180px] mt-4 opacity-70">
-                  <span className="flex-1 h-[1px] bg-gradient-to-r from-transparent to-[#DFBEDB]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#A06A98]/60" />
-                  <span className="flex-1 h-[1px] bg-gradient-to-l from-transparent to-[#DFBEDB]" />
+                <div className="flex items-center gap-3 w-full max-w-[180px] mt-4 opacity-75">
+                  <span className="flex-1 h-[1px] bg-gradient-to-r from-transparent to-[#A06A98]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#76416F]" />
+                  <span className="flex-1 h-[1px] bg-gradient-to-l from-transparent to-[#A06A98]" />
                 </div>
               </div>
 
@@ -395,11 +483,11 @@ export const AdminApp: React.FC<{
               <form onSubmit={(event) => void login(event)} className="space-y-4 sm:space-y-5">
                 {/* Email Field */}
                 <div className="login-anim-item space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#666666] flex items-center justify-between">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#3F2B3E] flex items-center justify-between">
                     <span>Admin Email / Username</span>
                   </label>
                   <div className="relative group/field">
-                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9E7398] group-focus-within/field:text-[#76416F] transition-colors pointer-events-none">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#76416F] group-focus-within/field:text-[#52254B] transition-colors pointer-events-none">
                       <Mail className="w-4 h-4" />
                     </div>
                     <input
@@ -409,7 +497,7 @@ export const AdminApp: React.FC<{
                       inputMode="email"
                       required
                       autoComplete="username"
-                      className="w-full bg-[#FAF6F9]/90 border border-[#E8DAE5] hover:border-[#D5B8D1] focus:border-[#A06A98] focus:bg-white focus:ring-4 focus:ring-[#A06A98]/12 text-base sm:text-sm text-[#2A2A2A] placeholder-[#A0939F] rounded-xl py-3 sm:py-2.5 pl-10 pr-3.5 transition-all duration-200 outline-none"
+                      className="w-full bg-[#FCF8FB] border-2 border-[#D8BFD4] hover:border-[#A06A98] focus:border-[#76416F] focus:bg-white focus:ring-4 focus:ring-[#A06A98]/15 text-base sm:text-sm text-[#1E171D] font-medium placeholder-[#8F798C] rounded-xl py-3 sm:py-2.5 pl-10 pr-3.5 transition-all duration-200 outline-none shadow-xs"
                       placeholder="admin@veloraarougee.com"
                     />
                   </div>
@@ -417,11 +505,11 @@ export const AdminApp: React.FC<{
 
                 {/* Password Field */}
                 <div className="login-anim-item space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#666666] flex items-center justify-between">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#3F2B3E] flex items-center justify-between">
                     <span>Password</span>
                   </label>
                   <div className="relative group/field">
-                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9E7398] group-focus-within/field:text-[#76416F] transition-colors pointer-events-none">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#76416F] group-focus-within/field:text-[#52254B] transition-colors pointer-events-none">
                       <Lock className="w-4 h-4" />
                     </div>
                     <input
@@ -430,14 +518,14 @@ export const AdminApp: React.FC<{
                       type={showPassword ? 'text' : 'password'}
                       required
                       autoComplete="current-password"
-                      className="w-full bg-[#FAF6F9]/90 border border-[#E8DAE5] hover:border-[#D5B8D1] focus:border-[#A06A98] focus:bg-white focus:ring-4 focus:ring-[#A06A98]/12 text-base sm:text-sm text-[#2A2A2A] placeholder-[#A0939F] rounded-xl py-3 sm:py-2.5 pl-10 pr-11 transition-all duration-200 outline-none"
+                      className="w-full bg-[#FCF8FB] border-2 border-[#D8BFD4] hover:border-[#A06A98] focus:border-[#76416F] focus:bg-white focus:ring-4 focus:ring-[#A06A98]/15 text-base sm:text-sm text-[#1E171D] font-medium placeholder-[#8F798C] rounded-xl py-3 sm:py-2.5 pl-10 pr-11 transition-all duration-200 outline-none shadow-xs"
                       placeholder="••••••••••••"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#76416F] hover:bg-[#FAF2F8] transition-all p-2 rounded-lg cursor-pointer"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[#76416F] hover:text-[#52254B] hover:bg-[#F8EBF5] transition-all p-2 rounded-lg cursor-pointer"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -456,7 +544,7 @@ export const AdminApp: React.FC<{
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 font-bold uppercase tracking-widest text-xs sm:text-[13px] rounded-xl bg-gradient-to-r from-[#76416F] via-[#8C4E84] to-[#A06A98] hover:brightness-105 active:scale-[0.98] text-white shadow-[0_10px_25px_-5px_rgba(118,65,111,0.35)] hover:shadow-[0_14px_30px_-5px_rgba(118,65,111,0.45)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 relative overflow-hidden touch-manipulation group"
+                    className="w-full py-3.5 font-bold uppercase tracking-widest text-xs sm:text-[13px] rounded-xl bg-gradient-to-r from-[#76416F] via-[#8C4E84] to-[#A06A98] hover:brightness-105 active:scale-[0.98] text-white shadow-[0_10px_25px_-5px_rgba(118,65,111,0.38)] hover:shadow-[0_14px_30px_-5px_rgba(118,65,111,0.48)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 relative overflow-hidden touch-manipulation group"
                   >
                     {/* Shimmer Sweep Effect */}
                     <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 pointer-events-none" />
@@ -466,8 +554,8 @@ export const AdminApp: React.FC<{
                 </div>
 
                 {/* Footer Security Badge & Storefront Link */}
-                <div className="login-anim-item pt-4 border-t border-[#F1E6EE]/80 space-y-3 text-center">
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#888888]">
+                <div className="login-anim-item pt-4 border-t border-[#F1E6EE] space-y-3 text-center">
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#666666] font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span>256-Bit TLS Encrypted Gateway</span>
                   </div>
@@ -475,7 +563,7 @@ export const AdminApp: React.FC<{
                   <button
                     type="button"
                     onClick={() => onNavigate('/en')}
-                    className="group text-xs font-bold text-[#A06A98] hover:text-[#76416F] transition-colors inline-flex items-center gap-1.5 py-1 cursor-pointer touch-manipulation"
+                    className="group text-xs font-bold text-[#76416F] hover:text-[#52254B] transition-colors inline-flex items-center gap-1.5 py-1 cursor-pointer touch-manipulation"
                   >
                     <span className="transition-transform group-hover:-translate-x-1 duration-200">←</span>
                     <span className="underline underline-offset-4 decoration-[#DFBEDB] group-hover:decoration-[#76416F] transition-all">
@@ -603,12 +691,13 @@ export const AdminApp: React.FC<{
       )}
 
       {/* ========================================================================= */}
-      {/* 2. Desktop Fixed Left Sidebar Shell                                      */}
+      {/* 2. Desktop Fixed Left Sidebar Shell (Sticky On Scroll)                   */}
       {/* ========================================================================= */}
-      <aside className="hidden lg:flex bg-white border-r border-[#E2E8F0] flex-col justify-between min-h-screen sticky top-0 z-40">
-        <div>
+      <aside className="hidden lg:flex bg-white border-r border-[#E2E8F0] flex-col justify-between h-screen h-dvh max-h-screen sticky top-0 self-start z-40 shadow-[4px_0_24px_-4px_rgba(118,65,111,0.04)]">
+        {/* Top Header & Scrollable Nav Region */}
+        <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
           {/* Brand Header */}
-          <div className="p-6 border-b border-[#E2E8F0]/80 bg-gradient-to-b from-[#FAF5F8]/60 to-white">
+          <div className="p-6 border-b border-[#E2E8F0]/80 bg-gradient-to-b from-[#FAF5F8]/80 to-white shrink-0">
             <div className="flex items-center justify-between gap-2 mb-2">
               <VeloraaRougeeLogo
                 size="md"
@@ -625,12 +714,14 @@ export const AdminApp: React.FC<{
             </p>
           </div>
 
-          {/* Desktop Nav Links */}
-          {renderNavLinks()}
+          {/* Desktop Nav Links - Smoothly scrollable if screen height is constrained */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden [scrollbar-width:thin] [scrollbar-color:#E8DAE5_transparent]">
+            {renderNavLinks()}
+          </div>
         </div>
 
-        {/* Desktop Sidebar Footer */}
-        <div className="p-4 border-t border-[#E2E8F0] bg-[#FAF5F8]/50 space-y-3">
+        {/* Desktop Sidebar Footer - Always docked cleanly at bottom of viewport */}
+        <div className="p-4 border-t border-[#E2E8F0] bg-[#FAF5F8]/70 space-y-3 shrink-0">
           <div className="flex items-center justify-between text-xs font-semibold text-[#666666]">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
