@@ -1,6 +1,6 @@
-# Siella Beauty colors
+# VELORAA ROUGEE colors
 
-Measured from the saved CSS (`:root` in `siellabeauty.com/_next/static/css/00bc51710d82ab29.css`) and from the homepage rendered at 1440px. Use the hex values in a clone. The HSL columns are the CSS variables, stored as components without `hsl()`.
+Measured from the design system specifications (`:root` tokens) and from the homepage rendered at 1440px. Use the hex values in a clone. The HSL columns are the CSS variables, stored as components without `hsl()`.
 
 ## Brand tokens
 

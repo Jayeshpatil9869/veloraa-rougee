@@ -8,6 +8,49 @@ import { hashPassword } from './password';
 const OPENING_STOCK = 25;
 
 async function main() {
+  const activeCategorySlugs = CATEGORIES.map((c) => c.slug);
+  const activeProductSlugs = PRODUCTS.map((p) => p.slug);
+
+  // Clean up products that are no longer in the catalog
+  const allExistingProducts = await rows<{ id: string; slug: string }>(
+    db().from('products').select('id, slug'),
+  );
+  const obsoleteProducts = allExistingProducts.filter((p) => !activeProductSlugs.includes(p.slug));
+  for (const obsolete of obsoleteProducts) {
+    const vars = await rows<{ id: string }>(
+      db().from('product_variants').select('id').eq('product_id', obsolete.id),
+    );
+    for (const v of vars) {
+      await ok(db().from('cart_items').delete().eq('variant_id', v.id));
+      await ok(db().from('inventory_movements').delete().eq('variant_id', v.id));
+      await ok(db().from('product_variant_images').delete().eq('variant_id', v.id));
+    }
+    await ok(db().from('product_images').delete().eq('product_id', obsolete.id));
+    await ok(db().from('product_tags').delete().eq('product_id', obsolete.id));
+    await ok(db().from('story_products').delete().eq('product_id', obsolete.id));
+    try {
+      await ok(db().from('product_variants').delete().eq('product_id', obsolete.id));
+      await ok(db().from('products').delete().eq('id', obsolete.id));
+    } catch {
+      await ok(db().from('products').update({ status: 'archived', bestseller: false, featured: false }).eq('id', obsolete.id));
+      await ok(db().from('product_variants').update({ active: false }).eq('product_id', obsolete.id));
+    }
+  }
+
+  // Clean up categories that are no longer in the catalog
+  const allExistingCategories = await rows<{ id: string; slug: string }>(
+    db().from('categories').select('id, slug'),
+  );
+  const obsoleteCategories = allExistingCategories.filter((c) => !activeCategorySlugs.includes(c.slug));
+  for (const obsolete of obsoleteCategories) {
+    await ok(db().from('categories').update({ active: false }).eq('id', obsolete.id));
+    try {
+      await ok(db().from('categories').delete().eq('id', obsolete.id));
+    } catch {
+      // Fallback: active is already false
+    }
+  }
+
   for (const [index, category] of CATEGORIES.entries()) {
     await ok(db().from('categories').upsert({
       legacy_id: category.id,
