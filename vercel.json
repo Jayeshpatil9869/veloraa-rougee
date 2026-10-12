@@ -17,15 +17,15 @@
           "value": "api.veloraarougee.com"
         }
       ],
-      "destination": "/api?__path=/$1"
+      "destination": "/api/index?__path=/$1"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/api?__path=/$1"
+      "destination": "/api/index?__path=/$1"
     },
     {
       "source": "/api",
-      "destination": "/api?__path=/health"
+      "destination": "/api/index?__path=/health"
     },
     {
       "source": "/((?!robots\\.txt|sitemap\\.xml|assets/|fonts/|brand/|favicon\\.svg).*)",
