@@ -74,7 +74,6 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
   };
 
   return (
-  return (
     <div className="w-full min-h-[calc(100vh-160px)] bg-[var(--bg-primary)] text-[var(--text-primary)] py-10 lg:py-16 transition-colors">
       <div className="max-w-[1440px] mx-auto px-4 lg:px-20 space-y-8">
         {/* Page Header */}
