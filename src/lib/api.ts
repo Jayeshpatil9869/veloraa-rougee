@@ -1,16 +1,30 @@
 function getApiBaseUrl(): string {
-  const envUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '');
-  if (envUrl) return envUrl;
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
-    if (host === 'veloraarougee.com' || host === 'admin.veloraarougee.com' || host.endsWith('.veloraarougee.com')) {
+
+    // 1. Localhost development only
+    if (host === 'localhost' || host === '127.0.0.1') {
+      const envUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '');
+      return envUrl || '';
+    }
+
+    // 2. Production custom domains (veloraarougee.com, admin.veloraarougee.com, etc.)
+    if (
+      host === 'veloraarougee.com' ||
+      host === 'www.veloraarougee.com' ||
+      host === 'admin.veloraarougee.com' ||
+      host.endsWith('.veloraarougee.com')
+    ) {
+      if (host === 'api.veloraarougee.com') return '';
       return 'https://api.veloraarougee.com';
     }
+
+    // 3. Vercel preview deployments (*.vercel.app) or other hosts
+    return '';
   }
+
   return '';
 }
-
-const API_URL = getApiBaseUrl();
 
 export function hasApi() {
   return import.meta.env.VITE_DATA_SOURCE !== 'static';
@@ -35,15 +49,38 @@ function getAuthHeader(): Record<string, string> {
 }
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
-    ...init,
-    credentials: 'include',
-    headers: {
-      ...(init?.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
-      ...getAuthHeader(),
-      ...(init?.headers ?? {}),
-    },
-  });
+  const baseUrl = getApiBaseUrl();
+  const primaryUrl = `${baseUrl}${path}`;
+
+  const executeRequest = async (url: string) => {
+    return fetch(url, {
+      ...init,
+      credentials: 'include',
+      headers: {
+        ...(init?.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
+        ...getAuthHeader(),
+        ...(init?.headers ?? {}),
+      },
+    });
+  };
+
+  let response: Response;
+  try {
+    response = await executeRequest(primaryUrl);
+  } catch (networkError) {
+    // If connecting to https://api.veloraarougee.com failed (e.g. DNS not yet propagated),
+    // and we are on a custom domain, fall back to same-origin /api rewrite
+    if (baseUrl && typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
+      try {
+        response = await executeRequest(`/api${path}`);
+      } catch {
+        throw networkError;
+      }
+    } else {
+      throw networkError;
+    }
+  }
+
   const data = await response.json().catch(() => null);
   if (!response.ok) {
     const message = data && typeof data.error === 'string'

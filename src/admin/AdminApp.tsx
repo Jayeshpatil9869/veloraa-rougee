@@ -1052,7 +1052,7 @@ export const AdminApp: React.FC<{
         {/* Dynamic Workspace Container */}
         <main className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10">
           {module === 'dashboard' && (
-            <Dashboard onOpenOrder={(id) => adminNav(`/admin/orders/${id}`)} />
+            <Dashboard onOpenOrder={(id) => adminNav(`/admin/orders/${id}`)} onNavigate={adminNav} />
           )}
           {module === 'products' && <ProductsModule />}
           {module === 'categories' && <CategoriesModule />}

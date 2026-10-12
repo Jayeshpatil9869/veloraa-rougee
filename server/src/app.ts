@@ -29,17 +29,24 @@ export async function buildApp() {
   await app.register(cors, {
     origin: (origin, cb) => {
       if (!origin) return cb(null, true);
+      if (
+        ALLOWED_ORIGINS.has(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('veloraarougee.com') ||
+        /^https?:\/\/([a-z0-9-]+\.)?veloraarougee\.com$/.test(origin)
+      ) {
+        return cb(null, true);
+      }
       if (env.NODE_ENV !== 'production') {
         if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
           return cb(null, true);
         }
       }
-      if (ALLOWED_ORIGINS.has(origin) || origin.endsWith('.vercel.app')) {
-        return cb(null, true);
-      }
-      return cb(new Error('CORS not allowed for this origin'), false);
+      return cb(null, false);
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   });
   await app.register(cookie);
   await app.register(formbody);
