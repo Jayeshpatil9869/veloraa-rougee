@@ -46,11 +46,17 @@ export function httpError(error: unknown) {
   return { status: 500, error: 'request_failed' };
 }
 
-export function cookieBase() {
+export function cookieBase(request?: FastifyRequest) {
+  const isProd = env.NODE_ENV === 'production';
+  const origin = (request?.headers?.origin as string | undefined) || '';
+  const host = (request?.headers?.host as string | undefined) || '';
+  const isCustomDomain = origin.includes('veloraarougee.com') || host.includes('veloraarougee.com');
+
   return {
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'lax' as const,
+    secure: isProd,
+    sameSite: (isProd ? 'none' : 'lax') as 'none' | 'lax',
+    ...(isProd && isCustomDomain ? { domain: '.veloraarougee.com' } : {}),
     path: '/',
   };
 }
@@ -69,7 +75,9 @@ export interface AdminPrincipal {
 
 export async function readAdmin(request: FastifyRequest): Promise<AdminPrincipal | null> {
   if (!supabase) return null;
-  const token = request.cookies.vr_admin;
+  const authHeader = request.headers.authorization;
+  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const token = request.cookies.vr_admin || bearerToken;
   if (!token) return null;
   const session = await one<{
     admin_users: { id: string; email: string; full_name: string; role_id: string; active: boolean } | { id: string; email: string; full_name: string; role_id: string; active: boolean }[] | null;
@@ -118,7 +126,9 @@ export interface CustomerPrincipal {
 export async function readCustomer(request: FastifyRequest): Promise<CustomerPrincipal | null> {
   const client = supabaseAdmin();
   if (!client) return null;
-  const token = request.cookies.vr_access;
+  const authHeader = request.headers.authorization;
+  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const token = request.cookies.vr_access || bearerToken;
   if (!token) return null;
   const { data, error } = await client.auth.getUser(token);
   if (error || !data.user?.email) return null;

@@ -57,7 +57,7 @@ const NAV = [
 type ModuleId = (typeof NAV)[number]['id'];
 
 function moduleFromPath(path: string): ModuleId {
-  const clean = path.replace(/^\/admin\/?/, '');
+  const clean = path.replace(/^\/admin\/?/, '').replace(/^\/+/, '');
   const requested = clean.split('/')[0] || 'dashboard';
   const match = NAV.find((item) => item.id === requested);
   return match ? match.id : 'dashboard';
@@ -413,7 +413,7 @@ export const AdminApp: React.FC<{
   }, []);
 
   useEffect(() => {
-    const clean = path.replace(/^\/admin\/?/, '');
+    const clean = path.replace(/^\/admin\/?/, '').replace(/^\/+/, '');
     const requested = clean.split('/')[0] || 'dashboard';
     if (!NAV.some((item) => item.id === requested)) {
       adminNav('/admin/dashboard');
@@ -427,14 +427,17 @@ export const AdminApp: React.FC<{
     setError('');
     setIsLoading(true);
     try {
-      await api('/admin/auth/login', {
+      const loginRes = await api<{ email: string; fullName?: string; roleId: string; token?: string }>('/admin/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
-      const result = await api<{ admin: { email: string; fullName?: string } }>('/admin/auth/me');
-      setAdmin(result.admin);
+      const result = await api<{ admin: { email: string; fullName?: string } }>('/admin/auth/me', {
+        headers: loginRes.token ? { Authorization: `Bearer ${loginRes.token}` } : {},
+      });
+      const sessionData = { ...result.admin, token: loginRes.token };
+      setAdmin(sessionData);
       try {
-        localStorage.setItem('vr_admin_session', JSON.stringify(result.admin));
+        localStorage.setItem('vr_admin_session', JSON.stringify(sessionData));
       } catch {
         // ignore
       }

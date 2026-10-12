@@ -16,12 +16,31 @@ export function hasApi() {
   return import.meta.env.VITE_DATA_SOURCE !== 'static';
 }
 
+function getAuthHeader(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const adminSession = localStorage.getItem('vr_admin_session');
+    if (adminSession) {
+      const parsed = JSON.parse(adminSession);
+      if (parsed?.token) {
+        return { Authorization: `Bearer ${parsed.token}` };
+      }
+    }
+    const customerToken = localStorage.getItem('vr_customer_token');
+    if (customerToken) {
+      return { Authorization: `Bearer ${customerToken}` };
+    }
+  } catch {}
+  return {};
+}
+
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     ...init,
     credentials: 'include',
     headers: {
       ...(init?.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
+      ...getAuthHeader(),
       ...(init?.headers ?? {}),
     },
   });

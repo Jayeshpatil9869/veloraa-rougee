@@ -38,7 +38,10 @@ import { applySeoHead, SeoPayload } from './seo/head';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<string>(() => {
-    return window.location.pathname || '/en';
+    const isAdmin = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
+    const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+    if (isAdmin) return pathname || '/';
+    return pathname === '/' || !pathname ? '/en' : pathname;
   });
 
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
@@ -153,9 +156,12 @@ export default function App() {
   // Handle browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname || '/en';
+      const isAdmin = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
+      const path = window.location.pathname || (isAdmin ? '/' : '/en');
       setCurrentPath(path);
-      parsePath(path);
+      if (!isAdmin) {
+        parsePath(path);
+      }
       scrollToTop();
     };
 
@@ -164,12 +170,15 @@ export default function App() {
   }, []);
 
   const navigate = (path: string, shouldScroll: boolean = true) => {
-    const target = path === '/' ? '/en' : path;
+    const isAdmin = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
+    const target = (!isAdmin && path === '/') ? '/en' : path;
     if (window.location.pathname !== target) {
       window.history.pushState({}, '', target);
     }
     setCurrentPath(target);
-    parsePath(target);
+    if (!isAdmin) {
+      parsePath(target);
+    }
     if (shouldScroll) {
       scrollToTop();
     }

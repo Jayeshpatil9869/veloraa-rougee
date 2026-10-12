@@ -3,9 +3,9 @@
   "outputDirectory": "dist",
   "installCommand": "npm install && npm install --prefix server",
   "functions": {
-    "server/api/index.ts": {
-      "runtime": "nodejs20.x",
-      "memory": 512
+    "api/index.ts": {
+      "memory": 512,
+      "maxDuration": 30
     }
   },
   "rewrites": [
@@ -17,15 +17,15 @@
           "value": "api.veloraarougee.com"
         }
       ],
-      "destination": "/server/api/index"
+      "destination": "/api?__path=/$1"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/server/api/index"
+      "destination": "/api?__path=/$1"
     },
     {
       "source": "/api",
-      "destination": "/server/api/index"
+      "destination": "/api?__path=/health"
     },
     {
       "source": "/((?!robots\\.txt|sitemap\\.xml|assets/|fonts/|brand/|favicon\\.svg).*)",
