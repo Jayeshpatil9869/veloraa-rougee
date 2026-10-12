@@ -1,6 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { Socket } from 'node:net';
-import { buildApp } from './app';
 
 export const config = {
   api: {
@@ -14,35 +13,6 @@ const ALLOWED_ORIGINS = new Set([
   'https://admin.veloraarougee.com',
   'https://api.veloraarougee.com',
 ]);
-
-let appPromise: ReturnType<typeof buildApp> | null = null;
-
-async function getApp() {
-  if (!appPromise) {
-    appPromise = buildApp()
-      .then(async (app) => {
-        await app.ready();
-        return app;
-      })
-      .catch((err) => {
-        appPromise = null;
-        throw err;
-      });
-  }
-  return appPromise;
-}
-
-function patchRequest(req: IncomingMessage) {
-  if (!req.socket) {
-    const socket = new Socket();
-    const forwarded = req.headers['x-forwarded-for'];
-    const ip = typeof forwarded === 'string' ? forwarded.split(',')[0]?.trim() : '127.0.0.1';
-    Object.defineProperty(socket, 'remoteAddress', { value: ip, writable: true });
-    Object.defineProperty(socket, 'remotePort', { value: 0, writable: true });
-    Object.defineProperty(socket, 'encrypted', { value: true, writable: true });
-    (req as IncomingMessage & { socket: Socket }).socket = socket;
-  }
-}
 
 function setCorsHeaders(req: IncomingMessage, res: ServerResponse) {
   const origin = req.headers['origin'];
@@ -60,6 +30,18 @@ function setCorsHeaders(req: IncomingMessage, res: ServerResponse) {
   }
 }
 
+function patchRequest(req: IncomingMessage) {
+  if (!req.socket) {
+    const socket = new Socket();
+    const forwarded = req.headers['x-forwarded-for'];
+    const ip = typeof forwarded === 'string' ? forwarded.split(',')[0]?.trim() : '127.0.0.1';
+    Object.defineProperty(socket, 'remoteAddress', { value: ip, writable: true });
+    Object.defineProperty(socket, 'remotePort', { value: 0, writable: true });
+    Object.defineProperty(socket, 'encrypted', { value: true, writable: true });
+    (req as IncomingMessage & { socket: Socket }).socket = socket;
+  }
+}
+
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   setCorsHeaders(req, res);
 
@@ -69,13 +51,23 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     return;
   }
 
+  // Diagnostic ping route to verify execution of this exact function on Vercel
+  const rawUrl = req.url || '/';
+  if (rawUrl.includes('__diag=1') || rawUrl.endsWith('/diag')) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ ok: true, runtime: 'vercel-node', timestamp: new Date().toISOString() }));
+    return;
+  }
+
   try {
     patchRequest(req);
-    const app = await getApp();
+    // Lazy-load Fastify and routes inside handler wrapped in try/catch to report any boot errors
+    const { buildApp } = await import('./app');
+    const app = await buildApp();
+    await app.ready();
 
-    const rawUrl = req.url || '/';
     let targetUrl = rawUrl;
-
     try {
       const parsed = new URL(rawUrl, 'http://localhost');
       const customPath = parsed.searchParams.get('__path');
@@ -105,7 +97,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       res.end(
         JSON.stringify({
           error: 'internal_server_error',
-          message: err instanceof Error ? err.message : 'unknown',
+          message: err instanceof Error ? err.message : String(err),
+          stack: err instanceof Error ? err.stack : undefined,
         })
       );
     }
