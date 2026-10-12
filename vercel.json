@@ -1,9 +1,9 @@
 {
-  "buildCommand": "node node_modules/vite/bin/vite.js build",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install && npm install --prefix server",
   "functions": {
-    "api/index.ts": {
+    "api/index.js": {
       "memory": 512,
       "maxDuration": 30
     }

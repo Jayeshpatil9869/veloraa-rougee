@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { Socket } from 'node:net';
 import { buildApp } from '../server/src/app';
 
 export const config = {
@@ -18,29 +19,31 @@ let appPromise: ReturnType<typeof buildApp> | null = null;
 
 async function getApp() {
   if (!appPromise) {
-    appPromise = buildApp().then(async (app) => {
-      await app.ready();
-      return app;
-    }).catch((err) => {
-      // Reset so next request retries
-      appPromise = null;
-      throw err;
-    });
+    appPromise = buildApp()
+      .then(async (app) => {
+        await app.ready();
+        return app;
+      })
+      .catch((err) => {
+        // Reset so subsequent requests retry instead of latching onto failed promise
+        appPromise = null;
+        throw err;
+      });
   }
   return appPromise;
 }
 
 function patchRequest(req: IncomingMessage) {
-  // Vercel serverless functions may not have a real socket attached.
-  // Fastify reads req.socket for IP address and other metadata, so we
-  // provide a minimal stub to prevent runtime crashes.
+  // Fastify and Node stream internals check `socket instanceof Stream` and read socket properties.
+  // In serverless environments, req.socket may be null or undefined.
   if (!req.socket) {
-    (req as IncomingMessage & { socket: unknown }).socket = {
-      remoteAddress: req.headers['x-forwarded-for']?.toString().split(',')[0]?.trim() ?? '127.0.0.1',
-      remotePort: 0,
-      encrypted: true,
-      destroy: () => {},
-    };
+    const socket = new Socket();
+    const forwarded = req.headers['x-forwarded-for'];
+    const ip = typeof forwarded === 'string' ? forwarded.split(',')[0]?.trim() : '127.0.0.1';
+    Object.defineProperty(socket, 'remoteAddress', { value: ip, writable: true });
+    Object.defineProperty(socket, 'remotePort', { value: 0, writable: true });
+    Object.defineProperty(socket, 'encrypted', { value: true, writable: true });
+    (req as IncomingMessage & { socket: Socket }).socket = socket;
   }
 }
 
@@ -61,10 +64,8 @@ function setCorsHeaders(req: IncomingMessage, res: ServerResponse) {
 }
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
-  // Always set CORS headers before anything else so preflight never fails
   setCorsHeaders(req, res);
 
-  // Handle OPTIONS preflight immediately – no need to hit Fastify
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
     res.end();
@@ -82,35 +83,34 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       const parsed = new URL(rawUrl, 'http://localhost');
       const customPath = parsed.searchParams.get('__path');
       if (customPath) {
-        // __path was injected by the Vercel rewrite rule, e.g.
-        // /api?__path=/auth/me  →  /auth/me
         parsed.searchParams.delete('__path');
         const search = parsed.searchParams.toString();
         targetUrl = customPath + (search ? `?${search}` : '');
       } else {
-        // No __path: strip /api prefix if present (direct same-origin call)
-        // e.g. /api/auth/session → /auth/session
         if (targetUrl.startsWith('/api/')) {
-          targetUrl = targetUrl.slice(4); // '/api/auth' → '/auth'
+          targetUrl = targetUrl.slice(4);
         } else if (targetUrl === '/api' || targetUrl === '') {
           targetUrl = '/health';
         }
       }
     } catch {
-      // fallback: strip /api prefix if present
       if (targetUrl.startsWith('/api/')) targetUrl = targetUrl.slice(4);
       else if (targetUrl === '/api') targetUrl = '/health';
     }
 
     req.url = targetUrl;
-
     app.server.emit('request', req, res);
   } catch (err) {
     console.error('Vercel API handler error:', err);
     if (!res.headersSent) {
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: 'internal_server_error', message: err instanceof Error ? err.message : 'unknown' }));
+      res.end(
+        JSON.stringify({
+          error: 'internal_server_error',
+          message: err instanceof Error ? err.message : 'unknown',
+        })
+      );
     }
   }
 }
