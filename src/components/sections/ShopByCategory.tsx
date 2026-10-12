@@ -85,53 +85,54 @@ export const ShopByCategory: React.FC<ShopByCategoryProps> = ({
   ];
 
   return (
-    <div ref={sectionRef} className="px-4 py-8 lg:px-20 lg:py-12 flex flex-col gap-8 lg:gap-12 bg-[var(--bg-secondary)]">
-      <ScrollReveal direction="up" distance={20}>
-        <div className="grid grid-cols-3 gap-2">
-          <h2 className="text font-sans text-3xl lg:text-5xl leading-9 font-bold tracking-tight col-span-2 text-[var(--text-primary)]">
-            Shop by Category
-          </h2>
-          <a
-            className="text font-sans font-extrabold flex items-center gap-2 justify-self-end text-sm uppercase text-[var(--accent-gold)] transition-colors duration-200 hover:text-[var(--accent-rose-gold)] md:text-base cursor-pointer"
-            href="/en/collection"
-            onClick={(e) => {
-              e.preventDefault();
-              onNavigateToCollection();
-            }}
-          >
-            Shop All
-            <svg
-              className="h-6 w-5 rtl:-rotate-180"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 22 14"
-              aria-label="Right arrow icon"
+    <div ref={sectionRef} className="w-full bg-[var(--bg-secondary)] py-8 lg:py-12 border-y border-[var(--border-subtle)]">
+      <div className="max-w-[1440px] 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-3 min-[400px]:px-4 lg:px-12 2xl:px-20 flex flex-col gap-6 lg:gap-10">
+        <ScrollReveal direction="up" distance={20}>
+          <div className="grid grid-cols-3 gap-2 items-end">
+            <h2 className="text font-sans text-2xl sm:text-3xl lg:text-5xl font-bold tracking-tight col-span-2 text-[var(--text-primary)]">
+              Shop by Category
+            </h2>
+            <a
+              className="text font-sans font-extrabold flex items-center gap-1.5 sm:gap-2 justify-self-end text-xs sm:text-sm uppercase text-[var(--accent-gold)] transition-colors duration-200 hover:text-[var(--accent-rose-gold)] md:text-base cursor-pointer"
+              href="/en/collection"
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigateToCollection();
+              }}
             >
-              <g clipPath="url(#shop-by-cat-arrow)">
-                <path
-                  fill="currentColor"
-                  d="m18.568 6.1-4.81-4.827L15.028 0 22 7l-6.973 7-1.268-1.273L18.568 7.9H0V6.1h18.568Z"
-                />
-              </g>
-              <defs>
-                <clipPath id="shop-by-cat-arrow">
-                  <path fill="#fff" d="M0 0h22v14H0z" />
-                </clipPath>
-              </defs>
-            </svg>
-          </a>
-        </div>
-      </ScrollReveal>
+              Shop All
+              <svg
+                className="h-5 w-4 sm:h-6 sm:w-5 rtl:-rotate-180"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 22 14"
+                aria-label="Right arrow icon"
+              >
+                <g clipPath="url(#shop-by-cat-arrow)">
+                  <path
+                    fill="currentColor"
+                    d="m18.568 6.1-4.81-4.827L15.028 0 22 7l-6.973 7-1.268-1.273L18.568 7.9H0V6.1h18.568Z"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="shop-by-cat-arrow">
+                    <path fill="#fff" d="M0 0h22v14H0z" />
+                  </clipPath>
+                </defs>
+              </svg>
+            </a>
+          </div>
+        </ScrollReveal>
 
-      <StaggerContainer
-        staggerDelay={0.08}
-        className="grid auto-cols-[75%] grid-flow-col gap-x-2 overflow-x-auto lg:grid-cols-4 lg:gap-x-4"
-      >
-        {categories.map((category, index) => (
-          <StaggerItem key={category.id} className="h-full">
-            <div
-              className="group relative flex h-[29.5rem] w-full flex-none items-end overflow-hidden rounded-md bg-[var(--bg-elevated)] p-2 lg:h-[30vw] lg:p-4 border border-[var(--border-subtle)]"
-            >
+        <StaggerContainer
+          staggerDelay={0.08}
+          className="grid auto-cols-[72%] sm:auto-cols-[45%] md:auto-cols-[38%] grid-flow-col gap-x-3 overflow-x-auto lg:grid-cols-4 lg:grid-flow-row lg:gap-x-4 pb-2 snap-x snap-mandatory lg:snap-none [scrollbar-width:none]"
+        >
+          {categories.map((category, index) => (
+            <StaggerItem key={category.id} className="h-full snap-start">
+              <div
+                className="group relative flex h-[24rem] sm:h-[26rem] w-full flex-none items-end overflow-hidden rounded-md bg-[var(--bg-elevated)] p-2 lg:h-[28vw] 2xl:h-[440px] lg:p-4 border border-[var(--border-subtle)]"
+              >
               <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
                   ref={(el) => {
@@ -161,6 +162,7 @@ export const ShopByCategory: React.FC<ShopByCategoryProps> = ({
           </StaggerItem>
         ))}
       </StaggerContainer>
+      </div>
     </div>
   );
 };

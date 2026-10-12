@@ -241,7 +241,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
       </div>
 
       {/* Main Footer Container */}
-      <div className="px-4 py-8 lg:px-20 lg:py-12 relative z-10">
+      <div className="max-w-[1440px] 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 min-[400px]:px-6 lg:px-12 2xl:px-20 py-8 lg:py-12 relative z-10">
         <div className="lg:gap-y-18 grid gap-y-8 lg:grid-cols-3 lg:gap-x-12">
           {/* Column 1: Brand & Newsletter */}
           <div className="col-span-1 font-medium">
@@ -296,9 +296,6 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                 <span className="text-xs text-[var(--accent-gold)] font-medium block mt-2">
                   Thank you for subscribing!
                 </span>
-              )}
-              {newsletterError && (
-                <span className="text-xs text-[#EF4444] block mt-2" role="alert">{newsletterError}</span>
               )}
               {newsletterError && (
                 <span className="text-xs text-[#EF4444] block mt-2" role="alert">{newsletterError}</span>

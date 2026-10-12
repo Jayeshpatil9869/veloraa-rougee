@@ -4,6 +4,7 @@ import { Eye, EyeOff, Lock, Mail, User, Phone, Check, KeyRound, ArrowLeft } from
 import { FlowerTallSvg, FlowerShortSvg } from '../components/brand/BrandIcons';
 import { VeloraaRougeeLogo } from '../components/brand/VeloraaRougeeLogo';
 import { api, hasApi } from '../lib/api';
+import { getBrowserSupabase } from '../lib/supabase';
 
 interface AuthPageProps {
   initialMode?: 'login' | 'signup';
@@ -303,9 +304,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
   const handleGoogleAuth = async () => {
     setAuthError(null);
-    const url = import.meta.env.VITE_SUPABASE_URL;
-    const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    if (!url || !key) {
+    const supabase = getBrowserSupabase();
+    if (!supabase) {
       setAuthError('Google sign-in is not configured.');
       return;
     }
@@ -314,8 +314,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     sessionStorage.setItem('vr_return_to', dest);
 
     setIsLoading(true);
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(url, key);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

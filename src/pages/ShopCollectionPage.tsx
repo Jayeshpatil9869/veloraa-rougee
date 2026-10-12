@@ -120,26 +120,26 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
   return (
     <div className="w-full bg-[var(--bg-primary)] select-none transition-colors">
       {/* Centered Editorial Masthead Banner (Matching Reference) */}
-      <section className="relative w-full bg-[var(--bg-secondary)] py-14 lg:py-20 border-b border-[var(--border-subtle)] overflow-hidden">
-        <ScrollReveal direction="up" blur={true} className="max-w-[1440px] mx-auto px-4 lg:px-20 text-center relative z-10 space-y-4">
-          <div className="inline-flex items-center gap-2 bg-[var(--bg-elevated)]/90 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-[var(--border-subtle)] text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] shadow-2xs">
+      <section className="relative w-full bg-[var(--bg-secondary)] py-12 sm:py-14 lg:py-20 border-b border-[var(--border-subtle)] overflow-hidden">
+        <ScrollReveal direction="up" blur={true} className="max-w-[1440px] 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-4 lg:px-12 2xl:px-20 text-center relative z-10 space-y-4">
+          <div className="inline-flex items-center gap-2 bg-[var(--bg-elevated)]/90 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-[var(--border-subtle)] text-[10px] min-[360px]:text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
             {heroInfo.kicker}
           </div>
           <h1
-            className="font-serif text-6xl sm:text-7xl lg:text-8xl text-[var(--text-primary)] leading-tight"
+            className="font-serif text-5xl sm:text-7xl lg:text-8xl text-[var(--text-primary)] leading-tight"
             style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
           >
             {heroInfo.title}
           </h1>
-          <p className="font-sans text-sm sm:text-base text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
+          <p className="font-sans text-xs sm:text-sm lg:text-base text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
             {heroInfo.description}
           </p>
         </ScrollReveal>
       </section>
 
       {/* Main Container */}
-      <div className="max-w-[1440px] mx-auto px-4 lg:px-20 py-8 lg:py-12">
+      <div className="max-w-[1440px] 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-3 min-[400px]:px-4 lg:px-12 2xl:px-20 py-6 sm:py-8 lg:py-12">
         {/* Mobile Toolbar Trigger */}
         <div className="flex lg:hidden items-center justify-between pb-4 border-b border-[var(--border-subtle)] mb-6">
           <button
@@ -323,12 +323,12 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
               </div>
             </div>
 
-            {/* Product Card Grid (2-column on mobile, responsive up to 3 columns) */}
+            {/* Product Card Grid (2-column on mobile, responsive up to 4 columns on large screens) */}
             {filteredProducts.length > 0 ? (
               <StaggerContainer
                 key={`${currentCategory}-${sortBy}-${maxPrice}-${searchQuery}`}
                 stagger={0.06}
-                className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6"
+                className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
               >
                 {filteredProducts.map((product) => (
                   <StaggerItem key={product.id}>

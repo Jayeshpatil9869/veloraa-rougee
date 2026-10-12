@@ -33,7 +33,11 @@ function readLocal(): CartItem[] {
 
 function publish(items: CartItem[]) {
   memory = items;
-  if (!hasApi()) localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    // ignore quota errors
+  }
   window.dispatchEvent(new CustomEvent('cart_updated', { detail: items }));
 }
 
@@ -61,49 +65,61 @@ export const cartService = {
       publish(readLocal());
       return memory;
     }
-    fromRemote(await api<RemoteCart>('/cart'));
+    try {
+      const remote = await api<RemoteCart>('/cart');
+      fromRemote(remote);
+    } catch {
+      publish(readLocal());
+    }
     return memory;
   },
 
   addItem: (product: Product, variant: ProductVariant, quantity = 1): CartItem[] => {
-    if (!hasApi()) {
-      const current = [...memory];
-      const existing = current.find((item) => item.variant.id === variant.id);
-      if (existing) existing.quantity += quantity;
-      else current.push({ id: variant.id, product, variant, quantity });
-      publish(current);
-      return current;
+    const current = [...memory];
+    const existing = current.find((item) => item.variant.id === variant.id || item.id === variant.id);
+    if (existing) existing.quantity += quantity;
+    else current.push({ id: variant.id, product, variant, quantity });
+    publish(current);
+
+    if (hasApi()) {
+      void api<RemoteCart>('/cart/items', {
+        method: 'POST',
+        body: JSON.stringify({ variantId: variant.id, quantity }),
+      })
+        .then(fromRemote)
+        .catch((err) => console.warn('Remote cart item add failed:', err));
     }
-    void api<RemoteCart>('/cart/items', {
-      method: 'POST',
-      body: JSON.stringify({ variantId: variant.id, quantity }),
-    }).then(fromRemote);
-    return memory;
+    return current;
   },
 
   updateQuantity: (variantId: string, quantity: number): CartItem[] => {
-    if (!hasApi()) {
-      const current =
-        quantity <= 0
-          ? memory.filter((item) => item.variant.id !== variantId)
-          : memory.map((item) => (item.variant.id === variantId ? { ...item, quantity } : item));
-      publish(current);
-      return current;
+    const current =
+      quantity <= 0
+        ? memory.filter((item) => item.variant.id !== variantId && item.id !== variantId)
+        : memory.map((item) => (item.variant.id === variantId || item.id === variantId ? { ...item, quantity } : item));
+    publish(current);
+
+    if (hasApi()) {
+      void api<RemoteCart>(`/cart/items/${encodeURIComponent(variantId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ quantity }),
+      })
+        .then(fromRemote)
+        .catch((err) => console.warn('Remote cart quantity update failed:', err));
     }
-    void api<RemoteCart>(`/cart/items/${encodeURIComponent(variantId)}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ quantity }),
-    }).then(fromRemote);
-    return memory;
+    return current;
   },
 
   removeItem: (variantId: string): CartItem[] => {
-    if (!hasApi()) {
-      publish(memory.filter((item) => item.variant.id !== variantId));
-      return memory;
+    const current = memory.filter((item) => item.variant.id !== variantId && item.id !== variantId);
+    publish(current);
+
+    if (hasApi()) {
+      void api<RemoteCart>(`/cart/items/${encodeURIComponent(variantId)}`, { method: 'DELETE' })
+        .then(fromRemote)
+        .catch((err) => console.warn('Remote cart item remove failed:', err));
     }
-    void api<RemoteCart>(`/cart/items/${encodeURIComponent(variantId)}`, { method: 'DELETE' }).then(fromRemote);
-    return memory;
+    return current;
   },
 
   clearCart: (): void => {

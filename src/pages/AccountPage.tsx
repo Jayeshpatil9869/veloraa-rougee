@@ -20,6 +20,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { api, hasApi } from '../lib/api';
+import { getBrowserSupabase } from '../lib/supabase';
 
 interface AccountPageProps {
   onNavigate: (path: string) => void;
@@ -921,14 +922,11 @@ export const AuthCallbackPage: React.FC<{ onNavigate: (path: string) => void }> 
   const [message, setMessage] = useState('Confirming Google sign-in…');
   useEffect(() => {
     const finish = async () => {
-      const url = import.meta.env.VITE_SUPABASE_URL;
-      const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      if (!url || !key) {
+      const supabase = getBrowserSupabase();
+      if (!supabase) {
         setMessage('Google sign-in is not configured.');
         return;
       }
-      const { createClient } = await import('@supabase/supabase-js');
-      const supabase = createClient(url, key);
       const code = new URLSearchParams(window.location.search).get('code');
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);

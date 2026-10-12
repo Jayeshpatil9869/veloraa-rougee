@@ -19,17 +19,17 @@ export const BestSellersSection: React.FC<BestSellersSectionProps> = ({
   const bestSellers = productService.getBestSellers();
 
   return (
-    <section className="px-4 py-8 lg:px-20 lg:py-12 space-y-8 bg-[var(--bg-primary)] select-none">
+    <section className="max-w-[1440px] 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-3 min-[400px]:px-4 py-8 lg:px-12 2xl:px-20 lg:py-12 space-y-8 bg-[var(--bg-primary)] select-none">
       {/* Header Row with Scroll Reveal */}
       <ScrollReveal direction="up" distance={24}>
         <div className="grid grid-cols-3 gap-2 items-end">
-          <h2 className="col-span-2 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)]">
+          <h2 className="col-span-2 text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)]">
             Best Sellers
           </h2>
           <button
             type="button"
             onClick={onNavigateToBestSellers}
-            className="justify-self-end text-xs sm:text-sm md:text-base font-extrabold uppercase text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] transition-colors flex items-center gap-2 group cursor-pointer"
+            className="justify-self-end text-xs sm:text-sm md:text-base font-extrabold uppercase text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] transition-colors flex items-center gap-1.5 sm:gap-2 group cursor-pointer"
           >
             <span>SHOP ALL</span>
             <BrandArrow />
@@ -37,10 +37,10 @@ export const BestSellersSection: React.FC<BestSellersSectionProps> = ({
         </div>
       </ScrollReveal>
 
-      {/* Clean 2-column on mobile, responsive 3 columns on tablet/desktop */}
+      {/* Clean 2-column on mobile, responsive up to 4 columns on large monitors */}
       <StaggerContainer
         staggerDelay={0.09}
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6"
+        className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
       >
         {bestSellers.map((product) => (
           <StaggerItem key={product.id} className="w-full h-full">

@@ -15,7 +15,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    const refresh = () => setItems(cartService.getCart());
+    const refresh = (e?: Event) => {
+      const customEvent = e as CustomEvent<CartItem[]> | undefined;
+      if (customEvent?.detail) {
+        setItems(customEvent.detail);
+      } else {
+        setItems(cartService.getCart());
+      }
+    };
     refresh();
     window.addEventListener('cart_updated', refresh);
     return () => window.removeEventListener('cart_updated', refresh);
@@ -26,10 +33,21 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
   const shippingPercent = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
 
   const handleUpdateQuantity = (variantId: string, delta: number, currentQty: number) => {
-    cartService.updateQuantity(variantId, currentQty + delta);
+    const nextQty = currentQty + delta;
+    if (nextQty <= 0) {
+      setItems((prev) => prev.filter((item) => item.variant.id !== variantId && item.id !== variantId));
+    } else {
+      setItems((prev) =>
+        prev.map((item) =>
+          item.variant.id === variantId || item.id === variantId ? { ...item, quantity: nextQty } : item
+        )
+      );
+    }
+    cartService.updateQuantity(variantId, nextQty);
   };
 
   const handleRemove = (variantId: string) => {
+    setItems((prev) => prev.filter((item) => item.variant.id !== variantId && item.id !== variantId));
     cartService.removeItem(variantId);
   };
 
@@ -61,14 +79,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
       {/* Luxury Cart Drawer Panel Expanding Right-to-Left */}
       <div
         data-lenis-prevent
-        className="fixed top-0 right-0 h-full bg-[var(--bg-elevated)] border-l border-[var(--border-subtle)] shadow-2xl flex flex-col z-50 overflow-hidden transition-colors duration-200"
+        className="fixed top-0 right-0 h-full bg-[var(--bg-elevated)] border-l border-[var(--border-subtle)] shadow-2xl flex flex-col z-50 overflow-hidden transition-colors duration-200 w-full sm:w-[420px] lg:w-[460px] max-w-[100vw] sm:max-w-[calc(100vw-2rem)]"
         style={{
-          width: isOpen ? 'min(100%, max(360px, 40%))' : '0%',
-          transition: 'width 1s cubic-bezier(0.19, 1, 0.22, 1)',
-          willChange: 'width',
+          transform: isOpen ? 'translateX(0%)' : 'translateX(100%)',
+          transition: 'transform 450ms cubic-bezier(0.16, 1, 0.3, 1)',
+          willChange: 'transform',
         }}
       >
-        <div className="w-full h-full flex flex-col min-w-[320px] sm:min-w-[380px] min-h-0 overflow-hidden">
+        <div className="w-full h-full flex flex-col min-h-0 overflow-hidden">
           {/* Header */}
           <div className="p-4 sm:p-6 border-b border-[var(--border-subtle)] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
@@ -141,7 +159,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
                       <button
                         type="button"
                         onClick={() => handleUpdateQuantity(item.variant.id, -1, item.quantity)}
-                        className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
+                        className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors cursor-pointer"
                         aria-label="Decrease quantity"
                       >
                         <Minus className="w-3.5 h-3.5" />
@@ -152,7 +170,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
                       <button
                         type="button"
                         onClick={() => handleUpdateQuantity(item.variant.id, 1, item.quantity)}
-                        className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
+                        className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors cursor-pointer"
                         aria-label="Increase quantity"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -162,7 +180,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onNavig
                     <button
                       type="button"
                       onClick={() => handleRemove(item.variant.id)}
-                      className="text-xs text-rose-500 hover:text-rose-700 flex items-center gap-1 transition-colors"
+                      className="text-xs text-rose-500 hover:text-rose-700 flex items-center gap-1 transition-colors cursor-pointer"
                       aria-label="Remove item"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

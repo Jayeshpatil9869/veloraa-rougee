@@ -54,10 +54,22 @@ class WishlistService {
         if (Array.isArray(remote)) {
           const remoteIds = new Set<string>();
           for (const item of remote) {
-            if (item.variantId) remoteIds.add(item.variantId);
-            if (item.databaseVariantId) remoteIds.add(item.databaseVariantId);
+            if (item.variantId) remoteIds.add(String(item.variantId));
+            if (item.databaseVariantId) remoteIds.add(String(item.databaseVariantId));
           }
-          this.ids = remoteIds;
+          // Merge remote items into local set
+          for (const id of remoteIds) {
+            this.ids.add(id);
+          }
+          // If we have local items not yet in remote, sync them to server
+          for (const localId of this.ids) {
+            if (!remoteIds.has(localId)) {
+              api('/account/wishlist', {
+                method: 'POST',
+                body: JSON.stringify({ variantId: localId }),
+              }).catch(() => {});
+            }
+          }
           this.saveLocal();
         }
       } catch {

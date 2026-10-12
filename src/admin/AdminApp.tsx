@@ -760,9 +760,6 @@ export const AdminApp: React.FC<{
                       adminNav('/admin/dashboard');
                     }}
                   />
-                  <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[0.25rem] bg-[var(--accent-primary)] text-[var(--button-primary-text)]">
-                    Studio
-                  </span>
                 </div>
                 <button
                   type="button"
@@ -809,23 +806,15 @@ export const AdminApp: React.FC<{
         {/* Top Header & Scrollable Nav Region */}
         <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
           {/* Brand Header */}
-          <div className="p-6 border-b border-[var(--border-subtle)] bg-gradient-to-b from-[var(--bg-secondary)]/60 to-[var(--card-bg)] shrink-0">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <div className="text-[var(--text-primary)]">
-                <VeloraaRougeeLogo
-                  size="md"
-                  color="currentColor"
-                  onClick={() => adminNav('/admin/dashboard')}
-                  className="cursor-pointer"
-                />
-              </div>
-              <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[0.3rem] bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-subtle)] shadow-2xs">
-                Studio
-              </span>
+          <div className="py-6 px-4 border-b border-[var(--border-subtle)] bg-gradient-to-b from-[var(--bg-secondary)]/60 to-[var(--card-bg)] shrink-0 flex items-center justify-center">
+            <div className="w-full flex items-center justify-center text-[var(--text-primary)]">
+              <VeloraaRougeeLogo
+                size="md"
+                color="currentColor"
+                onClick={() => adminNav('/admin/dashboard')}
+                className="cursor-pointer mx-auto transition-transform hover:scale-105"
+              />
             </div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
-              Luxury Backoffice Suite
-            </p>
           </div>
 
           {/* Desktop Nav Links - Smoothly scrollable if screen height is constrained */}
@@ -835,15 +824,7 @@ export const AdminApp: React.FC<{
         </div>
 
         {/* Desktop Sidebar Footer - Always docked cleanly at bottom of viewport */}
-        <div className="p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 space-y-3 shrink-0">
-          <div className="flex items-center justify-between text-xs font-semibold text-[var(--text-muted)]">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              API Connected
-            </span>
-            <span className="text-[10px] text-[var(--text-muted)] font-mono">v2.4.0</span>
-          </div>
-
+        <div className="p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 shrink-0">
           <button
             onClick={() => onNavigate('/en')}
             className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-[0.3rem] bg-[var(--card-bg)] border border-[var(--border-subtle)] hover:border-[var(--accent-primary)] text-xs font-bold text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-all shadow-2xs cursor-pointer"
@@ -924,7 +905,7 @@ export const AdminApp: React.FC<{
                 <div
                   data-lenis-prevent
                   onWheel={(e) => e.stopPropagation()}
-                  className="absolute right-0 top-full pt-1.5 w-80 sm:w-96 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-150"
+                  className="absolute right-0 top-full pt-1.5 w-80 sm:w-96 max-w-[calc(100vw-24px)] z-50 origin-top-right animate-in fade-in zoom-in-95 duration-150"
                   onMouseEnter={handleNotifMouseEnter}
                   onMouseLeave={handleNotifMouseLeave}
                 >
@@ -1047,7 +1028,7 @@ export const AdminApp: React.FC<{
         </header>
 
         {/* Dynamic Workspace Container */}
-        <main className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10">
+        <main className="flex-1 max-w-[1720px] 2xl:max-w-[1850px] w-full mx-auto px-3 sm:px-6 lg:px-10 py-5 sm:py-8 lg:py-10">
           {module === 'dashboard' && (
             <Dashboard onOpenOrder={(id) => adminNav(`/admin/orders/${id}`)} />
           )}

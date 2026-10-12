@@ -92,14 +92,14 @@ export const ProductImageZoom: React.FC<ProductImageZoomProps> = ({
     <div className="flex flex-col-reverse sm:flex-row gap-4 relative">
       {/* 1. Thumbnails Column */}
       {images.length > 1 && (
-        <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-y-auto sm:overflow-x-hidden sm:w-20 shrink-0 no-scrollbar select-none">
+        <div className="flex sm:flex-col gap-2.5 sm:gap-3 overflow-x-auto sm:overflow-y-auto sm:overflow-x-hidden sm:w-20 shrink-0 no-scrollbar select-none pb-1 -mx-1 px-1 touch-pan-x snap-x snap-mandatory">
           {images.map((img, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => onSelectIndex(idx)}
               aria-label={`Product Image ${idx + 1}`}
-              className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-brand overflow-hidden border transition-all duration-300 bg-white ${
+              className={`relative w-14 h-14 sm:w-20 sm:h-20 shrink-0 snap-start rounded-brand overflow-hidden border transition-all duration-300 bg-white ${
                 selectedIndex === idx
                   ? 'border-[#A06A98] scale-105 opacity-100 ring-2 ring-[#A06A98]/40 shadow-xs'
                   : 'border-[#E2E8F0] opacity-80 hover:opacity-100 hover:border-slate-300'

@@ -7,6 +7,7 @@ import { wishlistService } from '../../services/wishlistService';
 
 interface ProductCardProps {
   product: Product;
+  initialVariantId?: string;
   onSelectProduct: (product: Product, selectedVariantId?: string) => void;
   onAddedToCart?: () => void;
   className?: string;
@@ -14,11 +15,15 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
+  initialVariantId,
   onSelectProduct,
   onAddedToCart,
   className = '',
 }) => {
   const defaultVar =
+    (initialVariantId
+      ? product.variants.find((v) => v.id === initialVariantId || v.databaseId === initialVariantId)
+      : undefined) ||
     product.variants.find((v) => v.id === product.defaultVariantId) ||
     product.variants[0];
 
@@ -26,6 +31,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [showAllSwatches, setShowAllSwatches] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(() => wishlistService.isWishlisted(product, activeVariant?.id));
+
+  useEffect(() => {
+    if (initialVariantId) {
+      const match = product.variants.find((v) => v.id === initialVariantId || v.databaseId === initialVariantId);
+      if (match) setActiveVariant(match);
+    }
+  }, [initialVariantId, product]);
 
   useEffect(() => {
     const updateWishlist = () => {
@@ -156,14 +168,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <button
           type="button"
           onClick={handleAddToCart}
-          className="w-full h-8 sm:h-9 lg:h-10 btn-theme-primary text-[10px] sm:text-xs lg:text-sm uppercase tracking-tight rounded-brand font-bold transition-all flex items-center justify-center px-1.5 sm:px-3 shadow-xs"
+          className="w-full h-8 sm:h-9 lg:h-10 btn-theme-primary text-[10px] min-[360px]:text-[11px] sm:text-xs lg:text-sm uppercase tracking-tight rounded-brand font-bold transition-all flex items-center justify-center px-1 sm:px-3 shadow-xs cursor-pointer active:scale-[0.98]"
           aria-label={`Add ${product.name} to cart`}
         >
           {justAdded ? (
             <span className="font-bold">ADDED ✓</span>
           ) : (
             <span className="truncate">
-              ADD TO BAG ─ <strong className="font-bold">₹{activeVariant.price.toFixed(2)}</strong>
+              <span className="hidden min-[380px]:inline">ADD TO BAG ─ </span>
+              <span className="inline min-[380px]:hidden">BAG ─ </span>
+              <strong className="font-bold">₹{activeVariant.price.toFixed(2)}</strong>
             </span>
           )}
         </button>

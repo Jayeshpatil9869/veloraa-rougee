@@ -5,7 +5,7 @@ import { productService } from '../services/productService';
 import { BrandImage } from '../components/ui/BrandImage';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductImageZoom } from '../components/product/ProductImageZoom';
-import { ChevronRight, Plus, Minus, Check, ChevronDown, ChevronUp, Heart, Star, Edit3, Trash2 } from 'lucide-react';
+import { ChevronRight, Plus, Minus, Check, ChevronDown, ChevronUp, Heart, Star, Edit3, Trash2, Zap } from 'lucide-react';
 import { ScrollReveal, StaggerContainer, StaggerItem } from '../components/motion/ScrollReveal';
 import { api, hasApi } from '../lib/api';
 import { wishlistService } from '../services/wishlistService';
@@ -171,11 +171,17 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     if (onCartUpdated) onCartUpdated();
   };
 
+  const handleBuyNow = () => {
+    cartService.addItem(product, selectedVariant, quantity);
+    if (onCartUpdated) onCartUpdated();
+    onNavigate('/en/checkout');
+  };
+
   const suggestedProducts = productService.getSuggestedProducts(product.id, 4);
 
   return (
     <div className="w-full bg-[var(--bg-primary)] select-none transition-colors">
-      <div className="max-w-[1440px] mx-auto px-4 lg:px-20 py-6 lg:py-10">
+      <div className="max-w-[1440px] 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-3 min-[400px]:px-4 lg:px-12 2xl:px-20 py-6 lg:py-10">
         {/* Breadcrumbs */}
         <nav
           aria-label="Breadcrumb"
@@ -268,25 +274,25 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               </div>
             )}
 
-            {/* Quantity Selector & Add to Bag */}
-            <div className="pt-2 space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center border border-[var(--border-subtle)] rounded-brand h-12 bg-[var(--bg-secondary)] px-2">
+            {/* Quantity Selector, Add to Bag & Buy Now */}
+            <div className="pt-2 space-y-3">
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
+                <div className="flex items-center border border-[var(--border-subtle)] rounded-brand h-11 sm:h-12 bg-[var(--bg-secondary)] px-2 shrink-0">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
+                    className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors cursor-pointer"
                     aria-label="Decrease quantity"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="w-10 text-center text-sm font-bold tabular-nums text-[var(--text-primary)]">
+                  <span className="w-8 sm:w-9 text-center text-sm font-bold tabular-nums text-[var(--text-primary)]">
                     {quantity}
                   </span>
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => q + 1)}
-                    className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
+                    className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors cursor-pointer"
                     aria-label="Increase quantity"
                   >
                     <Plus className="w-4 h-4" />
@@ -297,28 +303,43 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   type="button"
                   onClick={() => void toggleWishlist()}
                   aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'}
-                  className={`h-12 w-12 border rounded-brand flex items-center justify-center transition-colors ${saved ? 'border-[var(--accent-gold)] text-[var(--accent-gold)] bg-[var(--bg-secondary)]' : 'border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--accent-gold)]'}`}
+                  className={`h-11 sm:h-12 w-11 sm:w-12 shrink-0 border rounded-brand flex items-center justify-center transition-colors cursor-pointer ${
+                    saved
+                      ? 'border-[var(--accent-gold)] text-[var(--accent-gold)] bg-[var(--bg-secondary)] shadow-xs'
+                      : 'border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:border-[var(--accent-gold)]'
+                  }`}
                 >
-                  <Heart className={`w-5 h-5 ${saved ? 'fill-[var(--accent-gold)]' : ''}`} />
+                  <Heart className={`w-4 sm:w-5 h-4 sm:h-5 transition-transform duration-200 active:scale-90 ${saved ? 'fill-[var(--accent-gold)]' : ''}`} />
                 </button>
+
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="flex-1 h-12 btn-theme-primary text-sm uppercase tracking-tight font-bold rounded-brand transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                  className="flex-1 min-w-[140px] h-11 sm:h-12 btn-theme-primary text-xs sm:text-sm uppercase tracking-tight font-bold rounded-brand transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-[0.99]"
                 >
                   {added ? (
-                    <span className="flex items-center gap-2 font-bold">
+                    <span className="flex items-center gap-1.5 font-bold">
                       <Check className="w-4 h-4" /> ADDED TO BAG
                     </span>
                   ) : (
-                    <span>
+                    <span className="truncate">
                       ADD TO BAG ─ <strong className="font-bold">₹{(selectedVariant.price * quantity).toFixed(2)}</strong>
                     </span>
                   )}
                 </button>
               </div>
 
-              <div className="text-xs text-[var(--text-secondary)] bg-[var(--bg-secondary)] p-3 rounded-brand border border-[var(--border-subtle)] flex items-center justify-center font-medium">
+              {/* Direct BUY NOW Button */}
+              <button
+                type="button"
+                onClick={handleBuyNow}
+                className="w-full h-11 sm:h-12 bg-gradient-to-r from-[#C5A262] via-[#E2C98A] to-[#C5A262] hover:brightness-105 active:scale-[0.99] text-[#121212] font-black text-xs sm:text-sm uppercase tracking-widest rounded-brand transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+              >
+                <Zap className="w-4 h-4 fill-current shrink-0" />
+                <span>BUY NOW ─ DIRECT CHECKOUT</span>
+              </button>
+
+              <div className="text-[11px] sm:text-xs text-[var(--text-secondary)] bg-[var(--bg-secondary)] p-2.5 sm:p-3 rounded-brand border border-[var(--border-subtle)] flex items-center justify-center font-medium">
                 ✨ Free Shipping on orders over ₹999.00
               </div>
             </div>

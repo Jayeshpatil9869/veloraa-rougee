@@ -77,14 +77,14 @@ export const FeelGoodBanner: React.FC = () => {
     <section
       ref={containerRef}
       aria-label="Brand Philosophy"
-      className="bg-[var(--bg-primary)] px-4 py-12 lg:px-20 lg:py-16 mx-auto flex max-w-[92vw] lg:max-w-[75vw] justify-center text-center select-none overflow-visible transition-colors"
+      className="bg-[var(--bg-primary)] px-3 min-[400px]:px-4 py-10 sm:py-12 lg:px-20 lg:py-16 mx-auto flex max-w-[95vw] lg:max-w-[75vw] 2xl:max-w-[1400px] justify-center text-center select-none overflow-visible transition-colors"
     >
       <div
         ref={textRef}
-        className="inline-flex flex-wrap items-center justify-center font-bold gap-x-2.5 sm:gap-x-3 lg:gap-x-4 text-2xl sm:text-3xl lg:text-4xl text-[var(--text-primary)] leading-snug lg:leading-[1.1]"
+        className="inline-flex flex-wrap items-center justify-center font-bold gap-x-2 sm:gap-x-3 lg:gap-x-4 text-xl min-[360px]:text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl text-[var(--text-primary)] leading-snug lg:leading-[1.1]"
       >
         <span
-          className="font-serif text-[var(--accent-gold)] font-normal text-3xl sm:text-4xl lg:text-5xl -mb-1"
+          className="font-serif text-[var(--accent-gold)] font-normal text-2xl min-[360px]:text-3xl sm:text-4xl lg:text-5xl 2xl:text-6xl -mb-1"
           style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
         >
           Feel-good
@@ -95,7 +95,7 @@ export const FeelGoodBanner: React.FC = () => {
         </span>
 
         <span ref={flower1Ref} className="inline-flex items-center mx-1 will-change-transform text-[var(--accent-gold)]">
-          <FlowerShortSvg className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 -mb-2" />
+          <FlowerShortSvg className="w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20 -mb-2" />
         </span>
 
         <span className="font-bold tracking-tight">
@@ -103,7 +103,7 @@ export const FeelGoodBanner: React.FC = () => {
         </span>
 
         <span ref={flower2Ref} className="inline-flex items-center mx-1 will-change-transform text-[var(--accent-gold)]">
-          <FlowerTallSvg className="w-14 h-14 sm:w-18 sm:h-18 lg:w-22 lg:h-22 -mb-3" />
+          <FlowerTallSvg className="w-11 h-11 sm:w-18 sm:h-18 lg:w-22 lg:h-22 -mb-3" />
         </span>
 
         <span className="font-bold tracking-tight">&amp;</span>
@@ -111,7 +111,7 @@ export const FeelGoodBanner: React.FC = () => {
         <span className="font-bold tracking-tight">share</span>
 
         <span
-          className="font-serif text-[var(--accent-gold)] font-normal text-3xl sm:text-4xl lg:text-5xl -mb-1"
+          className="font-serif text-[var(--accent-gold)] font-normal text-2xl min-[360px]:text-3xl sm:text-4xl lg:text-5xl 2xl:text-6xl -mb-1"
           style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
         >
           positive energy

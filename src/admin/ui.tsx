@@ -362,21 +362,21 @@ export function DataTable({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-12 text-center shadow-xs">
-        <p className="text-sm font-medium text-[var(--text-muted)]">{emptyMessage}</p>
+      <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-8 sm:p-12 text-center shadow-xs">
+        <p className="text-xs sm:text-sm font-medium text-[var(--text-muted)]">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] overflow-x-auto shadow-xs">
-      <table className="w-full text-sm text-[var(--text-primary)] text-left border-collapse min-w-[640px]">
-        <thead className="bg-[var(--bg-secondary)] text-[var(--text-secondary)] text-xs uppercase tracking-wider font-bold border-b border-[var(--border-subtle)]">
+    <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] overflow-x-auto shadow-xs [scrollbar-width:thin] [scrollbar-color:var(--border-subtle)_transparent] touch-pan-x">
+      <table className="w-full text-xs sm:text-sm text-[var(--text-primary)] text-left border-collapse min-w-[560px] sm:min-w-[640px]">
+        <thead className="bg-[var(--bg-secondary)] text-[var(--text-secondary)] text-[10px] sm:text-xs uppercase tracking-wider font-bold border-b border-[var(--border-subtle)]">
           <tr>
             {columns.map((column, idx) => (
               <th
                 key={column}
-                className={`py-3.5 px-4 font-bold ${
+                className={`py-3 sm:py-3.5 px-3 sm:px-4 font-bold ${
                   idx === columns.length - 1 ? 'text-right' : 'text-left'
                 }`}
               >
@@ -394,7 +394,7 @@ export function DataTable({
               {row.map((cell, cellIndex) => (
                 <td
                   key={cellIndex}
-                  className={`py-3.5 px-4 align-middle ${
+                  className={`py-3 sm:py-3.5 px-3 sm:px-4 align-middle ${
                     cellIndex === row.length - 1 ? 'text-right' : 'text-left'
                   }`}
                 >
@@ -479,25 +479,25 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 lg:p-6 overflow-hidden overscroll-none"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-5 lg:p-6 overflow-hidden overscroll-none"
       onClick={requestClose}
     >
       <div
         ref={modalRef}
-        className={`w-full ${maxWidth} max-h-[92vh] h-auto flex flex-col bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-xl sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden relative my-auto`}
+        className={`w-full ${maxWidth} max-h-[96vh] sm:max-h-[92vh] h-auto flex flex-col bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-xl sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden relative my-auto`}
         onClick={(event) => event.stopPropagation()}
         onWheel={(event) => event.stopPropagation()}
       >
         {/* Top Luxury Gradient Accent Bar */}
         <div className="h-1.5 w-full bg-gradient-to-r from-[var(--accent-primary)] via-[var(--border-subtle)] to-[var(--accent-secondary)] absolute top-0 left-0 right-0 z-20 shrink-0" />
 
-        <header className="px-5 sm:px-7 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)] flex items-center justify-between shrink-0 pt-4.5 z-10">
+        <header className="px-4 sm:px-7 py-3.5 sm:py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)] flex items-center justify-between shrink-0 pt-4.5 z-10">
           <div className="min-w-0 pr-4">
-            <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] tracking-tight font-sans truncate">
+            <h2 className="text-base sm:text-xl font-bold text-[var(--text-primary)] tracking-tight font-sans truncate">
               {title}
             </h2>
             {subtitle && (
-              <p className="text-xs text-[var(--text-muted)] mt-0.5 font-medium leading-relaxed truncate sm:whitespace-normal">
+              <p className="text-[11px] sm:text-xs text-[var(--text-muted)] mt-0.5 font-medium leading-relaxed truncate sm:whitespace-normal">
                 {subtitle}
               </p>
             )}
@@ -512,12 +512,12 @@ export function Modal({
           </button>
         </header>
 
-        <div className="p-5 sm:p-7 overflow-y-auto flex-1 min-h-0 modal-luxury-scroll overscroll-contain">
+        <div className="p-3.5 sm:p-7 overflow-y-auto flex-1 min-h-0 modal-luxury-scroll overscroll-contain">
           {children}
         </div>
 
         {footer && (
-          <footer className="px-5 sm:px-7 py-3.5 border-t border-[var(--border-subtle)] bg-[var(--bg-secondary)] flex items-center justify-between gap-3 shrink-0 z-10">
+          <footer className="px-4 sm:px-7 py-3 sm:py-3.5 border-t border-[var(--border-subtle)] bg-[var(--bg-secondary)] flex items-center justify-between gap-3 shrink-0 z-10">
             {footer}
           </footer>
         )}

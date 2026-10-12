@@ -215,7 +215,6 @@ export default function App() {
           initialVariantId={activeVariantId}
           onSelectProduct={handleSelectProduct}
           onNavigate={navigate}
-          onCartUpdated={() => setCartOpen(true)}
         />
       );
     }
@@ -230,7 +229,6 @@ export default function App() {
           currentArticleSlug={activeArticleSlug}
           onSelectArticle={handleSelectArticle}
           onSelectProduct={handleSelectProduct}
-          onCartUpdated={() => setCartOpen(true)}
         />
       );
     }
@@ -287,7 +285,6 @@ export default function App() {
           currentCategory={collectionCategory}
           onSelectCategory={(cat) => handleSelectCategory(cat, false)}
           onSelectProduct={handleSelectProduct}
-          onCartUpdated={() => setCartOpen(true)}
         />
       );
     }
@@ -299,7 +296,6 @@ export default function App() {
         onSelectCategory={(cat) => handleSelectCategory(cat, true)}
         onSelectArticle={handleSelectArticle}
         onNavigate={navigate}
-        onCartUpdated={() => setCartOpen(true)}
       />
     );
   };

@@ -376,8 +376,10 @@ export async function registerCommerce(app: FastifyInstance) {
   app.post('/account/wishlist', async (request, reply) => {
     const customer = await requireCustomer(request);
     const body = z.object({ variantId: z.string().min(1) }).parse(request.body);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.variantId);
+    const query = db().from('product_variants').select('id');
     const variant = await one<{ id: string }>(
-      db().from('product_variants').select('id').or(`id.eq.${body.variantId},legacy_variant_id.eq.${body.variantId}`).limit(1).maybeSingle(),
+      (isUuid ? query.or(`id.eq.${body.variantId},legacy_variant_id.eq.${body.variantId}`) : query.eq('legacy_variant_id', body.variantId)).limit(1).maybeSingle(),
     );
     if (!variant) return reply.status(404).send({ error: 'not_found' });
     await ok(db().from('wishlists').upsert({ customer_id: customer.id, variant_id: variant.id }, { onConflict: 'customer_id,variant_id', ignoreDuplicates: true }));
@@ -387,8 +389,10 @@ export async function registerCommerce(app: FastifyInstance) {
   app.delete('/account/wishlist/:variantId', async (request) => {
     const customer = await requireCustomer(request);
     const params = z.object({ variantId: z.string().min(1) }).parse(request.params);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.variantId);
+    const query = db().from('product_variants').select('id');
     const variant = await one<{ id: string }>(
-      db().from('product_variants').select('id').or(`id.eq.${params.variantId},legacy_variant_id.eq.${params.variantId}`).limit(1).maybeSingle(),
+      (isUuid ? query.or(`id.eq.${params.variantId},legacy_variant_id.eq.${params.variantId}`) : query.eq('legacy_variant_id', params.variantId)).limit(1).maybeSingle(),
     );
     if (variant) await ok(db().from('wishlists').delete().eq('customer_id', customer.id).eq('variant_id', variant.id));
     return { ok: true };

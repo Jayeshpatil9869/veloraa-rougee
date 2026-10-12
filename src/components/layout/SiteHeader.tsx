@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { Search, ShoppingBag, User, Menu, ChevronDown, Heart, LogIn, LogOut, UserPlus } from 'lucide-react';
+import { ShoppingBag, User, Menu, ChevronDown, Heart, LogIn, LogOut, UserPlus } from 'lucide-react';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
 import { TextRoll } from '../ui/TextRoll';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { cartService } from '../../services/cartService';
-import { wishlistService } from '../../services/wishlistService';
 import { api, hasApi } from '../../lib/api';
 
 interface SiteHeaderProps {
   currentPath: string;
   onNavigate: (path: string) => void;
-  onOpenSearch: () => void;
+  onOpenSearch?: () => void;
   onOpenCart: () => void;
   onOpenMobileMenu: () => void;
 }
@@ -19,12 +18,10 @@ interface SiteHeaderProps {
 export const SiteHeader: React.FC<SiteHeaderProps> = ({
   currentPath,
   onNavigate,
-  onOpenSearch,
   onOpenCart,
   onOpenMobileMenu,
 }) => {
   const [cartCount, setCartCount] = useState(0);
-  const [wishlistCount, setWishlistCount] = useState(() => wishlistService.getCount());
   const [customer, setCustomer] = useState<{ email: string; fullName: string; avatarUrl?: string | null } | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -37,17 +34,11 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
       const items = cartService.getCart();
       setCartCount(cartService.getItemCount(items));
     };
-    const updateWishlist = () => {
-      setWishlistCount(wishlistService.getCount());
-    };
 
     updateCount();
-    updateWishlist();
     window.addEventListener('cart_updated', updateCount);
-    window.addEventListener('wishlist_updated', updateWishlist);
     return () => {
       window.removeEventListener('cart_updated', updateCount);
-      window.removeEventListener('wishlist_updated', updateWishlist);
     };
   }, []);
 
@@ -182,18 +173,23 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-[var(--header-bg)] backdrop-blur-md shadow-xs border-b border-[var(--header-border)] h-[72px] transition-colors duration-200">
-      <div className="h-full px-4 lg:px-20 grid grid-cols-5 items-center">
-        {/* Left Column: Nav or Hamburger */}
-        <div className="col-span-2 flex items-center">
+      <div className="h-full max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-12 2xl:px-16 flex items-center justify-between relative lg:grid lg:grid-cols-5">
+        {/* Left Column: Nav or Hamburger + Mobile Theme Toggle */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 lg:gap-1 lg:col-span-2 z-10">
           {/* Mobile hamburger */}
           <button
             type="button"
             onClick={onOpenMobileMenu}
             aria-label="Open mobile menu"
-            className="lg:hidden p-2 -ml-2 text-[var(--text-primary)] hover:text-[var(--accent-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+            className="lg:hidden p-2 -ml-1 text-[var(--text-primary)] hover:text-[var(--accent-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer"
           >
             <Menu className="w-6 h-6" />
           </button>
+
+          {/* Theme Toggle on Mobile ONLY (Positioned immediately on the left next to hamburger) */}
+          <div className="flex lg:hidden items-center">
+            <ThemeToggle className="scale-90 origin-left" />
+          </div>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-bold uppercase text-[var(--text-primary)]">
@@ -340,8 +336,8 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
           </nav>
         </div>
 
-        {/* Center Column: Authoritative Brand Mark */}
-        <div className="col-span-1 flex justify-center text-[var(--text-primary)]">
+        {/* Center Column: Authoritative Brand Mark (Dead-center on mobile, col-span-1 on desktop) */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 lg:static lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0 lg:col-span-1 flex items-center justify-center text-[var(--text-primary)] shrink-0 z-10 pointer-events-auto">
           <VeloraaRougeeLogo
             size="md"
             onClick={() => onNavigate('/en')}
@@ -349,35 +345,12 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
         </div>
 
         {/* Right Column: Actions */}
-        <div className="col-span-2 flex items-center justify-end gap-1.5 sm:gap-2.5 lg:gap-4 text-[var(--text-primary)]">
-          {/* Theme Toggle Button */}
-          <ThemeToggle />
+        <div className="flex items-center justify-end gap-1.5 sm:gap-2.5 lg:gap-4 text-[var(--text-primary)] lg:col-span-2 z-10">
+          {/* Theme Toggle Button (Desktop Only on Right side) */}
+          <div className="hidden lg:flex items-center">
+            <ThemeToggle />
+          </div>
 
-          {/* Search Trigger (Desktop Only) */}
-          <button
-            type="button"
-            onClick={onOpenSearch}
-            aria-label="Open search dialog"
-            className="hidden lg:flex p-2 text-[var(--text-primary)] hover:text-[var(--accent-gold)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer"
-          >
-            <Search className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onNavigate('/en/wishlist')}
-            aria-label="Wishlist"
-            className={`relative flex p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer ${
-              currentPath === '/en/wishlist' ? 'text-[var(--accent-primary)]' : 'text-[var(--text-primary)] hover:text-[var(--accent-primary)]'
-            }`}
-          >
-            <Heart className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
-            {wishlistCount > 0 && (
-              <span className="absolute top-1 right-0 min-w-[18px] h-[18px] px-1 bg-[var(--accent-primary)] text-[var(--button-primary-text)] text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs">
-                {wishlistCount}
-              </span>
-            )}
-          </button>
 
           {/* Account / Login Trigger with Dropdown on Hover & Click */}
           <div

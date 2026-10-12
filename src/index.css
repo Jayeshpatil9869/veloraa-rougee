@@ -28,6 +28,14 @@
 @font-face {
   font-family: 'Sofia Pro';
   src: url('/fonts/SofiaPro-Bold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sofia Pro';
+  src: url('/fonts/SofiaPro-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -39,6 +47,15 @@
   font-weight: 800;
   font-style: normal;
   font-display: swap;
+}
+
+@theme {
+  --font-sans: 'Sofia Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sofia: 'Sofia Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Amithen', 'Alex Brush', cursive;
+  --font-script: 'Amithen', 'Alex Brush', cursive;
+  --font-editorial: 'Amithen', 'Alex Brush', cursive;
+  --font-amithen: 'Amithen', 'Alex Brush', cursive;
 }
 
 :root {
@@ -233,9 +250,10 @@
   }
 
   @media (max-width: 767px) {
-    html,
-    body {
-      font-size: clamp(0.4rem, 0.6rem + 1.6vw, 1rem) !important;
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
     }
   }
 }
@@ -444,7 +462,8 @@
 .gold-shimmer-top::before {
   content: '';
   position: absolute;
-  inset-x: 0;
+  left: 0;
+  right: 0;
   top: 0;
   height: 1.5px;
   background: linear-gradient(90deg, transparent, #D1AF92, #A9755A, transparent);

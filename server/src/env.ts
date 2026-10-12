@@ -1,8 +1,17 @@
+import { config as loadEnv } from 'dotenv';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
-// In production (Vercel), env vars come directly from process.env set in the dashboard.
-// In local development, .env is loaded by the dev script (scripts/dev.mjs) or tsx.
-// We do NOT use dotenv here to avoid path issues in serverless environments.
+// Load .env files in local development before parsing process.env
+try {
+  const dir = path.dirname(fileURLToPath(import.meta.url));
+  loadEnv({ path: path.resolve(dir, '../../.env') });
+  loadEnv({ path: path.resolve(dir, '../.env') });
+  loadEnv();
+} catch {
+  // Ignored in serverless environments where dotenv/filesystem is not needed
+}
 
 const schema = z.object({
   NODE_ENV: z.string().default('development'),

@@ -24,36 +24,70 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
 
   const load = () => {
     setLoading(true);
+
+    const buildItemsFromProducts = (ids: Set<string>): WishlistItem[] => {
+      const list: WishlistItem[] = [];
+      const seen = new Set<string>();
+      const allProducts = productService.getProducts();
+
+      for (const p of allProducts) {
+        let matchedVariants = p.variants.filter((v) => ids.has(v.id) || (v.databaseId && ids.has(v.databaseId)));
+        if (matchedVariants.length === 0 && (ids.has(p.id) || (p.defaultVariantId && ids.has(p.defaultVariantId)))) {
+          const fallback = p.variants.find((v) => v.id === p.defaultVariantId) || p.variants[0];
+          if (fallback) matchedVariants = [fallback];
+        }
+
+        for (const v of matchedVariants) {
+          const key = `${p.slug}-${v.id}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            list.push({
+              variantId: v.id,
+              databaseVariantId: v.databaseId || v.id,
+              shade: v.name,
+              productName: p.name,
+              slug: p.slug,
+              pricePaise: Math.round(v.price * 100),
+              imageUrl: v.image || p.images[0]?.src,
+            });
+          }
+        }
+      }
+      return list;
+    };
+
+    const localIds = new Set(wishlistService.getWishlistIds());
+    const localItems = buildItemsFromProducts(localIds);
+    if (localItems.length > 0) {
+      setItems(localItems);
+    }
+
     api<WishlistItem[]>('/account/wishlist')
-      .then((data) => {
-        setItems(data);
+      .then((remoteData) => {
         setError('');
+        if (Array.isArray(remoteData) && remoteData.length > 0) {
+          const merged: WishlistItem[] = [...remoteData];
+          const existing = new Set(
+            remoteData.flatMap((r) => [r.variantId, r.databaseVariantId, `${r.slug}-${r.variantId}`].filter(Boolean))
+          );
+          for (const item of localItems) {
+            if (!existing.has(item.variantId) && !existing.has(item.databaseVariantId) && !existing.has(`${item.slug}-${item.variantId}`)) {
+              merged.push(item);
+            }
+          }
+          setItems(merged);
+        } else if (localItems.length > 0) {
+          setItems(localItems);
+        } else {
+          setItems([]);
+        }
       })
       .catch((reason) => {
         const message = reason instanceof Error ? reason.message : 'load_failed';
-        if (message === 'unauthorized') {
-          // If guest, we can match local wishlist IDs from catalog
-          const localIds = new Set(wishlistService.getWishlistIds());
-          const allProducts = productService.getProducts();
-          const guestItems: WishlistItem[] = [];
-          for (const p of allProducts) {
-            for (const v of p.variants) {
-              if (localIds.has(v.id) || (v.databaseId && localIds.has(v.databaseId))) {
-                guestItems.push({
-                  variantId: v.id,
-                  databaseVariantId: v.databaseId || v.id,
-                  shade: v.name,
-                  productName: p.name,
-                  slug: p.slug,
-                  imageUrl: v.image || p.images[0]?.src,
-                });
-              }
-            }
-          }
-          setItems(guestItems);
-        } else {
-          setError(message);
+        if (message !== 'unauthorized') {
+          console.warn('Wishlist notice:', message);
         }
+        setItems(buildItemsFromProducts(new Set(wishlistService.getWishlistIds())));
       })
       .finally(() => setLoading(false));
   };
@@ -74,8 +108,8 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
   };
 
   return (
-    <div className="w-full min-h-[calc(100vh-160px)] bg-[var(--bg-primary)] text-[var(--text-primary)] py-10 lg:py-16 transition-colors">
-      <div className="max-w-[1440px] mx-auto px-4 lg:px-20 space-y-8">
+    <div className="w-full min-h-[calc(100vh-160px)] bg-[var(--bg-primary)] text-[var(--text-primary)] py-8 lg:py-16 transition-colors">
+      <div className="max-w-[1440px] 2xl:max-w-[1600px] 3xl:max-w-[1800px] mx-auto px-3 min-[400px]:px-4 lg:px-12 2xl:px-20 space-y-8">
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[var(--border-subtle)] pb-6">
           <div>
@@ -105,7 +139,7 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
 
         {/* Wishlist Product Cards Grid */}
         {items.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
             {items.map((item) => {
               const matchedProduct: Product | undefined = productService.getProductBySlug(item.slug);
 
@@ -114,6 +148,7 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                   <ProductCard
                     key={`${item.slug}-${item.variantId}`}
                     product={matchedProduct}
+                    initialVariantId={item.variantId}
                     onSelectProduct={(p, vId) =>
                       onNavigate(`/en/product/${p.slug}/${vId || item.variantId}`)
                     }
