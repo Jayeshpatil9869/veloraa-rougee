@@ -57,7 +57,8 @@ const NAV = [
 type ModuleId = (typeof NAV)[number]['id'];
 
 function moduleFromPath(path: string): ModuleId {
-  const requested = path.split('/')[2] || 'dashboard';
+  const clean = path.replace(/^\/admin\/?/, '');
+  const requested = clean.split('/')[0] || 'dashboard';
   const match = NAV.find((item) => item.id === requested);
   return match ? match.id : 'dashboard';
 }

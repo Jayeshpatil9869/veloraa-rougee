@@ -2,11 +2,42 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!robots\\.txt|sitemap\\.xml|assets/|fonts/|brand/|favicon\\.svg).*)",
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "api.veloraarougee.com"
+        }
+      ],
+      "destination": "/api"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/((?!robots\\.txt|sitemap\\.xml|assets/|fonts/|brand/|favicon\\.svg|api).*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
     {
       "source": "/assets/(.*)",
       "headers": [

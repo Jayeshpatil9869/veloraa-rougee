@@ -1,4 +1,16 @@
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
+function getApiBaseUrl(): string {
+  const envUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '');
+  if (envUrl) return envUrl;
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'veloraarougee.com' || host === 'admin.veloraarougee.com' || host.endsWith('.veloraarougee.com')) {
+      return 'https://api.veloraarougee.com';
+    }
+  }
+  return '';
+}
+
+const API_URL = getApiBaseUrl();
 
 export function hasApi() {
   return import.meta.env.VITE_DATA_SOURCE !== 'static';
