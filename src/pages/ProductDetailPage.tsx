@@ -5,9 +5,10 @@ import { productService } from '../services/productService';
 import { BrandImage } from '../components/ui/BrandImage';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductImageZoom } from '../components/product/ProductImageZoom';
-import { ChevronRight, Plus, Minus, Check, ChevronDown, ChevronUp, Heart } from 'lucide-react';
+import { ChevronRight, Plus, Minus, Check, ChevronDown, ChevronUp, Heart, Star, Edit3, Trash2 } from 'lucide-react';
 import { ScrollReveal, StaggerContainer, StaggerItem } from '../components/motion/ScrollReveal';
 import { api, hasApi } from '../lib/api';
+import { wishlistService } from '../services/wishlistService';
 
 interface ProductDetailPageProps {
   product: Product;
@@ -33,12 +34,19 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(() => wishlistService.isWishlisted(product, initialVariant?.id));
   const [signedIn, setSignedIn] = useState(false);
-  const [reviews, setReviews] = useState<{ rating: number; body: string; author: string }[]>([]);
+  const [currentCustomerId, setCurrentCustomerId] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<{ id?: string; customerId?: string; rating: number; body: string; author: string }[]>([]);
   const [stars, setStars] = useState(5);
+  const [hoverStars, setHoverStars] = useState(0);
   const [comment, setComment] = useState('');
   const [reviewNote, setReviewNote] = useState('');
+
+  // Editing state for existing review
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const [editingStars, setEditingStars] = useState(5);
+  const [editingComment, setEditingComment] = useState('');
 
   // Accordion open states
   const [openStory, setOpenStory] = useState(true);
@@ -55,50 +63,98 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     document.body.scrollTop = 0;
   }, [product, initialVariantId]);
 
-  useEffect(() => {
+  const loadReviews = () => {
     if (!hasApi()) return;
-    api<{ rating: number; body: string; author: string }[]>(`/products/${product.slug}/reviews`)
+    api<{ id?: string; customerId?: string; rating: number; body: string; author: string }[]>(`/products/${product.slug}/reviews`)
       .then(setReviews)
       .catch(() => setReviews([]));
-    api<{ customer: { email: string } | null }>('/auth/me')
-      .then(async (result) => {
+  };
+
+  useEffect(() => {
+    if (!hasApi()) return;
+    loadReviews();
+
+    api<{ customer: { id: string; email: string } | null }>('/auth/me')
+      .then((result) => {
         setSignedIn(Boolean(result.customer));
-        if (!result.customer) return;
-        const savedItems = await api<{ variantId: string; databaseVariantId: string }[]>('/account/wishlist');
-        const ids = new Set(savedItems.flatMap((item) => [item.variantId, item.databaseVariantId]));
-        setSaved(ids.has(selectedVariant.databaseId || '') || ids.has(selectedVariant.id));
+        setCurrentCustomerId(result.customer?.id || null);
       })
-      .catch(() => setSignedIn(false));
-  }, [product.slug, selectedVariant.id, selectedVariant.databaseId]);
+      .catch(() => {
+        setSignedIn(false);
+        setCurrentCustomerId(null);
+      });
+  }, [product.slug]);
+
+  useEffect(() => {
+    const updateSaved = () => {
+      setSaved(wishlistService.isWishlisted(product, selectedVariant.id));
+    };
+    updateSaved();
+    window.addEventListener('wishlist_updated', updateSaved);
+    return () => window.removeEventListener('wishlist_updated', updateSaved);
+  }, [product, selectedVariant.id]);
 
   const toggleWishlist = async () => {
-    if (!signedIn) {
-      onNavigate('/en/login');
-      return;
-    }
-    const variantId = selectedVariant.databaseId || selectedVariant.id;
-    if (saved) {
-      await api(`/account/wishlist/${variantId}`, { method: 'DELETE' });
-      setSaved(false);
-      return;
-    }
-    await api('/account/wishlist', { method: 'POST', body: JSON.stringify({ variantId }) });
-    setSaved(true);
+    const next = await wishlistService.toggle(product, selectedVariant);
+    setSaved(next);
   };
 
   const submitReview = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!signedIn) {
+      sessionStorage.setItem('vr_return_to', window.location.pathname);
       onNavigate('/en/login');
       return;
     }
     setReviewNote('');
-    await api('/reviews', {
-      method: 'POST',
-      body: JSON.stringify({ productSlug: product.slug, rating: stars, body: comment }),
-    });
-    setComment('');
-    setReviewNote('Thank you. Your review is waiting for approval.');
+    try {
+      await api('/reviews', {
+        method: 'POST',
+        body: JSON.stringify({ productSlug: product.slug, rating: stars, body: comment }),
+      });
+      setComment('');
+      setReviewNote('Thank you! Your review has been added.');
+      loadReviews();
+    } catch (err) {
+      setReviewNote(err instanceof Error ? err.message : 'Could not submit review');
+    }
+  };
+
+  const startEditReview = (review: { id?: string; rating: number; body: string }) => {
+    if (!review.id) return;
+    setEditingReviewId(review.id);
+    setEditingStars(review.rating);
+    setEditingComment(review.body);
+  };
+
+  const cancelEditReview = () => {
+    setEditingReviewId(null);
+    setEditingComment('');
+  };
+
+  const saveEditReview = async (reviewId: string) => {
+    try {
+      await api(`/reviews/${reviewId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ rating: editingStars, body: editingComment }),
+      });
+      setEditingReviewId(null);
+      loadReviews();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Could not update review');
+    }
+  };
+
+  const deleteReview = async (reviewId: string) => {
+    if (!window.confirm('Are you sure you want to delete this review?')) return;
+    try {
+      await api(`/reviews/${reviewId}`, {
+        method: 'DELETE',
+      });
+      loadReviews();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Could not delete review');
+    }
   };
 
   const allImages = [
@@ -330,25 +386,138 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         <section className="py-12 border-b border-[var(--border-subtle)] grid gap-6">
           <h2 className="text-2xl font-bold text-[var(--text-primary)]">Reviews</h2>
           <ul className="grid gap-4">
-            {reviews.map((review, index) => (
-              <li key={`${review.author}-${index}`} className="text-sm">
-                <p className="font-bold text-[var(--accent-gold)]">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)} · {review.author}</p>
-                <p className="text-[var(--text-muted)] mt-1">{review.body}</p>
-              </li>
-            ))}
-            {reviews.length === 0 && <li className="text-sm text-[var(--text-muted)]/80">No approved reviews yet.</li>}
+            {reviews.map((review, index) => {
+              const isMyReview = Boolean(currentCustomerId && review.customerId === currentCustomerId);
+              const isEditing = editingReviewId === review.id;
+
+              if (isEditing && review.id) {
+                return (
+                  <li key={review.id} className="p-4 rounded-xl bg-[var(--card-bg)] border-2 border-[var(--accent-primary)] text-sm space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-xs uppercase text-[var(--accent-primary)] tracking-wider">Editing Your Review</span>
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((val) => (
+                          <button
+                            key={val}
+                            type="button"
+                            onClick={() => setEditingStars(val)}
+                            className="p-0.5 hover:scale-110 transition-transform"
+                          >
+                            <Star
+                              className={`w-5 h-5 ${val <= editingStars ? 'text-amber-400 fill-amber-400' : 'text-gray-400'}`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <textarea
+                      value={editingComment}
+                      onChange={(e) => setEditingComment(e.target.value)}
+                      rows={3}
+                      className="w-full p-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-lg text-sm focus:border-[var(--focus-ring)] focus:outline-none"
+                      placeholder="Update your review..."
+                    />
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={cancelEditReview}
+                        className="px-3 py-1.5 rounded-lg border border-[var(--border-subtle)] text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-secondary)]"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => saveEditReview(review.id!)}
+                        className="px-4 py-1.5 rounded-lg btn-theme-primary text-xs font-bold shadow-xs"
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                  </li>
+                );
+              }
+
+              return (
+                <li key={review.id || `${review.author}-${index}`} className="p-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-subtle)] text-sm relative group">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((val) => (
+                          <Star
+                            key={val}
+                            className={`w-4 h-4 ${val <= review.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-400'}`}
+                          />
+                        ))}
+                      </div>
+                      <span className="font-semibold text-[var(--text-primary)]">· {review.author}</span>
+                      {isMyReview && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] text-[var(--accent-primary)] border border-[var(--border-subtle)]">
+                          You
+                        </span>
+                      )}
+                    </div>
+                    {isMyReview && review.id && (
+                      <div className="flex items-center gap-1.5 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          onClick={() => startEditReview(review)}
+                          className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-primary)] hover:bg-[var(--bg-secondary)] rounded transition-colors"
+                          title="Edit review"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteReview(review.id!)}
+                          className="p-1 text-[var(--text-muted)] hover:text-rose-500 hover:bg-rose-500/10 rounded transition-colors"
+                          title="Delete review"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-[var(--text-secondary)] mt-1 leading-relaxed">{review.body}</p>
+                </li>
+              );
+            })}
+            {reviews.length === 0 && <li className="text-sm text-[var(--text-muted)]">No reviews yet. Be the first to share your thoughts!</li>}
           </ul>
           <form className="grid gap-3 max-w-xl" onSubmit={(event) => void submitReview(event)}>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((value) => (
-                <button key={value} type="button" onClick={() => setStars(value)} className={`w-9 h-9 rounded-[0.3rem] border transition-colors ${stars >= value ? 'bg-[var(--accent-gold)] text-[var(--btn-primary-text)] border-[var(--accent-gold)]' : 'border-[var(--border-subtle)] text-[var(--text-muted)]'}`} aria-label={`${value} stars`}>
-                  {value}
-                </button>
-              ))}
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center gap-1.5"
+                onMouseLeave={() => setHoverStars(0)}
+              >
+                {[1, 2, 3, 4, 5].map((value) => {
+                  const isFilled = (hoverStars || stars) >= value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setStars(value)}
+                      onMouseEnter={() => setHoverStars(value)}
+                      className="p-1 transition-transform hover:scale-110 focus:outline-none"
+                      aria-label={`${value} stars`}
+                    >
+                      <Star
+                        className={`w-7 h-7 transition-colors ${
+                          isFilled
+                            ? 'text-amber-400 fill-amber-400'
+                            : 'text-gray-400 hover:text-amber-300'
+                        }`}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent-primary)]">
+                {hoverStars || stars} / 5 Stars
+              </span>
             </div>
-            <textarea required minLength={4} value={comment} onChange={(event) => setComment(event.target.value)} placeholder={signedIn ? 'Share how this shade wore' : 'Sign in to write a review'} className="min-h-24 px-3 py-2 border border-[var(--border-subtle)] bg-[var(--input-bg)] text-[var(--input-text)] rounded-[0.3rem] text-sm focus:border-[var(--accent-gold)] focus:outline-none transition-colors" />
-            <button className="h-11 w-fit px-5 btn-theme-primary font-bold rounded-[0.3rem] text-sm cursor-pointer transition-colors">{signedIn ? 'Submit review' : 'Sign in to review'}</button>
-            {reviewNote && <p className="text-sm text-[var(--text-secondary)] font-medium">{reviewNote}</p>}
+            <textarea required minLength={4} value={comment} onChange={(event) => setComment(event.target.value)} placeholder={signedIn ? 'Share how this shade wore' : 'Sign in to write a review'} className="min-h-24 px-3 py-2 border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--input-text)] rounded-[0.3rem] text-sm focus:border-[var(--focus-ring)] focus:outline-none transition-colors" />
+            <button className="h-11 w-fit px-5 btn-theme-primary rounded-[0.3rem] text-sm font-medium transition-colors">{signedIn ? 'Submit review' : 'Sign in to review'}</button>
+            {reviewNote && <p className="text-sm text-[var(--accent-primary)]">{reviewNote}</p>}
           </form>
         </section>
 

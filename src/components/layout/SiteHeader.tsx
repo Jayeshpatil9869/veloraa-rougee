@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { Search, ShoppingBag, User, Menu, ChevronDown, Heart } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, ChevronDown, Heart, LogIn, LogOut, UserPlus } from 'lucide-react';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
 import { TextRoll } from '../ui/TextRoll';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { cartService } from '../../services/cartService';
+import { wishlistService } from '../../services/wishlistService';
+import { api, hasApi } from '../../lib/api';
 
 interface SiteHeaderProps {
   currentPath: string;
@@ -22,6 +24,10 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
   onOpenMobileMenu,
 }) => {
   const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(() => wishlistService.getCount());
+  const [customer, setCustomer] = useState<{ email: string; fullName: string; avatarUrl?: string | null } | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const chevronRef = useRef<SVGSVGElement>(null);
   const itemsRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -31,11 +37,66 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
       const items = cartService.getCart();
       setCartCount(cartService.getItemCount(items));
     };
+    const updateWishlist = () => {
+      setWishlistCount(wishlistService.getCount());
+    };
 
     updateCount();
+    updateWishlist();
     window.addEventListener('cart_updated', updateCount);
-    return () => window.removeEventListener('cart_updated', updateCount);
+    window.addEventListener('wishlist_updated', updateWishlist);
+    return () => {
+      window.removeEventListener('cart_updated', updateCount);
+      window.removeEventListener('wishlist_updated', updateWishlist);
+    };
   }, []);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (!hasApi()) return;
+      try {
+        const res = await api<{ customer: { email: string; fullName: string; avatarUrl?: string | null } | null }>('/auth/me');
+        setCustomer(res.customer || null);
+      } catch {
+        setCustomer(null);
+      }
+    };
+    void checkAuth();
+    window.addEventListener('auth_state_changed', checkAuth);
+    return () => window.removeEventListener('auth_state_changed', checkAuth);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    if (userMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [userMenuOpen]);
+
+  const handleLogout = async () => {
+    setUserMenuOpen(false);
+    try {
+      await api('/auth/logout', { method: 'POST' });
+    } catch {
+      // ignore
+    }
+    setCustomer(null);
+    window.dispatchEvent(new Event('auth_state_changed'));
+    onNavigate('/en');
+  };
+
+  const handleUserAction = (targetPath: string, storeReturn: boolean = true) => {
+    setUserMenuOpen(false);
+    if (storeReturn && !currentPath.startsWith('/en/login') && !currentPath.startsWith('/en/signup') && !currentPath.startsWith('/en/auth/callback')) {
+      sessionStorage.setItem('vr_return_to', currentPath);
+    }
+    onNavigate(targetPath);
+  };
 
   // Initialize dropdown hidden state
   useEffect(() => {
@@ -306,22 +367,140 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
             type="button"
             onClick={() => onNavigate('/en/wishlist')}
             aria-label="Wishlist"
-            className={`flex p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer ${
-              currentPath === '/en/wishlist' ? 'text-[var(--accent-gold)]' : 'text-[var(--text-primary)] hover:text-[var(--accent-gold)]'
+            className={`relative flex p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer ${
+              currentPath === '/en/wishlist' ? 'text-[var(--accent-primary)]' : 'text-[var(--text-primary)] hover:text-[var(--accent-primary)]'
             }`}
           >
             <Heart className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
+            {wishlistCount > 0 && (
+              <span className="absolute top-1 right-0 min-w-[18px] h-[18px] px-1 bg-[var(--accent-primary)] text-[var(--button-primary-text)] text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs">
+                {wishlistCount}
+              </span>
+            )}
           </button>
 
-          {/* Account / Login Trigger */}
-          <button
-            type="button"
-            onClick={() => onNavigate('/en/account')}
-            aria-label="Customer account"
-            className="flex p-2 text-[var(--text-primary)] hover:text-[var(--accent-gold)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer"
+          {/* Account / Login Trigger with Dropdown on Hover & Click */}
+          <div
+            className="relative py-2"
+            ref={userMenuRef}
+            onMouseEnter={() => setUserMenuOpen(true)}
+            onMouseLeave={() => setUserMenuOpen(false)}
           >
-            <User className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
-          </button>
+            <button
+              type="button"
+              onClick={() => handleUserAction(customer ? '/en/account' : '/en/login')}
+              aria-label="Customer account menu"
+              aria-expanded={userMenuOpen}
+              className={`flex items-center p-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer ${
+                userMenuOpen || currentPath.includes('/account') || currentPath.includes('/login') || currentPath.includes('/signup')
+                  ? 'text-[var(--accent-primary)]'
+                  : 'text-[var(--text-primary)] hover:text-[var(--accent-primary)]'
+              }`}
+            >
+              {customer?.avatarUrl ? (
+                <img
+                  src={customer.avatarUrl}
+                  alt={customer.fullName || 'User'}
+                  className="w-6 h-6 rounded-full object-cover border border-[var(--border-subtle)]"
+                />
+              ) : (
+                <User className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
+              )}
+            </button>
+
+            {userMenuOpen && (
+              <div
+                className="absolute right-0 top-full pt-1.5 w-64 sm:w-72 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200"
+              >
+                <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-2xl shadow-[0_16px_40px_rgba(0,0,0,0.2)] py-2 overflow-hidden text-[var(--text-primary)]">
+                {customer ? (
+                  <>
+                    <div className="px-4 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
+                      <p className="text-[11px] font-bold text-[var(--accent-primary)] uppercase tracking-wider">Welcome,</p>
+                      <p className="text-sm font-bold text-[var(--text-primary)] truncate">
+                        {customer.fullName || customer.email.split('@')[0]}
+                      </p>
+                      <p className="text-xs text-[var(--text-muted)] truncate">{customer.email}</p>
+                    </div>
+
+                    <div className="py-1">
+                      <button
+                        type="button"
+                        onClick={() => handleUserAction('/en/account', false)}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
+                      >
+                        <User className="w-4 h-4 text-[var(--accent-primary)]" />
+                        <span>My Account</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleUserAction('/en/wishlist', false)}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
+                      >
+                        <Heart className="w-4 h-4 text-[var(--accent-primary)]" />
+                        <span>My Wishlist</span>
+                      </button>
+                    </div>
+
+                    <div className="pt-1 border-t border-[var(--border-subtle)]">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-rose-500 hover:bg-rose-500/10 flex items-center gap-3 transition-colors cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4 text-rose-500" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="px-4 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
+                      <p className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">
+                        Veloraa Rougee Account
+                      </p>
+                      <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                        Sign in for personalized orders, saved details, &amp; wishlist.
+                      </p>
+                    </div>
+
+                    <div className="p-2 space-y-1">
+                      <button
+                        type="button"
+                        onClick={() => handleUserAction('/en/login', true)}
+                        className="w-full text-center py-2.5 px-4 btn-theme-primary rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <LogIn className="w-4 h-4" />
+                        <span>Sign In</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleUserAction('/en/signup', true)}
+                        className="w-full text-center py-2 px-4 bg-[var(--bg-secondary)] hover:bg-[var(--bg-subtle)] text-[var(--accent-primary)] border border-[var(--border-subtle)] rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer mt-1"
+                      >
+                        <UserPlus className="w-4 h-4" />
+                        <span>Create Account</span>
+                      </button>
+                    </div>
+
+                    <div className="pt-1 border-t border-[var(--border-subtle)]">
+                      <button
+                        type="button"
+                        onClick={() => handleUserAction('/en/wishlist', false)}
+                        className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
+                      >
+                        <Heart className="w-4 h-4 text-[var(--accent-primary)]" />
+                        <span>Wishlist</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Cart Trigger */}
           <button

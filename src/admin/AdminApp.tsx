@@ -22,6 +22,8 @@ import {
   X,
   Sparkles,
   Clock,
+  Bell,
+  BookOpen,
 } from 'lucide-react';
 import { api } from '../lib/api';
 import { CategoriesModule } from './modules/Categories';
@@ -33,6 +35,7 @@ import { OrdersModule } from './modules/Orders';
 import { PaymentsModule } from './modules/Payments';
 import { ProductsModule } from './modules/Products';
 import { ReviewsModule } from './modules/Reviews';
+import { StoriesModule } from './modules/Stories';
 import { inputClass, Notice, PrimaryButton } from './ui';
 import { FlowerShortSvg, FlowerTallSvg } from '../components/brand/BrandIcons';
 import { VeloraaRougeeLogo } from '../components/brand/VeloraaRougeeLogo';
@@ -46,6 +49,7 @@ const NAV = [
   { id: 'customers', label: 'Clientele', icon: Users },
   { id: 'coupons', label: 'Promo Codes', icon: Tag },
   { id: 'reviews', label: 'Reviews & Ratings', icon: Star },
+  { id: 'stories', label: 'Cosmetics Articles & SEO', icon: BookOpen },
   { id: 'enquiries', label: 'Concierge Inquiries', icon: MessageSquare },
 ] as const;
 
@@ -90,7 +94,53 @@ export const AdminApp: React.FC<{
   const [error, setError] = useState('');
   const [currentTime, setCurrentTime] = useState('');
 
+  // Notifications state
+  const [notifications, setNotifications] = useState<{
+    id: string;
+    type: string;
+    title: string;
+    body: string;
+    href?: string | null;
+    read_at?: string | null;
+    created_at: string;
+  }[]>([]);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const loadNotifications = () => {
+    api<{ id: string; type: string; title: string; body: string; href?: string | null; read_at?: string | null; created_at: string }[]>('/admin/notifications')
+      .then(setNotifications)
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    if (!admin) return;
+    loadNotifications();
+    const interval = setInterval(loadNotifications, 12000);
+    return () => clearInterval(interval);
+  }, [admin]);
+
+  const handleMarkAllRead = async () => {
+    try {
+      await api('/admin/notifications/read', { method: 'POST', body: JSON.stringify({ all: true }) });
+      setNotifications((prev) => prev.map((n) => ({ ...n, read_at: new Date().toISOString() })));
+    } catch {}
+  };
+
+  const handleNotificationClick = async (notif: { id: string; href?: string | null; read_at?: string | null }) => {
+    if (!notif.read_at) {
+      try {
+        await api('/admin/notifications/read', { method: 'POST', body: JSON.stringify({ id: notif.id }) });
+        setNotifications((prev) => prev.map((n) => (n.id === notif.id ? { ...n, read_at: new Date().toISOString() } : n)));
+      } catch {}
+    }
+    setIsNotificationOpen(false);
+    if (notif.href) {
+      onNavigate(notif.href);
+    }
+  };
 
   // Live Time clock in header
   useEffect(() => {
@@ -770,7 +820,7 @@ export const AdminApp: React.FC<{
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Live Time Clock */}
             {currentTime && (
               <span className="text-xs text-[#86533A] font-medium hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-[#F1E7DA]/60 rounded-[0.3rem] border border-[#E6D9CB]">
@@ -778,6 +828,116 @@ export const AdminApp: React.FC<{
                 {currentTime}
               </span>
             )}
+
+            {/* Notifications Bell Dropdown */}
+            <div
+              className="relative py-1"
+              ref={notifRef}
+              onMouseEnter={() => setIsNotificationOpen(true)}
+              onMouseLeave={() => setIsNotificationOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setIsNotificationOpen((prev) => !prev)}
+                className="relative p-2 text-[#666666] hover:text-[#A06A98] hover:bg-[#FAF5F8] rounded-full transition-colors cursor-pointer"
+                title="Activity Alerts"
+                aria-label="Activity alerts and notifications"
+              >
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                {notifications.filter((n) => !n.read_at).length > 0 && (
+                  <span className="absolute top-1 right-1 min-w-[17px] h-[17px] px-1 bg-[#A06A98] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs">
+                    {notifications.filter((n) => !n.read_at).length > 9
+                      ? '9+'
+                      : notifications.filter((n) => !n.read_at).length}
+                  </span>
+                )}
+              </button>
+
+              {isNotificationOpen && (
+                <div className="absolute right-0 top-full pt-1.5 w-80 sm:w-96 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-150">
+                  <div className="bg-white border border-[#F0DEF7] rounded-2xl shadow-[0_16px_40px_rgba(119,65,112,0.18)] overflow-hidden">
+                    {/* Header */}
+                    <div className="px-4 py-3 border-b border-[#F0DEF7] bg-gradient-to-r from-[#FAF5F8] to-white flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Bell className="w-4 h-4 text-[#A06A98]" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-[#333333]">
+                          Live Store Alerts
+                        </span>
+                        {notifications.filter((n) => !n.read_at).length > 0 && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#A06A98] text-white">
+                            {notifications.filter((n) => !n.read_at).length} new
+                          </span>
+                        )}
+                      </div>
+                      {notifications.filter((n) => !n.read_at).length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => void handleMarkAllRead()}
+                          className="text-[11px] font-semibold text-[#A06A98] hover:underline cursor-pointer"
+                        >
+                          Mark all read
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Notification list */}
+                    <div className="max-h-80 overflow-y-auto divide-y divide-[#F0DEF7]/60">
+                      {notifications.length === 0 ? (
+                        <div className="p-6 text-center text-xs text-[#888888]">
+                          No recent alerts or activity.
+                        </div>
+                      ) : (
+                        notifications.slice(0, 15).map((n) => {
+                          const isUnread = !n.read_at;
+                          return (
+                            <div
+                              key={n.id}
+                              onClick={() => void handleNotificationClick(n)}
+                              className={`p-3 sm:p-3.5 transition-colors cursor-pointer flex items-start gap-3 ${
+                                isUnread ? 'bg-[#FDF6FA]/80 hover:bg-[#FBEBF6]' : 'hover:bg-slate-50'
+                              }`}
+                            >
+                              <div className="p-2 rounded-xl bg-white border border-[#F0DEF7] text-[#A06A98] shrink-0 mt-0.5">
+                                {n.type.startsWith('customer') ? (
+                                  <Users className="w-4 h-4 text-emerald-600" />
+                                ) : n.type.startsWith('order') ? (
+                                  <ShoppingBag className="w-4 h-4 text-[#A06A98]" />
+                                ) : n.type.startsWith('payment') ? (
+                                  <CreditCard className="w-4 h-4 text-amber-600" />
+                                ) : n.type.startsWith('review') ? (
+                                  <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                                ) : (
+                                  <Sparkles className="w-4 h-4 text-[#A06A98]" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-1 mb-0.5">
+                                  <p className={`text-xs ${isUnread ? 'font-bold text-[#333333]' : 'font-semibold text-[#555555]'} truncate`}>
+                                    {n.title}
+                                  </p>
+                                  {isUnread && (
+                                    <span className="w-2 h-2 rounded-full bg-[#A06A98] shrink-0" />
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-[#666666] line-clamp-2">
+                                  {n.body}
+                                </p>
+                                <p className="text-[10px] text-[#999999] mt-1 font-mono">
+                                  {new Date(n.created_at).toLocaleTimeString('en-IN', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Admin User Profile Badge */}
             <div className="flex items-center gap-2 sm:gap-2.5 pl-2 sm:pl-3 py-1 pr-1 sm:pr-1.5 bg-[#F1E7DA]/60 border border-[#E6D9CB] rounded-full">
@@ -815,6 +975,7 @@ export const AdminApp: React.FC<{
           {module === 'customers' && <CustomersModule />}
           {module === 'coupons' && <CouponsModule />}
           {module === 'reviews' && <ReviewsModule />}
+          {module === 'stories' && <StoriesModule />}
           {module === 'enquiries' && <EnquiriesModule />}
         </main>
       </section>

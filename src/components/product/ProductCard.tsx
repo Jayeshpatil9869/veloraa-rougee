@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Heart } from 'lucide-react';
 import { Product, ProductVariant } from '../../types';
 import { BrandImage } from '../ui/BrandImage';
 import { cartService } from '../../services/cartService';
+import { wishlistService } from '../../services/wishlistService';
 
 interface ProductCardProps {
   product: Product;
@@ -23,6 +25,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [activeVariant, setActiveVariant] = useState<ProductVariant>(defaultVar);
   const [showAllSwatches, setShowAllSwatches] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(() => wishlistService.isWishlisted(product, activeVariant?.id));
+
+  useEffect(() => {
+    const updateWishlist = () => {
+      setIsWishlisted(wishlistService.isWishlisted(product, activeVariant?.id));
+    };
+    updateWishlist();
+    window.addEventListener('wishlist_updated', updateWishlist);
+    return () => window.removeEventListener('wishlist_updated', updateWishlist);
+  }, [product, activeVariant?.id]);
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    void wishlistService.toggle(product, activeVariant);
+  };
 
   const handleSwatchClick = (variant: ProductVariant, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,6 +66,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     >
       {/* 1. Product Image Link */}
       <div className="relative aspect-square w-full overflow-hidden bg-[var(--bg-secondary)] mb-1.5 sm:mb-2 rounded-xs">
+        {/* Wishlist Heart Button at Top-Right */}
+        <button
+          type="button"
+          onClick={handleToggleWishlist}
+          aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+          title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+          className={`absolute top-2 right-2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${
+            isWishlisted
+              ? 'bg-[var(--card-bg)] text-[var(--accent-primary)] shadow-sm scale-105 border border-[var(--border-subtle)]'
+              : 'bg-[var(--card-bg)]/85 text-[var(--text-muted)] hover:text-[var(--accent-primary)] hover:bg-[var(--card-bg)] hover:scale-110 shadow-2xs border border-[var(--border-subtle)]'
+          }`}
+        >
+          <Heart
+            className={`w-4 h-4 transition-transform duration-200 ${
+              isWishlisted ? 'fill-[var(--accent-primary)] text-[var(--accent-primary)]' : 'text-current'
+            }`}
+          />
+        </button>
         <BrandImage
           src={activeVariant.image || product.images[0]?.src}
           alt={`${product.name} - ${activeVariant.name}`}

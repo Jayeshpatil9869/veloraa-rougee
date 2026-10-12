@@ -257,6 +257,14 @@ export async function registerCommerce(app: FastifyInstance) {
       fields.surl = `${callbackBase}/payments/payu/callback`;
       fields.furl = `${callbackBase}/payments/payu/callback`;
     }
+    await notify({
+      type: 'order.placed',
+      title: 'New customer order',
+      body: `Order #${result.orderNumber} placed for ₹${(result.amountPaise / 100).toLocaleString('en-IN')}`,
+      entityType: 'order',
+      entityId: result.orderNumber,
+      href: '/admin/orders',
+    });
     return {
       orderNumber: result.orderNumber,
       viewToken: result.viewToken,
@@ -282,6 +290,14 @@ export async function registerCommerce(app: FastifyInstance) {
     if (error) throw new Error(error.message);
     const raw = (data ?? {}) as Record<string, unknown>;
     const orderNumber = String(raw.orderNumber ?? '');
+    await notify({
+      type: paid ? 'payment.received' : 'payment.failed',
+      title: paid ? 'Payment received' : 'Payment failed',
+      body: `Order #${orderNumber}: ${paid ? '₹' + ((amountToPaise(body.amount) ?? 0) / 100).toLocaleString('en-IN') + ' paid' : 'Payment declined'}`,
+      entityType: 'payment',
+      entityId: body.txnid,
+      href: '/admin/payments',
+    });
     const target = new URL('/en/checkout/return', env.APP_ORIGIN);
     target.searchParams.set('order', orderNumber);
     return reply.redirect(target.toString());
@@ -412,20 +428,61 @@ export async function registerCommerce(app: FastifyInstance) {
       title: z.string().max(120).optional().default(''),
       body: z.string().min(4).max(2000),
     }).parse(request.body);
-    const product = await one<{ id: string }>(db().from('products').select('id').eq('slug', body.productSlug).maybeSingle());
+    const product = await one<{ id: string; name: string }>(db().from('products').select('id, name').eq('slug', body.productSlug).maybeSingle());
     if (!product) throw new Error('not_found');
     const saved = await rows<{ id: string }>(
-      db().from('reviews').upsert({
+      db().from('reviews').insert({
         product_id: product.id,
         customer_id: customer.id,
         rating: body.rating,
         title: body.title,
         body: body.body,
-        status: 'pending',
-      }, { onConflict: 'product_id,customer_id' }).select('id'),
+        status: 'approved',
+      }).select('id'),
     );
-    await notify({ type: 'review.created', title: 'New review', body: body.productSlug, href: '/admin/reviews' });
+    await notify({
+      type: 'review.created',
+      title: 'New customer review',
+      body: `${product.name}: ${body.rating}★ "${body.body.slice(0, 40)}"`,
+      entityType: 'review',
+      entityId: saved[0]?.id,
+      href: '/admin/reviews',
+    });
     return saved[0];
+  });
+
+  app.put('/reviews/:id', async (request) => {
+    const customer = await requireCustomer(request);
+    const params = z.object({ id: z.string().uuid() }).parse(request.params);
+    const body = z.object({
+      rating: z.number().int().min(1).max(5),
+      title: z.string().max(120).optional().default(''),
+      body: z.string().min(4).max(2000),
+    }).parse(request.body);
+    const review = await one<{ id: string; customer_id: string }>(
+      db().from('reviews').select('id, customer_id').eq('id', params.id).maybeSingle()
+    );
+    if (!review) throw new Error('not_found');
+    if (review.customer_id !== customer.id) throw new Error('forbidden');
+    await ok(db().from('reviews').update({
+      rating: body.rating,
+      title: body.title,
+      body: body.body,
+      status: 'approved',
+    }).eq('id', params.id));
+    return { ok: true };
+  });
+
+  app.delete('/reviews/:id', async (request) => {
+    const customer = await requireCustomer(request);
+    const params = z.object({ id: z.string().uuid() }).parse(request.params);
+    const review = await one<{ id: string; customer_id: string }>(
+      db().from('reviews').select('id, customer_id').eq('id', params.id).maybeSingle()
+    );
+    if (!review) throw new Error('not_found');
+    if (review.customer_id !== customer.id) throw new Error('forbidden');
+    await ok(db().from('reviews').delete().eq('id', params.id));
+    return { ok: true };
   });
 
   app.get('/admin/orders', async (request) => {
