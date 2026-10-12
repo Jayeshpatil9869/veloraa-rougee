@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { Socket } from 'node:net';
-import { buildApp } from '../server/src/app';
+import { buildApp } from './app';
 
 export const config = {
   api: {
@@ -25,7 +25,6 @@ async function getApp() {
         return app;
       })
       .catch((err) => {
-        // Reset so subsequent requests retry instead of latching onto failed promise
         appPromise = null;
         throw err;
       });
@@ -34,8 +33,6 @@ async function getApp() {
 }
 
 function patchRequest(req: IncomingMessage) {
-  // Fastify and Node stream internals check `socket instanceof Stream` and read socket properties.
-  // In serverless environments, req.socket may be null or undefined.
   if (!req.socket) {
     const socket = new Socket();
     const forwarded = req.headers['x-forwarded-for'];
