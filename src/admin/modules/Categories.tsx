@@ -86,7 +86,7 @@ export const CategoriesModule: React.FC = () => {
           >
             <form className="space-y-4" onSubmit={(event) => void save(event)}>
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#86533A]">
                   Category Title *
                 </label>
                 <input
@@ -97,14 +97,14 @@ export const CategoriesModule: React.FC = () => {
                   onChange={(event) => setName(event.target.value)}
                 />
                 {previewSlug && (
-                  <p className="text-[11px] text-[#888888] font-mono mt-1">
-                    Slug: <span className="text-[#A06A98]">/en/collection/{previewSlug}</span>
+                  <p className="text-[11px] text-[#86533A]/70 font-mono mt-1">
+                    Slug: <span className="text-[#B9997F]">/en/collection/{previewSlug}</span>
                   </p>
                 )}
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#86533A]">
                   Description
                 </label>
                 <textarea
@@ -129,14 +129,14 @@ export const CategoriesModule: React.FC = () => {
 
         {/* Existing Categories Table */}
         <div className="lg:col-span-8">
-          <section className="bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs overflow-hidden">
-            <header className="px-6 py-4 border-b border-[#E2E8F0] bg-[#FDF2F8]/40 flex items-center justify-between">
+          <section className="bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs overflow-hidden">
+            <header className="px-6 py-4 border-b border-[#E6D9CB] bg-[#F1E7DA]/40 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-[#333333] flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-[#A06A98]" />
+                <h2 className="text-base font-bold text-[#080604] flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-[#B9997F]" />
                   Active Collections
                 </h2>
-                <p className="text-xs text-[#666666] mt-0.5">
+                <p className="text-xs text-[#86533A]/70 mt-0.5">
                   {rows.length} taxonomy records listed in storefront
                 </p>
               </div>
@@ -145,16 +145,16 @@ export const CategoriesModule: React.FC = () => {
             <DataTable
               columns={['Category Name', 'Routing Slug', 'Description', 'Status']}
               rows={rows.map((row) => [
-                <div key="name" className="font-bold text-xs text-[#333333]">
+                <div key="name" className="font-bold text-xs text-[#080604]">
                   {row.name}
                 </div>,
                 <span
                   key="slug"
-                  className="font-mono text-xs text-[#76416F] bg-[#FDF2F8] px-2 py-0.5 rounded-[0.3rem] border border-[#DFBEDB]/50"
+                  className="font-mono text-xs text-[#86533A] bg-[#F1E7DA] px-2 py-0.5 rounded-[0.3rem] border border-[#E6D9CB]"
                 >
                   {row.slug}
                 </span>,
-                <span key="desc" className="text-xs text-[#666666] line-clamp-1 max-w-xs">
+                <span key="desc" className="text-xs text-[#86533A]/70 line-clamp-1 max-w-xs">
                   {row.description || '—'}
                 </span>,
                 <StatusBadge key="act" value={row.active !== false ? 'active' : 'draft'} />,

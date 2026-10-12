@@ -79,14 +79,14 @@ export const CustomersModule: React.FC = () => {
       </div>
 
       {/* Search Input */}
-      <div className="flex items-center justify-between p-3 bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs">
+      <div className="flex items-center justify-between p-3 bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by customer name, email, or telephone..."
           className="w-full sm:w-96"
         />
-        <span className="text-xs font-bold text-[#666666] hidden sm:inline">
+        <span className="text-xs font-bold text-[#86533A]/70 hidden sm:inline">
           Showing {filteredRows.length} of {rows.length} accounts
         </span>
       </div>
@@ -105,17 +105,17 @@ export const CustomersModule: React.FC = () => {
 
           return [
             <div key="who" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#A06A98] to-[#76416F] text-white text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#B9997F] to-[#86533A] text-white text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs">
                 {initials}
               </div>
-              <span className="font-bold text-xs text-[#333333]">
+              <span className="font-bold text-xs text-[#080604]">
                 {row.full_name || 'Boutique Member'}
               </span>
             </div>,
-            <span key="mail" className="text-xs text-[#555555]">
+            <span key="mail" className="text-xs text-[#080604]/80">
               {row.email}
             </span>,
-            <span key="phone" className="text-xs text-[#666666] font-mono">
+            <span key="phone" className="text-xs text-[#86533A]/70 font-mono">
               {row.phone || '—'}
             </span>,
             <StatusBadge
@@ -126,7 +126,7 @@ export const CustomersModule: React.FC = () => {
               key="ver"
               value={row.email_verified ? 'approved' : 'pending'}
             />,
-            <span key="since" className="text-xs text-[#666666] font-mono">
+            <span key="since" className="text-xs text-[#86533A]/70 font-mono">
               {new Date(row.created_at).toLocaleDateString('en-IN', {
                 year: 'numeric',
                 month: 'short',

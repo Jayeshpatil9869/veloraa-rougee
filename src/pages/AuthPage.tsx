@@ -256,7 +256,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative min-h-[calc(100vh-120px)] w-full bg-gradient-to-b from-[#FAF5F8] via-[#FDF2F8]/80 to-white py-12 lg:py-20 flex items-center justify-center overflow-hidden select-none px-4 sm:px-6"
+      className="relative min-h-[calc(100vh-120px)] w-full bg-[var(--bg-primary)] py-12 lg:py-20 flex items-center justify-center overflow-hidden select-none px-4 sm:px-6 transition-colors"
     >
       {/* ========================================================================= */}
       {/*             DECORATIVE BOTANICAL FLOWER ILLUSTRATIONS (THEME)             */}
@@ -266,7 +266,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         <div className="flower-reveal-1 absolute -left-12 -top-10 lg:left-4 lg:top-8 pointer-events-none">
           <div className="flower-parallax-1 will-change-transform">
             <div className="flower-float-1 will-change-transform opacity-45 lg:opacity-65">
-              <FlowerTallSvg className="w-36 sm:w-52 lg:w-64 h-auto text-[#D39DC7] -scale-x-100 drop-shadow-xs" />
+              <FlowerTallSvg className="w-36 sm:w-52 lg:w-64 h-auto text-[var(--accent-gold)] -scale-x-100 drop-shadow-xs" />
             </div>
           </div>
         </div>
@@ -275,7 +275,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         <div className="flower-reveal-2 absolute -left-8 -bottom-12 lg:left-8 lg:bottom-4 pointer-events-none">
           <div className="flower-parallax-2 will-change-transform">
             <div className="flower-float-2 will-change-transform opacity-35 lg:opacity-55">
-              <FlowerShortSvg className="w-28 sm:w-40 lg:w-48 h-auto text-[#A06A98] drop-shadow-xs" />
+              <FlowerShortSvg className="w-28 sm:w-40 lg:w-48 h-auto text-[var(--accent-rose-gold)] drop-shadow-xs" />
             </div>
           </div>
         </div>
@@ -284,7 +284,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         <div className="flower-reveal-3 absolute -right-12 -top-8 lg:right-6 lg:top-12 pointer-events-none">
           <div className="flower-parallax-3 will-change-transform">
             <div className="flower-float-3 will-change-transform opacity-40 lg:opacity-60">
-              <FlowerShortSvg className="w-32 sm:w-44 lg:w-56 h-auto text-[#D39DC7] -scale-x-100 drop-shadow-xs" />
+              <FlowerShortSvg className="w-32 sm:w-44 lg:w-56 h-auto text-[var(--accent-gold)] -scale-x-100 drop-shadow-xs" />
             </div>
           </div>
         </div>
@@ -293,19 +293,19 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         <div className="flower-reveal-4 absolute -right-16 -bottom-16 lg:right-4 lg:bottom-2 pointer-events-none">
           <div className="flower-parallax-4 will-change-transform">
             <div className="flower-float-4 will-change-transform opacity-50 lg:opacity-70">
-              <FlowerTallSvg className="w-44 sm:w-60 lg:w-80 h-auto text-[#9F6998] drop-shadow-xs" />
+              <FlowerTallSvg className="w-44 sm:w-60 lg:w-80 h-auto text-[var(--text-muted)] drop-shadow-xs" />
             </div>
           </div>
         </div>
 
         {/* Soft Ambient Radial Blurs */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#DFBEDB]/25 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[var(--accent-gold)]/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 
       {/* ========================================================================= */}
       {/*                           AUTH CONTAINER CARD                             */}
       {/* ========================================================================= */}
-      <div className="relative z-10 w-full max-w-lg bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl border border-[#F0DEF7] shadow-[0_16px_48px_rgba(119,65,112,0.12)] p-6 sm:p-8 lg:p-10 transition-all duration-300">
+      <div className="relative z-10 w-full max-w-lg bg-[var(--bg-elevated)] backdrop-blur-md rounded-2xl sm:rounded-3xl border border-[var(--border-subtle)] shadow-[0_16px_48px_rgba(0,0,0,0.18)] p-6 sm:p-8 lg:p-10 transition-all duration-300 text-[var(--text-primary)]">
         {/* Brand Header */}
         <div className="text-center space-y-2 mb-6 sm:mb-8">
           <div className="flex justify-center mb-1">
@@ -313,7 +313,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           </div>
 
           <h1
-            className="font-serif text-4xl sm:text-5xl text-[#333333] leading-none pt-1"
+            className="font-serif text-4xl sm:text-5xl text-[var(--text-primary)] leading-none pt-1"
             style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
           >
             {mode === 'login' ? 'Welcome Back' : 'Create Account'}
@@ -322,9 +322,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
         {/* Success Alert Banner */}
         {authSuccess && (
-          <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-semibold flex items-center gap-3 animate-in fade-in duration-300">
-            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-              <Check className="w-4 h-4 text-emerald-600" />
+          <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-semibold flex items-center gap-3 animate-in fade-in duration-300">
+            <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+              <Check className="w-4 h-4 text-emerald-400" />
             </div>
             <span>{authSuccess}</span>
           </div>
@@ -332,12 +332,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         {authError && (
           <p className="mb-6 text-sm text-[#EF4444]" role="alert">{authError}</p>
         )}
-        {authError && (
-          <p className="mb-6 text-sm text-[#EF4444]" role="alert">{authError}</p>
-        )}
 
         {/* Tab Switcher (Sign In vs Sign Up) */}
-        <div className="grid grid-cols-2 p-1 bg-[#FDF2F8] rounded-xl border border-[#F0DEF7] mb-6">
+        <div className="grid grid-cols-2 p-1 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-subtle)] mb-6">
           <button
             type="button"
             onClick={() => {
@@ -346,8 +343,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             }}
             className={`py-2.5 text-xs sm:text-sm font-bold tracking-wider rounded-lg transition-all duration-200 uppercase cursor-pointer ${
               mode === 'login'
-                ? 'bg-white text-[#A06A98] shadow-xs'
-                : 'text-[#666666] hover:text-[#333333]'
+                ? 'btn-theme-primary shadow-xs'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             Sign In
@@ -360,8 +357,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             }}
             className={`py-2.5 text-xs sm:text-sm font-bold tracking-wider rounded-lg transition-all duration-200 uppercase cursor-pointer ${
               mode === 'signup'
-                ? 'bg-white text-[#A06A98] shadow-xs'
-                : 'text-[#666666] hover:text-[#333333]'
+                ? 'btn-theme-primary shadow-xs'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             Create Account
@@ -373,7 +370,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           type="button"
           onClick={handleGoogleAuth}
           disabled={isLoading}
-          className="w-full h-11 sm:h-12 bg-white hover:bg-[#FDF2F8]/60 border border-[#DFBEDB] hover:border-[#A06A98] text-[#333333] rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all duration-200 flex items-center justify-center gap-3 shadow-2xs hover:shadow-xs cursor-pointer mb-6"
+          className="w-full h-11 sm:h-12 bg-[var(--bg-secondary)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)] hover:border-[var(--accent-gold)] text-[var(--text-primary)] rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all duration-200 flex items-center justify-center gap-3 shadow-2xs hover:shadow-xs cursor-pointer mb-6"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
@@ -398,8 +395,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
         {/* Divider */}
         <div className="relative flex items-center justify-center mb-6">
-          <div className="border-t border-[#F0DEF7] w-full" />
-          <span className="bg-white px-3 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#999999] absolute">
+          <div className="border-t border-[var(--border-subtle)] w-full" />
+          <span className="bg-[var(--bg-elevated)] px-3 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] absolute">
             Or with email
           </span>
         </div>
@@ -410,11 +407,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             <>
               {/* Full Name */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-[#444444] uppercase tracking-wider block">
+                <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-[#A06A98] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+                  <User className="w-4 h-4 text-[var(--accent-gold)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
                   <input
                     type="text"
                     name="fullName"
@@ -422,25 +419,25 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                     onChange={handleChange}
                     required
                     placeholder="e.g. Maya Thorne"
-                    className="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-[#FAF5F8] border border-[#DFBEDB] focus:border-[#A06A98] focus:bg-white rounded-xl outline-none transition-all placeholder:text-[#999999] text-[#333333]"
+                    className="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-[var(--input-bg)] border border-[var(--border-subtle)] focus:border-[var(--accent-gold)] rounded-xl outline-none transition-all placeholder:text-[var(--text-muted)]/60 text-[var(--input-text)]"
                   />
                 </div>
               </div>
 
-              {/* Phone Number */}
+              {/* Contact Number */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-[#444444] uppercase tracking-wider block">
+                <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block">
                   Contact Number
                 </label>
                 <div className="relative">
-                  <Phone className="w-4 h-4 text-[#A06A98] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+                  <Phone className="w-4 h-4 text-[var(--accent-gold)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="+91 98765 43210"
-                    className="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-[#FAF5F8] border border-[#DFBEDB] focus:border-[#A06A98] focus:bg-white rounded-xl outline-none transition-all placeholder:text-[#999999] text-[#333333]"
+                    className="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-[var(--input-bg)] border border-[var(--border-subtle)] focus:border-[var(--accent-gold)] rounded-xl outline-none transition-all placeholder:text-[var(--text-muted)]/60 text-[var(--input-text)]"
                   />
                 </div>
               </div>
@@ -449,11 +446,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
           {/* Email Address */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-[#444444] uppercase tracking-wider block">
+            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block">
               Email Address
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-[#A06A98] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+              <Mail className="w-4 h-4 text-[var(--accent-gold)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
               <input
                 type="email"
                 name="email"
@@ -461,7 +458,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 onChange={handleChange}
                 required
                 placeholder="name@luxuryatelier.com"
-                className="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-[#FAF5F8] border border-[#DFBEDB] focus:border-[#A06A98] focus:bg-white rounded-xl outline-none transition-all placeholder:text-[#999999] text-[#333333]"
+                className="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-[var(--input-bg)] border border-[var(--border-subtle)] focus:border-[var(--accent-gold)] rounded-xl outline-none transition-all placeholder:text-[var(--text-muted)]/60 text-[var(--input-text)]"
               />
             </div>
           </div>
@@ -469,21 +466,21 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           {/* Password */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-[#444444] uppercase tracking-wider">
+              <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                 Password
               </label>
               {mode === 'login' && (
                 <button
                   type="button"
                   onClick={() => alert('Password reset instructions sent to your email.')}
-                  className="text-[11px] font-semibold text-[#A06A98] hover:text-[#774170] transition-colors"
+                  className="text-[11px] font-semibold text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] transition-colors"
                 >
                   Forgot password?
                 </button>
               )}
             </div>
             <div className="relative">
-              <Lock className="w-4 h-4 text-[#A06A98] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+              <Lock className="w-4 h-4 text-[var(--accent-gold)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
@@ -491,12 +488,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 onChange={handleChange}
                 required
                 placeholder="••••••••••••"
-                className="w-full h-11 pl-10 pr-10 text-xs sm:text-sm bg-[#FAF5F8] border border-[#DFBEDB] focus:border-[#A06A98] focus:bg-white rounded-xl outline-none transition-all placeholder:text-[#999999] text-[#333333]"
+                className="w-full h-11 pl-10 pr-10 text-xs sm:text-sm bg-[var(--input-bg)] border border-[var(--border-subtle)] focus:border-[var(--accent-gold)] rounded-xl outline-none transition-all placeholder:text-[var(--text-muted)]/60 text-[var(--input-text)]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888888] hover:text-[#A06A98] transition-colors"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -507,11 +504,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             <>
               {/* Confirm Password */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-[#444444] uppercase tracking-wider block">
+                <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-[#A06A98] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+                  <Lock className="w-4 h-4 text-[var(--accent-gold)] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     name="confirmPassword"
@@ -519,12 +516,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                     onChange={handleChange}
                     required
                     placeholder="••••••••••••"
-                    className="w-full h-11 pl-10 pr-10 text-xs sm:text-sm bg-[#FAF5F8] border border-[#DFBEDB] focus:border-[#A06A98] focus:bg-white rounded-xl outline-none transition-all placeholder:text-[#999999] text-[#333333]"
+                    className="w-full h-11 pl-10 pr-10 text-xs sm:text-sm bg-[var(--input-bg)] border border-[var(--border-subtle)] focus:border-[var(--accent-gold)] rounded-xl outline-none transition-all placeholder:text-[var(--text-muted)]/60 text-[var(--input-text)]"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888888] hover:text-[#A06A98] transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -533,13 +530,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
               {/* Newsletter Opt-in */}
               <div className="pt-1 space-y-2">
-                <label className="flex items-start gap-2.5 text-xs text-[#555555] cursor-pointer">
+                <label className="flex items-start gap-2.5 text-xs text-[var(--text-muted)] cursor-pointer">
                   <input
                     type="checkbox"
                     name="subscribeNewsletter"
                     checked={formData.subscribeNewsletter}
                     onChange={handleChange}
-                    className="mt-0.5 accent-[#A06A98] rounded cursor-pointer"
+                    className="mt-0.5 accent-[var(--accent-gold)] rounded cursor-pointer"
                   />
                   <span>
                     Receive exclusive beauty gifts, early collection access, and atelier updates.
@@ -553,10 +550,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-12 bg-[#A06A98] hover:bg-[#774170] active:scale-[0.99] text-white rounded-xl font-bold text-xs sm:text-sm uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer mt-6"
+            className="w-full h-12 btn-theme-primary rounded-xl font-bold text-xs sm:text-sm uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer mt-6"
           >
             {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
             ) : (
               <span>{mode === 'login' ? 'SIGN IN' : 'SIGN UP'}</span>
             )}
@@ -564,8 +561,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         </form>
 
         {/* Footer info & toggle */}
-        <div className="mt-8 pt-6 border-t border-[#F0DEF7] text-center space-y-3">
-          <p className="text-xs text-[#666666]">
+        <div className="mt-8 pt-6 border-t border-[var(--border-subtle)] text-center space-y-3">
+          <p className="text-xs text-[var(--text-muted)]">
             {mode === 'login' ? "Don't have an account yet?" : 'Already a Veloraa Rougee member?'}
             {' '}
             <button
@@ -574,18 +571,18 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 setMode(mode === 'login' ? 'signup' : 'login');
                 setAuthSuccess(null);
               }}
-              className="font-bold text-[#A06A98] hover:text-[#774170] underline underline-offset-2 transition-colors cursor-pointer"
+              className="font-bold text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] underline underline-offset-2 transition-colors cursor-pointer"
             >
               {mode === 'login' ? 'Join Now' : 'Sign In'}
             </button>
           </p>
 
-          <p className="text-[11px] text-[#888888]">
+          <p className="text-[11px] text-[var(--text-muted)]">
             Protected by 256-bit encryption. By continuing, you agree to our{' '}
             <button
               type="button"
               onClick={() => onNavigate('/en/legal/terms-and-conditions')}
-              className="underline hover:text-[#A06A98]"
+              className="underline hover:text-[var(--accent-gold)] transition-colors"
             >
               Terms
             </button>{' '}
@@ -593,7 +590,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('/en/legal/privacy-policy')}
-              className="underline hover:text-[#A06A98]"
+              className="underline hover:text-[var(--accent-gold)] transition-colors"
             >
               Privacy Policy
             </button>

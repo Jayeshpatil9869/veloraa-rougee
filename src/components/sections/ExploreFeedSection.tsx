@@ -27,13 +27,13 @@ export const ExploreFeedSection: React.FC = () => {
   ];
 
   return (
-    <section className="px-4 py-12 lg:px-20 lg:py-16 bg-white space-y-6 text-center select-none">
+    <section className="px-4 py-12 lg:px-20 lg:py-16 bg-[var(--bg-primary)] space-y-6 text-center select-none transition-colors">
       <ScrollReveal direction="up" distance={20}>
         <div className="max-w-2xl mx-auto space-y-3">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#333333]">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)]">
             Explore Our Feed
           </h2>
-          <p className="text-sm sm:text-base font-bold text-[#666666] leading-relaxed">
+          <p className="text-sm sm:text-base font-bold text-[var(--text-muted)] leading-relaxed">
             We promise you top quality make-up that makes you stand out from the crowd by staying true to your natural self! #veloraarougee
           </p>
         </div>
@@ -56,7 +56,7 @@ export const ExploreFeedSection: React.FC = () => {
 
           return (
             <StaggerItem key={post.id} className={`${orderClass} h-full`}>
-              <div className="group relative aspect-square rounded-brand overflow-hidden bg-slate-50 border border-[#E2E8F0] shadow-xs">
+              <div className="group relative aspect-square rounded-brand overflow-hidden bg-[var(--bg-secondary)] border border-[var(--border-subtle)] shadow-xs">
                 <BrandImage
                   src={post.src}
                   alt={post.caption}

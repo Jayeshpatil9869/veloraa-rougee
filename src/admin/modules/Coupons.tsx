@@ -115,7 +115,7 @@ export const CouponsModule: React.FC = () => {
           >
             <form className="space-y-4" onSubmit={(event) => void save(event)}>
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#86533A]">
                   Promo Code *
                 </label>
                 <input
@@ -129,7 +129,7 @@ export const CouponsModule: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#86533A]">
                     Discount Mode
                   </label>
                   <select
@@ -145,7 +145,7 @@ export const CouponsModule: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#86533A]">
                     Value *
                   </label>
                   <input
@@ -161,25 +161,25 @@ export const CouponsModule: React.FC = () => {
               </div>
 
               {/* Product Selection List */}
-              <div className="pt-3 border-t border-[#E2E8F0] space-y-2">
+              <div className="pt-3 border-t border-[#E6D9CB] space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#76416F] flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5" />
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#86533A] flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-[#B9997F]" />
                     Applicable Items ({selected.length} chosen)
                   </label>
                   <button
                     type="button"
                     onClick={selectAll}
-                    className="text-[11px] font-bold text-[#A06A98] hover:text-[#774170] cursor-pointer"
+                    className="text-[11px] font-bold text-[#86533A] hover:text-[#080604] cursor-pointer"
                   >
                     {selected.length === products.length ? 'Deselect All' : 'Select All'}
                   </button>
                 </div>
 
-                <div className="max-h-60 overflow-y-auto space-y-3 p-2 bg-[#FAF5F8]/60 rounded-[0.3rem] border border-[#E2E8F0]">
+                <div className="max-h-60 overflow-y-auto space-y-3 p-2 bg-[#F5EBE0]/60 rounded-[0.3rem] border border-[#E6D9CB]">
                   {groups.map(([category, items]) => (
                     <div key={category} className="space-y-1.5">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#76416F]">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#86533A]">
                         {category}
                       </p>
                       <div className="grid gap-1 pl-1">
@@ -191,12 +191,12 @@ export const CouponsModule: React.FC = () => {
                             <label
                               key={product.databaseId || product.id}
                               className={`flex items-center gap-2 px-2 py-1.5 rounded-[0.3rem] text-xs transition-colors cursor-pointer ${
-                                isChecked ? 'bg-[#FDF2F8] text-[#76416F] font-semibold' : 'text-[#333333] hover:bg-white'
+                                isChecked ? 'bg-[#F1E7DA] text-[#86533A] font-semibold' : 'text-[#080604] hover:bg-white'
                               }`}
                             >
                               <input
                                 type="checkbox"
-                                className="accent-[#A06A98] rounded-xs"
+                                className="accent-[#86533A] rounded-xs"
                                 checked={isChecked}
                                 onChange={() =>
                                   product.databaseId && toggle(product.databaseId)
@@ -226,14 +226,14 @@ export const CouponsModule: React.FC = () => {
 
         {/* Right: Active Promotions Table */}
         <div className="lg:col-span-7">
-          <section className="bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs overflow-hidden">
-            <header className="px-6 py-4 border-b border-[#E2E8F0] bg-[#FDF2F8]/40 flex items-center justify-between">
+          <section className="bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs overflow-hidden">
+            <header className="px-6 py-4 border-b border-[#E6D9CB] bg-[#F1E7DA]/40 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-[#333333] flex items-center gap-2">
-                  <Tag className="w-4 h-4 text-[#A06A98]" />
+                <h2 className="text-base font-bold text-[#080604] flex items-center gap-2">
+                  <Tag className="w-4 h-4 text-[#B9997F]" />
                   Active Campaigns
                 </h2>
-                <p className="text-xs text-[#666666] mt-0.5">
+                <p className="text-xs text-[#86533A]/70 mt-0.5">
                   {rows.length} discount rules applied on checkout
                 </p>
               </div>
@@ -244,16 +244,16 @@ export const CouponsModule: React.FC = () => {
               rows={rows.map((row) => [
                 <span
                   key="code"
-                  className="font-mono font-bold text-xs text-[#76416F] bg-[#FDF2F8] px-2.5 py-1 rounded-[0.3rem] border border-[#DFBEDB]/60 inline-block"
+                  className="font-mono font-bold text-xs text-[#86533A] bg-[#F1E7DA] px-2.5 py-1 rounded-[0.3rem] border border-[#E6D9CB] inline-block"
                 >
                   {row.code}
                 </span>,
-                <span key="disc" className="font-bold text-xs text-[#333333]">
+                <span key="disc" className="font-bold text-xs text-[#080604]">
                   {row.discount_type === 'percent'
                     ? `${row.discount_value}% OFF`
                     : `₹${(row.discount_value / 100).toFixed(2)} OFF`}
                 </span>,
-                <span key="prods" className="text-xs text-[#666666]">
+                <span key="prods" className="text-xs text-[#86533A]/70">
                   {row.applicable_product_ids?.length ?? 0} products
                 </span>,
                 <StatusBadge key="stat" value={row.active ? 'active' : 'draft'} />,

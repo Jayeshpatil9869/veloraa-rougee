@@ -41,51 +41,128 @@
   font-display: swap;
 }
 
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Surfaces & Backgrounds */
+  --bg-primary: #F5EBE0;         /* Warm Cream */
+  --bg-secondary: #F1E7DA;       /* Light Beige */
+  --bg-elevated: #FFFFFF;        /* Pure Clean Card Surface */
+  --bg-subtle: #E6D9CB;          /* Champagne Tint */
+  --bg-surface: #FAF5F0;         /* Soft Neutral Surface */
+
+  /* Typography */
+  --text-primary: #080604;        /* Editorial Near-Black */
+  --text-secondary: #411F11;      /* Deep Brown */
+  --text-muted: #86533A;          /* Warm Brown */
+  --text-inverse: #F5EBE0;        /* Light Cream on Dark CTAs */
+
+  /* Accents & Brand Tones */
+  --accent-gold: #B9997F;         /* Muted Champagne Gold */
+  --accent-rose-gold: #C57E5D;    /* Rose Gold Warmth */
+  --accent-burgundy: #773323;     /* Deep Burgundy Accent */
+  --accent-nude: #DA9A78;         /* Soft Nude Tag */
+  --accent-blush: #E1BEA6;        /* Subtle Blush */
+
+  /* Borders & Dividers */
+  --border-subtle: #E6D9CB;       /* Champagne Divider */
+  --border-strong: #B9997F;       /* Gold Focus / Highlight Border */
+
+  /* Interactive Elements */
+  --btn-primary-bg: #0A0A08;      /* Dark Black Primary CTA */
+  --btn-primary-text: #F5EBE0;    /* Warm Cream Text */
+  --btn-primary-hover: #773323;   /* Burgundy Hover */
+  --btn-secondary-bg: #F1E7DA;    /* Light Beige Button */
+  --btn-secondary-text: #080604;  /* Near Black Text */
+
+  /* Header & Shell */
+  --header-bg: rgba(255, 255, 255, 0.94);
+  --header-border: #E6D9CB;
+  --announcement-bg: #F5EBE0;
+  --announcement-text: #411F11;
+  --footer-bg: #080604;
+  --footer-text: #F5EBE0;
+  --card-bg: #FFFFFF;
+  --input-bg: #FFFFFF;
+  --input-border: #E6D9CB;
+  --input-text: #080604;
+
+  --focus-ring: #B9997F;
+
+  --font-amithen: 'Amithen', 'Alex Brush', cursive;
+  --font-sofia-pro: 'Sofia Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+
+  /* Surfaces & Backgrounds */
+  --bg-primary: #080604;         /* Deep Obsidian Black */
+  --bg-secondary: #0A0A08;       /* Warm Charcoal Tone */
+  --bg-elevated: #16120E;        /* Dark Chocolate Card Surface */
+  --bg-subtle: #241A13;          /* Deep Brown Surface Pill */
+  --bg-surface: #1E1610;         /* Elevated Container Surface */
+
+  /* Typography */
+  --text-primary: #F2DCC3;        /* Warm Cream Heading */
+  --text-secondary: #CFB19C;      /* Champagne Body Text */
+  --text-muted: #B97858;          /* Rose Gold Muted Label */
+  --text-inverse: #080604;        /* Deep Black on Gold CTAs */
+
+  /* Accents & Brand Tones */
+  --accent-gold: #D6B17A;         /* Antique Gold */
+  --accent-rose-gold: #B97858;    /* Warm Rose-Gold */
+  --accent-copper: #C88D6E;       /* Metallic Copper */
+  --accent-burgundy: #591716;     /* Midnight Burgundy */
+  --accent-terracotta: #97513C;   /* Warm Terracotta */
+  --accent-nude: #CFB19C;
+  --accent-blush: #B97858;
+
+  /* Borders & Dividers */
+  --border-subtle: #342921;       /* Dark Brown Divider */
+  --border-strong: #7F4C34;       /* Copper-Brown Outline */
+
+  /* Interactive Elements */
+  --btn-primary-bg: #D6B17A;      /* Antique Gold Primary CTA */
+  --btn-primary-text: #080604;    /* Deep Black Text */
+  --btn-primary-hover: #C88D6E;   /* Warm Copper Hover */
+  --btn-secondary-bg: #241A13;    /* Deep Brown Pill */
+  --btn-secondary-text: #F2DCC3;  /* Warm Cream Text */
+
+  /* Header & Shell */
+  --header-bg: rgba(8, 6, 4, 0.94);
+  --header-border: #342921;
+  --announcement-bg: #16120E;
+  --announcement-text: #D6B17A;
+  --footer-bg: #040302;
+  --footer-text: #CFB19C;
+  --card-bg: #16120E;
+  --input-bg: #16120E;
+  --input-border: #342921;
+  --input-text: #F2DCC3;
+
+  --focus-ring: #D6B17A;
+}
+
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 20%;
-
-    --primary: 308 22% 52%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 327 69% 97%;
-    --secondary-foreground: 308 29% 36%;
-
-    --tertiary: 307 34% 81%;
-    --tertiary-foreground: 308 22% 52%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 0 0% 40%;
-
-    --light: 0 0% 40%;
-    --accent: 210 40% 96.1%;
-
-    --destructive: 0 84.2% 60.2%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 283 60% 92%;
-    --ring: 308 22% 52%;
-
-    --card: 0 0% 100%;
-    --popover: 0 0% 100%;
-
-    --radius: 0.3rem;
-
-    --font-amithen: 'Amithen', 'Alex Brush', cursive;
-    --font-sofia-pro: 'Sofia Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  * {
+    border-color: var(--border-subtle);
   }
 
-  * {
-    border-color: hsl(var(--border));
+  html {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
   }
 
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     font-family: var(--font-sofia-pro);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 200ms ease, color 200ms ease;
   }
 
   @media (max-width: 767px) {
@@ -94,6 +171,40 @@
       font-size: clamp(0.4rem, 0.6rem + 1.6vw, 1rem) !important;
     }
   }
+}
+
+/* Semantic Theme Utility Classes */
+.bg-theme-primary { background-color: var(--bg-primary); }
+.bg-theme-secondary { background-color: var(--bg-secondary); }
+.bg-theme-elevated { background-color: var(--bg-elevated); }
+.bg-theme-subtle { background-color: var(--bg-subtle); }
+.bg-theme-surface { background-color: var(--bg-surface); }
+
+.text-theme-primary { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-muted { color: var(--text-muted); }
+.text-theme-inverse { color: var(--text-inverse); }
+
+.border-theme-subtle { border-color: var(--border-subtle); }
+.border-theme-strong { border-color: var(--border-strong); }
+
+.btn-theme-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  transition: all 200ms ease;
+}
+.btn-theme-primary:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+.btn-theme-secondary {
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--border-subtle);
+  transition: all 200ms ease;
+}
+.btn-theme-secondary:hover {
+  border-color: var(--border-strong);
 }
 
 .font-serif,
@@ -108,49 +219,102 @@
 
 /* Custom exact hex surfaces and theme colors */
 .bg-primary {
-  background-color: #A06A98;
+  background-color: var(--accent-gold);
 }
 .text-primary {
-  color: #A06A98;
+  color: var(--accent-gold);
 }
 .border-primary {
-  border-color: #A06A98;
+  border-color: var(--accent-gold);
 }
 
 .bg-primary-foreground {
-  background-color: #F8FAFC;
+  background-color: var(--btn-primary-bg);
 }
 .text-primary-foreground {
-  color: #F8FAFC;
+  color: var(--btn-primary-text);
 }
 
 .bg-secondary {
-  background-color: #FDF2F8;
+  background-color: var(--bg-secondary);
 }
 .text-secondary {
-  color: #FDF2F8;
+  color: var(--text-secondary);
 }
 .text-secondary-foreground {
-  color: #76416F;
+  color: var(--text-primary);
+}
+
+.text-muted-foreground {
+  color: var(--text-muted);
 }
 
 .bg-tertiary {
-  background-color: #DFBEDB;
+  background-color: var(--bg-subtle);
 }
 .text-tertiary {
-  color: #DFBEDB;
+  color: var(--accent-rose-gold);
 }
 .border-tertiary {
-  border-color: #DFBEDB;
+  border-color: var(--border-subtle);
 }
 
 .text-light {
-  color: #666666;
+  color: var(--text-muted);
 }
 
 .bg-collection-band {
-  background-color: #FDF4F9;
+  background-color: var(--bg-secondary);
 }
+
+/* Warm Velvet Luxury Palette Utilities */
+.bg-cream { background-color: #F5EBE0; }
+.text-cream { color: #F5EBE0; }
+.border-cream { border-color: #F5EBE0; }
+
+.bg-light-beige { background-color: #F1E7DA; }
+.text-light-beige { color: #F1E7DA; }
+.border-light-beige { border-color: #F1E7DA; }
+
+.bg-champagne { background-color: #E6D9CB; }
+.text-champagne { color: #E6D9CB; }
+.border-champagne { border-color: #E6D9CB; }
+
+.bg-dark-obsidian { background-color: #080604; }
+.text-dark-obsidian { color: #080604; }
+.border-dark-obsidian { border-color: #080604; }
+
+.bg-dark-black { background-color: #0A0A08; }
+.text-dark-black { color: #0A0A08; }
+.border-dark-black { border-color: #0A0A08; }
+
+.bg-gold { background-color: #B9997F; }
+.text-gold { color: #B9997F; }
+.border-gold { border-color: #B9997F; }
+
+.bg-rose-gold { background-color: #C57E5D; }
+.text-rose-gold { color: #C57E5D; }
+.border-rose-gold { border-color: #C57E5D; }
+
+.bg-nude { background-color: #DA9A78; }
+.text-nude { color: #DA9A78; }
+.border-nude { border-color: #DA9A78; }
+
+.bg-warm-brown { background-color: #86533A; }
+.text-warm-brown { color: #86533A; }
+.border-warm-brown { border-color: #86533A; }
+
+.bg-deep-brown { background-color: #411F11; }
+.text-deep-brown { color: #411F11; }
+.border-deep-brown { border-color: #411F11; }
+
+.bg-burgundy { background-color: #773323; }
+.text-burgundy { color: #773323; }
+.border-burgundy { border-color: #773323; }
+
+.bg-blush { background-color: #E1BEA6; }
+.text-blush { color: #E1BEA6; }
+.border-blush { border-color: #E1BEA6; }
 
 .rounded-brand {
   border-radius: 2.8px;
@@ -214,18 +378,18 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #DFBEDB;
+  background: var(--accent-gold);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #A06A98;
+  background: var(--text-muted);
 }
 
 /* Modal Luxury Smooth Scrollbar */
 .modal-luxury-scroll {
   scrollbar-width: thin;
-  scrollbar-color: #A06A98 #FDF2F8;
+  scrollbar-color: var(--accent-gold) var(--bg-secondary);
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
@@ -236,19 +400,19 @@
 }
 
 .modal-luxury-scroll::-webkit-scrollbar-track {
-  background: #FDF2F8;
+  background: var(--bg-secondary);
   border-radius: 9999px;
   margin: 6px 0;
 }
 
 .modal-luxury-scroll::-webkit-scrollbar-thumb {
-  background: #A06A98;
+  background: var(--accent-gold);
   border-radius: 9999px;
-  border: 1.5px solid #FDF2F8;
+  border: 1.5px solid var(--bg-secondary);
 }
 
 .modal-luxury-scroll::-webkit-scrollbar-thumb:hover {
-  background: #76416F;
+  background: var(--text-muted);
 }
 
 /* Hide scrollbar utility */
@@ -287,12 +451,12 @@ select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus,
 select:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #FAF5F8 inset !important;
-  box-shadow: 0 0 0 1000px #FAF5F8 inset !important;
-  -webkit-text-fill-color: #333333 !important;
-  color: #333333 !important;
-  caret-color: #A06A98 !important;
-  border-color: #DFBEDB !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  -webkit-text-fill-color: var(--input-text) !important;
+  color: var(--input-text) !important;
+  caret-color: var(--accent-gold) !important;
+  border-color: var(--input-border) !important;
   transition: background-color 50000s ease-in-out 0s;
 }
 
@@ -300,6 +464,6 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none !important;
-  border-color: #A06A98 !important;
+  border-color: var(--focus-ring) !important;
 }
 

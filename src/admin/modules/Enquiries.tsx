@@ -118,7 +118,7 @@ export const EnquiriesModule: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -142,7 +142,7 @@ export const EnquiriesModule: React.FC = () => {
       <DataTable
         columns={['Date Received', 'Client Name', 'Contact Details', 'Inquiry Message', 'Current Status', 'Action']}
         rows={filteredRows.map((row) => [
-          <span key="date" className="text-xs text-[#666666] font-mono">
+          <span key="date" className="text-xs text-[#86533A]/70 font-mono">
             {new Date(row.created_at).toLocaleDateString('en-IN', {
               month: 'short',
               day: 'numeric',
@@ -150,28 +150,28 @@ export const EnquiriesModule: React.FC = () => {
               minute: '2-digit',
             })}
           </span>,
-          <span key="name" className="font-bold text-xs text-[#333333]">
+          <span key="name" className="font-bold text-xs text-[#080604]">
             {row.first_name} {row.last_name}
           </span>,
           <div key="contact" className="min-w-0">
             <a
               href={`mailto:${row.email}`}
-              className="text-xs font-semibold text-[#A06A98] hover:underline block truncate"
+              className="text-xs font-semibold text-[#86533A] hover:underline block truncate"
             >
               {row.email}
             </a>
             {row.phone && (
-              <span className="text-[11px] text-[#888888] font-mono block">
+              <span className="text-[11px] text-[#86533A]/70 font-mono block">
                 {row.phone}
               </span>
             )}
           </div>,
-          <p key="msg" className="text-xs text-[#555555] line-clamp-2 max-w-sm">
+          <p key="msg" className="text-xs text-[#080604]/80 line-clamp-2 max-w-sm">
             {row.message}
           </p>,
           <select
             key="status"
-            className="h-8 px-2.5 border border-[#E2E8F0] rounded-[0.3rem] bg-[#FAF5F8] text-xs font-bold text-[#76416F] focus:outline-none focus:border-[#A06A98] cursor-pointer"
+            className="h-8 px-2.5 border border-[#E6D9CB] rounded-[0.3rem] bg-[#F5EBE0] text-xs font-bold text-[#86533A] focus:outline-none focus:border-[#B9997F] cursor-pointer"
             value={row.status}
             onChange={(event) => void update(row.id, event.target.value as EnquiryRow['status'])}
           >
@@ -183,7 +183,7 @@ export const EnquiriesModule: React.FC = () => {
             key="view"
             type="button"
             onClick={() => setViewing(row)}
-            className="p-1.5 text-[#666666] hover:text-[#A06A98] hover:bg-[#FDF2F8] rounded-[0.3rem] transition-colors cursor-pointer"
+            className="p-1.5 text-[#86533A] hover:text-[#080604] hover:bg-[#F5EBE0] rounded-[0.3rem] transition-colors cursor-pointer"
             title="View Full Message"
           >
             <Eye className="w-4 h-4" />
@@ -207,29 +207,29 @@ export const EnquiriesModule: React.FC = () => {
           maxWidth="max-w-lg"
         >
           <div className="space-y-4 text-xs">
-            <div className="p-3 bg-[#FAF5F8] rounded-[0.3rem] border border-[#E2E8F0] space-y-1">
-              <p className="font-semibold text-[#333333]">Contact Information:</p>
-              <p className="text-[#666666]">Email: <a href={`mailto:${viewing.email}`} className="text-[#A06A98] font-bold underline">{viewing.email}</a></p>
-              {viewing.phone && <p className="text-[#666666]">Phone: <span className="font-mono text-[#333333]">{viewing.phone}</span></p>}
+            <div className="p-3 bg-[#F5EBE0] rounded-[0.3rem] border border-[#E6D9CB] space-y-1">
+              <p className="font-semibold text-[#080604]">Contact Information:</p>
+              <p className="text-[#86533A]/70">Email: <a href={`mailto:${viewing.email}`} className="text-[#86533A] font-bold underline">{viewing.email}</a></p>
+              {viewing.phone && <p className="text-[#86533A]/70">Phone: <span className="font-mono text-[#080604]">{viewing.phone}</span></p>}
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-bold uppercase tracking-wider text-[#76416F] text-[11px]">
+              <label className="font-bold uppercase tracking-wider text-[#86533A] text-[11px]">
                 Customer Message
               </label>
-              <div className="p-4 bg-white border border-[#E2E8F0] rounded-[0.3rem] text-[#333333] leading-relaxed whitespace-pre-wrap">
+              <div className="p-4 bg-white border border-[#E6D9CB] rounded-[0.3rem] text-[#080604] leading-relaxed whitespace-pre-wrap">
                 {viewing.message}
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-[#E2E8F0]">
+            <div className="flex items-center justify-between pt-4 border-t border-[#E6D9CB]">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-[#666666]">Status:</span>
+                <span className="font-bold text-[#86533A]">Status:</span>
                 <StatusBadge value={viewing.status} />
               </div>
               <a
                 href={`mailto:${viewing.email}?subject=Veloraa%20Rougee%20Concierge%20Support`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[0.3rem] bg-[#A06A98] hover:bg-[#774170] text-white font-bold transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[0.3rem] bg-[#B9997F] hover:bg-[#86533A] text-white font-bold transition-all"
               >
                 <Mail className="w-3.5 h-3.5" />
                 <span>Reply by Email</span>

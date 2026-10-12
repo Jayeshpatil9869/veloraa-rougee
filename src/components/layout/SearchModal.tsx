@@ -58,25 +58,25 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     >
       <div
         data-lenis-prevent
-        className="w-full max-w-2xl bg-white rounded-brand shadow-2xl overflow-hidden border border-[#E2E8F0] animate-in fade-in zoom-in-95 duration-200"
+        className="w-full max-w-2xl bg-[var(--bg-elevated)] rounded-brand shadow-2xl overflow-hidden border border-[var(--border-subtle)] animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Bar */}
-        <div className="relative flex items-center px-4 py-3.5 border-b border-[#E2E8F0]">
-          <Search className="w-5 h-5 text-[#A06A98] mr-3 shrink-0" />
+        <div className="relative flex items-center px-4 py-3.5 border-b border-[var(--border-subtle)]">
+          <Search className="w-5 h-5 text-[var(--accent-gold)] mr-3 shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for products, shades, formulas..."
-            className="w-full text-base text-[#333333] placeholder-[#888888] focus:outline-none bg-transparent"
+            className="w-full text-base text-[var(--text-primary)] placeholder-[var(--text-muted)]/70 focus:outline-none bg-transparent"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="p-1 text-[#888888] hover:text-[#333333] mr-2"
+              className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] mr-2 transition-colors"
               aria-label="Clear query"
             >
               <X className="w-4 h-4" />
@@ -85,15 +85,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-[#666666] hover:text-[#333333] rounded-brand border border-[#E2E8F0] text-xs font-semibold px-2 uppercase"
+            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-brand border border-[var(--border-subtle)] text-xs font-semibold px-2 uppercase transition-colors"
           >
             Esc
           </button>
         </div>
 
         {/* Category Pills (Functional filter buttons) */}
-        <div className="px-4 py-2.5 bg-[#FDF2F8]/60 border-b border-[#F0DEF7]/40 flex items-center gap-2 overflow-x-auto text-xs">
-          <span className="text-[#76416F] font-bold uppercase tracking-wider shrink-0 mr-1">
+        <div className="px-4 py-2.5 bg-[var(--bg-secondary)] border-b border-[var(--border-subtle)] flex items-center gap-2 overflow-x-auto text-xs">
+          <span className="text-[var(--text-secondary)] font-bold uppercase tracking-wider shrink-0 mr-1">
             Filter:
           </span>
           {categories.map((cat) => (
@@ -102,8 +102,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               onClick={() => setActiveCategory(cat.id)}
               className={`px-3 py-1 rounded-brand text-xs font-semibold transition-colors shrink-0 ${
                 activeCategory === cat.id
-                  ? 'bg-[#A06A98] text-white shadow-xs'
-                  : 'bg-white text-[#555555] hover:bg-[#FDF2F8] border border-[#E2E8F0]'
+                  ? 'btn-theme-primary shadow-xs'
+                  : 'bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)]'
               }`}
             >
               {cat.label}
@@ -112,7 +112,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
         {/* Results Stream */}
-        <div className="max-h-[60vh] overflow-y-auto p-4 divide-y divide-slate-100">
+        <div className="max-h-[60vh] overflow-y-auto p-4 divide-y divide-[var(--border-subtle)] modal-luxury-scroll">
           {results.length > 0 ? (
             results.map((product) => (
               <div
@@ -121,9 +121,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                   onSelectProduct(product);
                   onClose();
                 }}
-                className="py-3 px-2 flex items-center gap-4 cursor-pointer hover:bg-[#FDF2F8]/50 rounded-brand transition-colors group"
+                className="py-3 px-2 flex items-center gap-4 cursor-pointer hover:bg-[var(--bg-subtle)] rounded-brand transition-colors group"
               >
-                <div className="w-14 h-14 bg-white border border-[#E2E8F0] rounded-brand overflow-hidden shrink-0">
+                <div className="w-14 h-14 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded-brand overflow-hidden shrink-0">
                   <BrandImage
                     src={product.images[0]?.src}
                     alt={product.name}
@@ -132,32 +132,32 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#A06A98] block">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent-gold)] block">
                     {product.categoryName}
                   </span>
-                  <h4 className="text-sm font-bold text-[#333333] truncate group-hover:text-[#A06A98] transition-colors">
+                  <h4 className="text-sm font-bold text-[var(--text-primary)] truncate group-hover:text-[var(--accent-gold)] transition-colors">
                     {product.name}
                   </h4>
-                  <p className="text-xs text-[#666666] truncate">
+                  <p className="text-xs text-[var(--text-muted)] truncate">
                     {product.shortDescription}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="text-sm font-bold text-[#333333] tabular-nums block">
+                  <span className="text-sm font-bold text-[var(--text-primary)] tabular-nums block">
                     ₹{product.variants[0]?.price.toFixed(2)}
                   </span>
-                  <span className="text-[11px] text-[#A06A98] flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[11px] text-[var(--accent-gold)] flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     View <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
               </div>
             ))
           ) : (
-            <div className="py-12 text-center text-[#666666]">
-              <p className="text-sm font-semibold text-[#333333]">
+            <div className="py-12 text-center text-[var(--text-muted)]">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">
                 No beauty products match "{query}".
               </p>
-              <p className="text-xs mt-1 text-[#888888]">
+              <p className="text-xs mt-1 text-[var(--text-muted)]/80">
                 Try checking spelling or explore our complete collections.
               </p>
               <button
@@ -165,7 +165,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                   onNavigateToCatalog();
                   onClose();
                 }}
-                className="mt-4 px-4 py-2 bg-[#A06A98] text-white text-xs font-bold uppercase tracking-wider rounded-brand hover:bg-[#774170] transition-colors"
+                className="mt-4 px-4 py-2 btn-theme-primary text-xs font-bold uppercase tracking-wider rounded-brand"
               >
                 Browse All 23 Products
               </button>

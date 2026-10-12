@@ -141,7 +141,7 @@ export const OrdersModule: React.FC<{
           <button
             type="button"
             onClick={() => onOpen('')}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#A06A98] hover:text-[#774170] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#86533A] hover:text-[#080604] transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to All Orders</span>
@@ -157,37 +157,37 @@ export const OrdersModule: React.FC<{
         <div className="grid lg:grid-cols-12 gap-6 items-start">
           {/* Main Line Items and Details */}
           <div className="lg:col-span-8 space-y-6">
-            <section className="bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs overflow-hidden">
-              <header className="px-6 py-4 border-b border-[#E2E8F0] bg-[#FDF2F8]/40 flex items-center justify-between">
+            <section className="bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs overflow-hidden">
+              <header className="px-6 py-4 border-b border-[#E6D9CB] bg-[#F1E7DA]/40 flex items-center justify-between">
                 <div>
-                  <h2 className="text-base font-bold text-[#333333] font-mono">
+                  <h2 className="text-base font-bold text-[#080604] font-mono">
                     Order #{detail.order.order_number}
                   </h2>
-                  <p className="text-xs text-[#666666] flex items-center gap-1.5 mt-0.5">
-                    <Calendar className="w-3 h-3 text-[#A06A98]" />
+                  <p className="text-xs text-[#86533A]/70 flex items-center gap-1.5 mt-0.5">
+                    <Calendar className="w-3 h-3 text-[#B9997F]" />
                     Placed on {new Date(detail.order.created_at || Date.now()).toLocaleString('en-IN')}
                   </p>
                 </div>
               </header>
 
               {/* Line Items List */}
-              <div className="p-6 divide-y divide-[#F1F5F9]">
+              <div className="p-6 divide-y divide-[#F1E7DA]">
                 {detail.items.map((item, index) => (
                   <div key={index} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-[0.3rem] bg-[#FAF5F8] border border-[#E2E8F0] flex items-center justify-center shrink-0">
-                        <Package className="w-5 h-5 text-[#A06A98]" />
+                      <div className="w-10 h-10 rounded-[0.3rem] bg-[#F5EBE0] border border-[#E6D9CB] flex items-center justify-center shrink-0">
+                        <Package className="w-5 h-5 text-[#B9997F]" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-xs text-[#333333] truncate">
+                        <p className="font-bold text-xs text-[#080604] truncate">
                           {item.product_name}
                         </p>
-                        <p className="text-[11px] text-[#666666]">
-                          Shade: <span className="font-semibold text-[#76416F]">{item.variant_name}</span> × {item.quantity}
+                        <p className="text-[11px] text-[#86533A]/70">
+                          Shade: <span className="font-semibold text-[#86533A]">{item.variant_name}</span> × {item.quantity}
                         </p>
                       </div>
                     </div>
-                    <span className="font-bold text-xs text-[#333333] shrink-0">
+                    <span className="font-bold text-xs text-[#080604] shrink-0">
                       {rupees(item.line_total_paise)}
                     </span>
                   </div>
@@ -195,8 +195,8 @@ export const OrdersModule: React.FC<{
               </div>
 
               {/* Financial Calculation */}
-              <div className="px-6 py-4 bg-[#FAF5F8]/50 border-t border-[#E2E8F0] space-y-2 text-xs">
-                <div className="flex justify-between text-[#666666]">
+              <div className="px-6 py-4 bg-[#F5EBE0]/50 border-t border-[#E6D9CB] space-y-2 text-xs">
+                <div className="flex justify-between text-[#86533A]/70">
                   <span>Subtotal</span>
                   <span>{rupees(Number(detail.order.subtotal_paise))}</span>
                 </div>
@@ -206,13 +206,13 @@ export const OrdersModule: React.FC<{
                     <span>-{rupees(Number(detail.order.discount_paise))}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-[#666666]">
+                <div className="flex justify-between text-[#86533A]/70">
                   <span>Shipping & Delivery</span>
                   <span>{rupees(Number(detail.order.shipping_paise))}</span>
                 </div>
-                <div className="pt-2 border-t border-[#E2E8F0] flex justify-between font-bold text-sm text-[#333333]">
+                <div className="pt-2 border-t border-[#E6D9CB] flex justify-between font-bold text-sm text-[#080604]">
                   <span>Total Paid</span>
-                  <span className="text-[#A06A98]">{rupees(Number(detail.order.total_paise))}</span>
+                  <span className="text-[#86533A]">{rupees(Number(detail.order.total_paise))}</span>
                 </div>
               </div>
             </section>
@@ -221,32 +221,32 @@ export const OrdersModule: React.FC<{
           {/* Right Column: Customer & Delivery Address */}
           <div className="lg:col-span-4 space-y-6">
             {/* Customer Details */}
-            <div className="bg-white border border-[#E2E8F0] rounded-[0.3rem] p-5 shadow-xs space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#76416F] flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-[#A06A98]" />
+            <div className="bg-white border border-[#E6D9CB] rounded-[0.3rem] p-5 shadow-xs space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#86533A] flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-[#B9997F]" />
                 Customer Contact
               </h3>
-              <p className="text-xs font-bold text-[#333333]">
+              <p className="text-xs font-bold text-[#080604]">
                 {detail.address?.full_name || 'Boutique Client'}
               </p>
-              <p className="text-xs text-[#666666]">{detail.order.email}</p>
+              <p className="text-xs text-[#86533A]/70">{detail.order.email}</p>
               {detail.address?.phone && (
-                <p className="text-xs text-[#666666] flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-[#999999]" />
+                <p className="text-xs text-[#86533A]/70 flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-[#B9997F]" />
                   {detail.address.phone}
                 </p>
               )}
             </div>
 
             {/* Delivery Address */}
-            <div className="bg-white border border-[#E2E8F0] rounded-[0.3rem] p-5 shadow-xs space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#76416F] flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#A06A98]" />
+            <div className="bg-white border border-[#E6D9CB] rounded-[0.3rem] p-5 shadow-xs space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#86533A] flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-[#B9997F]" />
                 Delivery Address
               </h3>
               {detail.address ? (
-                <div className="text-xs text-[#555555] space-y-0.5 leading-relaxed">
-                  <p className="font-semibold text-[#333333]">{detail.address.full_name}</p>
+                <div className="text-xs text-[#080604]/80 space-y-0.5 leading-relaxed">
+                  <p className="font-semibold text-[#080604]">{detail.address.full_name}</p>
                   <p>{detail.address.line1}</p>
                   {detail.address.line2 && <p>{detail.address.line2}</p>}
                   <p>
@@ -254,25 +254,25 @@ export const OrdersModule: React.FC<{
                       .filter(Boolean)
                       .join(', ')}
                   </p>
-                  <p className="font-semibold text-[#76416F]">{detail.address.country}</p>
+                  <p className="font-semibold text-[#86533A]">{detail.address.country}</p>
                 </div>
               ) : (
-                <p className="text-xs text-[#999999]">No shipping address recorded.</p>
+                <p className="text-xs text-[#86533A]/50">No shipping address recorded.</p>
               )}
             </div>
 
             {/* Payment Transactions */}
-            <div className="bg-white border border-[#E2E8F0] rounded-[0.3rem] p-5 shadow-xs space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#76416F] flex items-center gap-1.5">
-                <CreditCard className="w-3.5 h-3.5 text-[#A06A98]" />
+            <div className="bg-white border border-[#E6D9CB] rounded-[0.3rem] p-5 shadow-xs space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#86533A] flex items-center gap-1.5">
+                <CreditCard className="w-3.5 h-3.5 text-[#B9997F]" />
                 Payment Gateway
               </h3>
               {detail.payments.length > 0 ? (
                 detail.payments.map((p, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-xs pt-1 border-t border-[#F1F5F9] first:border-0 first:pt-0">
+                  <div key={idx} className="flex items-center justify-between text-xs pt-1 border-t border-[#F1E7DA] first:border-0 first:pt-0">
                     <div>
-                      <p className="font-bold text-[#333333] capitalize">{p.gateway}</p>
-                      <p className="text-[10px] text-[#999999]">
+                      <p className="font-bold text-[#080604] capitalize">{p.gateway}</p>
+                      <p className="text-[10px] text-[#86533A]/60">
                         {new Date(p.created_at).toLocaleTimeString('en-IN')}
                       </p>
                     </div>
@@ -280,7 +280,7 @@ export const OrdersModule: React.FC<{
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-[#999999]">Pending gateway settlement.</p>
+                <p className="text-xs text-[#86533A]/50">Pending gateway settlement.</p>
               )}
             </div>
           </div>
@@ -300,7 +300,7 @@ export const OrdersModule: React.FC<{
       />
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -324,19 +324,19 @@ export const OrdersModule: React.FC<{
       <DataTable
         columns={['Order #', 'Customer & Contact', 'Ordered Items', 'Total', 'Order Status', 'Payment', 'Action']}
         rows={filteredRows.map((order) => [
-          <span key="num" className="font-bold text-xs text-[#A06A98] font-mono">
+          <span key="num" className="font-bold text-xs text-[#86533A] font-mono">
             {order.order_number}
           </span>,
           <div key="who" className="min-w-0">
-            <p className="font-bold text-xs text-[#333333] truncate">
+            <p className="font-bold text-xs text-[#080604] truncate">
               {order.customer_name || 'Boutique Guest'}
             </p>
-            <p className="text-[11px] text-[#888888] truncate">{order.email}</p>
+            <p className="text-[11px] text-[#86533A]/70 truncate">{order.email}</p>
           </div>,
-          <span key="items" className="text-xs text-[#666666] line-clamp-1 max-w-xs">
+          <span key="items" className="text-xs text-[#86533A]/80 line-clamp-1 max-w-xs">
             {order.items.map((item) => `${item.product_name} (${item.variant_name}) × ${item.quantity}`).join(', ') || '—'}
           </span>,
-          <span key="tot" className="font-bold text-xs text-[#333333]">
+          <span key="tot" className="font-bold text-xs text-[#080604]">
             {rupees(order.total_paise)}
           </span>,
           <StatusBadge key="status" value={order.status} />,
@@ -344,7 +344,7 @@ export const OrdersModule: React.FC<{
           <button
             key="btn"
             onClick={() => onOpen(order.id)}
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#A06A98] hover:text-[#774170] hover:underline transition-all cursor-pointer"
+            className="inline-flex items-center gap-1 text-xs font-bold text-[#86533A] hover:text-[#080604] hover:underline transition-all cursor-pointer"
           >
             <span>Invoice</span>
             <ChevronRight className="w-3 h-3" />

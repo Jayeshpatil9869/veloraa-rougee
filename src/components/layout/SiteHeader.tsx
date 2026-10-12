@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { Search, ShoppingBag, User, Menu, ChevronDown, Heart } from 'lucide-react';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
 import { TextRoll } from '../ui/TextRoll';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { cartService } from '../../services/cartService';
 
 interface SiteHeaderProps {
@@ -119,7 +120,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white shadow-xs border-b border-[#E2E8F0]/50 h-[72px] transition-all">
+    <header className="sticky top-0 z-40 bg-[var(--header-bg)] backdrop-blur-md shadow-xs border-b border-[var(--header-border)] h-[72px] transition-colors duration-200">
       <div className="h-full px-4 lg:px-20 grid grid-cols-5 items-center">
         {/* Left Column: Nav or Hamburger */}
         <div className="col-span-2 flex items-center">
@@ -128,23 +129,23 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
             type="button"
             onClick={onOpenMobileMenu}
             aria-label="Open mobile menu"
-            className="lg:hidden p-2 -ml-2 text-[#333333] hover:text-[#A06A98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
+            className="lg:hidden p-2 -ml-2 text-[var(--text-primary)] hover:text-[var(--accent-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           >
             <Menu className="w-6 h-6" />
           </button>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-bold uppercase text-[#333333]">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-bold uppercase text-[var(--text-primary)]">
             <button
               onClick={() => onNavigate('/en')}
-              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
-                currentPath === '/' || currentPath === '/en' ? 'text-[#A06A98]' : ''
+              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[var(--accent-gold)] cursor-pointer ${
+                currentPath === '/' || currentPath === '/en' ? 'text-[var(--accent-gold)]' : ''
               }`}
             >
               <span className="relative inline-flex flex-col items-center">
                 <TextRoll>HOME</TextRoll>
                 <span
-                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left ${
                     currentPath === '/' || currentPath === '/en'
                       ? 'scale-x-100'
                       : 'scale-x-0 group-hover:scale-x-100'
@@ -162,9 +163,9 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
               <button
                 type="button"
                 onClick={() => onNavigate('/en/collection')}
-                className={`group relative h-10 px-2.5 flex items-center gap-1.5 transition-colors hover:text-[#774170] cursor-pointer ${
+                className={`group relative h-10 px-2.5 flex items-center gap-1.5 transition-colors hover:text-[var(--accent-gold)] cursor-pointer ${
                   currentPath.includes('/collection') || currentPath.includes('/shop')
-                    ? 'text-[#A06A98]'
+                    ? 'text-[var(--accent-gold)]'
                     : ''
                 }`}
               >
@@ -175,7 +176,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                     className="w-3.5 h-3.5 opacity-60 transition-colors group-hover:opacity-100"
                   />
                   <span
-                    className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                    className={`absolute -bottom-1 left-0 w-full h-[2px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left ${
                       currentPath.includes('/collection') || currentPath.includes('/shop')
                         ? 'scale-x-100'
                         : 'scale-x-0 group-hover:scale-x-100'
@@ -188,7 +189,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                 ref={dropdownRef}
                 className="absolute left-0 top-full pt-1.5 w-56 z-50 origin-top-left"
               >
-                <div className="bg-white border border-[#F0DEF7] shadow-[0_16px_40px_rgba(119,65,112,0.12)] rounded-2xl py-2 px-1.5 overflow-hidden">
+                <div className="bg-[var(--bg-elevated)] border border-[var(--border-subtle)] shadow-[0_16px_40px_rgba(0,0,0,0.18)] rounded-2xl py-2 px-1.5 overflow-hidden">
                   {shopItems.map((item, index) => {
                     const isItemActive = currentPath === item.path;
                     return (
@@ -203,14 +204,14 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                         }}
                         className={`group relative w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center justify-between ${
                           isItemActive
-                            ? 'bg-[#FDF2F8] text-[#A06A98]'
-                            : 'text-[#333333] hover:bg-[#FDF2F8] hover:text-[#A06A98]'
+                            ? 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                            : 'text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-secondary)]'
                         }`}
                       >
                         <span className="relative inline-flex flex-col">
                           <TextRoll>{item.label}</TextRoll>
                           <span
-                            className={`absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left ${
+                            className={`absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left ${
                               isItemActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                             }`}
                           />
@@ -224,14 +225,14 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
 
             <button
               onClick={() => onNavigate('/en/about-us')}
-              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
-                currentPath === '/en/about-us' ? 'text-[#A06A98]' : ''
+              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[var(--accent-gold)] cursor-pointer ${
+                currentPath === '/en/about-us' ? 'text-[var(--accent-gold)]' : ''
               }`}
             >
               <span className="relative inline-flex flex-col items-center">
                 <TextRoll>ABOUT US</TextRoll>
                 <span
-                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left ${
                     currentPath === '/en/about-us'
                       ? 'scale-x-100'
                       : 'scale-x-0 group-hover:scale-x-100'
@@ -242,14 +243,14 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
 
             <button
               onClick={() => onNavigate('/en/stories')}
-              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
-                currentPath.startsWith('/en/stories') ? 'text-[#A06A98]' : ''
+              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[var(--accent-gold)] cursor-pointer ${
+                currentPath.startsWith('/en/stories') ? 'text-[var(--accent-gold)]' : ''
               }`}
             >
               <span className="relative inline-flex flex-col items-center">
                 <TextRoll>STORIES</TextRoll>
                 <span
-                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left ${
                     currentPath.startsWith('/en/stories')
                       ? 'scale-x-100'
                       : 'scale-x-0 group-hover:scale-x-100'
@@ -260,14 +261,14 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
 
             <button
               onClick={() => onNavigate('/en/locations')}
-              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[#774170] cursor-pointer ${
-                currentPath === '/en/locations' ? 'text-[#A06A98]' : ''
+              className={`group relative h-10 px-2.5 flex items-center transition-colors hover:text-[var(--accent-gold)] cursor-pointer ${
+                currentPath === '/en/locations' ? 'text-[var(--accent-gold)]' : ''
               }`}
             >
               <span className="relative inline-flex flex-col items-center">
                 <TextRoll>LOCATIONS</TextRoll>
                 <span
-                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#A06A98] to-[#774170] rounded-full transition-transform duration-300 ease-out origin-left ${
+                  className={`absolute -bottom-1 left-0 w-full h-[2px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left ${
                     currentPath === '/en/locations'
                       ? 'scale-x-100'
                       : 'scale-x-0 group-hover:scale-x-100'
@@ -279,7 +280,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
         </div>
 
         {/* Center Column: Authoritative Brand Mark */}
-        <div className="col-span-1 flex justify-center">
+        <div className="col-span-1 flex justify-center text-[var(--text-primary)]">
           <VeloraaRougeeLogo
             size="md"
             onClick={() => onNavigate('/en')}
@@ -287,36 +288,39 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
         </div>
 
         {/* Right Column: Actions */}
-        <div className="col-span-2 flex items-center justify-end gap-2.5 sm:gap-3 lg:gap-6 text-[#333333]">
+        <div className="col-span-2 flex items-center justify-end gap-1.5 sm:gap-2.5 lg:gap-4 text-[var(--text-primary)]">
+          {/* Theme Toggle Button */}
+          <ThemeToggle />
+
           {/* Search Trigger (Desktop Only) */}
           <button
             type="button"
             onClick={onOpenSearch}
             aria-label="Open search dialog"
-            className="hidden lg:flex p-2 text-[#333333] hover:text-[#A06A98] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
+            className="hidden lg:flex p-2 text-[var(--text-primary)] hover:text-[var(--accent-gold)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer"
           >
-            <Search className="w-5 h-5 lg:w-6 lg:h-6" />
+            <Search className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
           </button>
 
           <button
             type="button"
             onClick={() => onNavigate('/en/wishlist')}
             aria-label="Wishlist"
-            className={`flex p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98] ${
-              currentPath === '/en/wishlist' ? 'text-[#A06A98]' : 'text-[#333333] hover:text-[#A06A98]'
+            className={`flex p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer ${
+              currentPath === '/en/wishlist' ? 'text-[var(--accent-gold)]' : 'text-[var(--text-primary)] hover:text-[var(--accent-gold)]'
             }`}
           >
-            <Heart className="w-5 h-5 lg:w-6 lg:h-6" />
+            <Heart className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
           </button>
 
-          {/* Account / Login Trigger (Shown on Mobile & Desktop) */}
+          {/* Account / Login Trigger */}
           <button
             type="button"
             onClick={() => onNavigate('/en/account')}
             aria-label="Customer account"
-            className="flex p-2 text-[#333333] hover:text-[#A06A98] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
+            className="flex p-2 text-[var(--text-primary)] hover:text-[var(--accent-gold)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer"
           >
-            <User className="w-5 h-5 lg:w-6 lg:h-6" />
+            <User className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
           </button>
 
           {/* Cart Trigger */}
@@ -324,11 +328,11 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
             type="button"
             onClick={onOpenCart}
             aria-label="Open shopping bag"
-            className="relative p-2 text-[#333333] hover:text-[#A06A98] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A06A98]"
+            className="relative p-2 text-[var(--text-primary)] hover:text-[var(--accent-gold)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer"
           >
-            <ShoppingBag className="w-5 h-5 lg:w-6 lg:h-6" />
+            <ShoppingBag className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
             {cartCount > 0 && (
-              <span className="absolute top-1 right-0 min-w-[18px] h-[18px] px-1 bg-[#A06A98] text-[#F8FAFC] text-[10px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute top-1 right-0 min-w-[18px] h-[18px] px-1 bg-[var(--accent-gold)] text-[var(--text-inverse)] text-[10px] font-bold rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}

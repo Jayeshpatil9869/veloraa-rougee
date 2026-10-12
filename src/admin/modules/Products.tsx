@@ -148,7 +148,7 @@ export const ProductsModule: React.FC = () => {
         columns={['Item', 'Category', 'Base Price', 'Variants', 'Status', 'Actions']}
         rows={filteredProducts.map((product) => [
           <div key="item" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-[0.3rem] border border-[#E2E8F0] bg-[#FAF5F8] flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+            <div className="w-10 h-10 rounded-[0.3rem] border border-[#E6D9CB] bg-[#F5EBE0] flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
               {product.images?.[0]?.src ? (
                 <img
                   src={product.images[0].src}
@@ -156,24 +156,24 @@ export const ProductsModule: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Package className="w-5 h-5 text-[#A06A98]" />
+                <Package className="w-5 h-5 text-[#B9997F]" />
               )}
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-xs text-[#333333] truncate">{product.name}</p>
-              <p className="text-[11px] text-[#888888] font-mono truncate">/{product.slug}</p>
+              <p className="font-bold text-xs text-[#080604] truncate">{product.name}</p>
+              <p className="text-[11px] text-[#86533A]/70 font-mono truncate">/{product.slug}</p>
             </div>
           </div>,
           <span
             key="cat"
-            className="text-xs font-bold text-[#76416F] bg-[#FDF2F8] px-2 py-0.5 rounded-[0.3rem] border border-[#DFBEDB]/50 inline-block"
+            className="text-xs font-bold text-[#86533A] bg-[#F1E7DA] px-2 py-0.5 rounded-[0.3rem] border border-[#E6D9CB] inline-block"
           >
             {product.categoryName || 'Lips'}
           </span>,
-          <span key="price" className="font-bold text-xs text-[#333333]">
+          <span key="price" className="font-bold text-xs text-[#080604]">
             {product.variants[0] ? `₹${product.variants[0].price}` : '—'}
           </span>,
-          <span key="vars" className="text-xs text-[#666666]">
+          <span key="vars" className="text-xs text-[#86533A]/80">
             {product.variants.length} {product.variants.length === 1 ? 'shade' : 'shades'}
           </span>,
           <StatusBadge key="status" value={product.status} />,
@@ -183,14 +183,14 @@ export const ProductsModule: React.FC = () => {
                 setEditing(product);
                 setOpen(true);
               }}
-              className="p-1.5 text-[#666666] hover:text-[#A06A98] hover:bg-[#FDF2F8] rounded-[0.3rem] transition-colors cursor-pointer"
+              className="p-1.5 text-[#86533A] hover:text-[#080604] hover:bg-[#F5EBE0] rounded-[0.3rem] transition-colors cursor-pointer"
               title="Edit product"
             >
               <Edit2 className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => void remove(product)}
-              className="p-1.5 text-[#666666] hover:text-rose-600 hover:bg-rose-50 rounded-[0.3rem] transition-colors cursor-pointer"
+              className="p-1.5 text-[#86533A] hover:text-[#773323] hover:bg-[#F1E7DA] rounded-[0.3rem] transition-colors cursor-pointer"
               title="Delete product"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -442,8 +442,8 @@ const ProductForm: React.FC<{
             
             {/* Product Name */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#333333] block">
-                Product / Formula Name <span className="text-[#A06A98]">*</span>
+              <label className="text-xs font-bold text-[#080604] block">
+                Product / Formula Name <span className="text-[#B9997F]">*</span>
               </label>
               <input
                 className={`${inputClass} font-semibold`}
@@ -452,16 +452,16 @@ const ProductForm: React.FC<{
                 value={name}
                 onChange={(event) => setName(event.target.value)}
               />
-              <p className="text-[11px] text-[#888888] font-mono">
-                Store URL: <span className="text-[#76416F] font-semibold">/product/{computedSlug}</span>
+              <p className="text-[11px] text-[#86533A]/70 font-mono">
+                Store URL: <span className="text-[#86533A] font-semibold">/product/{computedSlug}</span>
               </p>
             </div>
 
             {/* Category & Finish (2 Columns) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#333333] block">
-                  Category <span className="text-[#A06A98]">*</span>
+                <label className="text-xs font-bold text-[#080604] block">
+                  Category <span className="text-[#B9997F]">*</span>
                 </label>
                 <div className="relative">
                   <select
@@ -483,12 +483,12 @@ const ProductForm: React.FC<{
                         </option>
                       ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-[#888888] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-[#86533A]/60 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#333333] block">
+                <label className="text-xs font-bold text-[#080604] block">
                   Texture / Finish
                 </label>
                 <div className="relative">
@@ -503,14 +503,14 @@ const ProductForm: React.FC<{
                     <option value="Precision Liquid">Precision Liquid</option>
                     <option value="Creamy Kohl">Creamy Kohl</option>
                   </select>
-                  <ChevronDown className="w-4 h-4 text-[#888888] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-[#86533A]/60 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
             </div>
 
             {/* Catalog Visibility Status */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#333333] block">
+              <label className="text-xs font-bold text-[#080604] block">
                 Catalog Visibility
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -525,8 +525,8 @@ const ProductForm: React.FC<{
                     onClick={() => setStatus(item.id)}
                     className={`py-2 px-2 text-xs font-bold rounded-[0.3rem] border transition-all cursor-pointer text-center ${
                       status === item.id
-                        ? 'border-[#A06A98] bg-[#FDF2F8] text-[#76416F] shadow-2xs'
-                        : 'border-[#E2E8F0] bg-white text-[#666666] hover:border-[#DFBEDB]'
+                        ? 'border-[#B9997F] bg-[#F1E7DA] text-[#86533A] shadow-2xs'
+                        : 'border-[#E6D9CB] bg-white text-[#86533A]/70 hover:border-[#B9997F]'
                     }`}
                   >
                     {item.label}
@@ -537,7 +537,7 @@ const ProductForm: React.FC<{
 
             {/* Formula Description */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#333333] block">
+              <label className="text-xs font-bold text-[#080604] block">
                 Formula Description & Sensory Notes
               </label>
               <textarea
@@ -546,7 +546,7 @@ const ProductForm: React.FC<{
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
               />
-              <p className="text-[11px] text-[#888888]">
+              <p className="text-[11px] text-[#86533A]/70">
                 Describe wear-time, application technique, texture, and botanical ingredients.
               </p>
             </div>
@@ -558,11 +558,11 @@ const ProductForm: React.FC<{
                 onClick={() => setBestseller(!bestseller)}
                 className={`px-3 py-1.5 text-xs font-bold rounded-[0.3rem] border transition-all cursor-pointer flex items-center gap-1.5 ${
                   bestseller
-                    ? 'bg-[#FDF2F8] border-[#A06A98] text-[#76416F]'
-                    : 'bg-white border-[#E2E8F0] text-[#888888] hover:border-[#DFBEDB]'
+                    ? 'bg-[#F1E7DA] border-[#B9997F] text-[#86533A]'
+                    : 'bg-white border-[#E6D9CB] text-[#86533A]/70 hover:border-[#B9997F]'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#A06A98]" />
+                <Sparkles className="w-3.5 h-3.5 text-[#B9997F]" />
                 <span>Bestseller</span>
               </button>
 
@@ -571,11 +571,11 @@ const ProductForm: React.FC<{
                 onClick={() => setFeatured(!featured)}
                 className={`px-3 py-1.5 text-xs font-bold rounded-[0.3rem] border transition-all cursor-pointer flex items-center gap-1.5 ${
                   featured
-                    ? 'bg-[#FDF2F8] border-[#A06A98] text-[#76416F]'
-                    : 'bg-white border-[#E2E8F0] text-[#888888] hover:border-[#DFBEDB]'
+                    ? 'bg-[#F1E7DA] border-[#B9997F] text-[#86533A]'
+                    : 'bg-white border-[#E6D9CB] text-[#86533A]/70 hover:border-[#B9997F]'
                 }`}
               >
-                <Tag className="w-3.5 h-3.5 text-[#A06A98]" />
+                <Tag className="w-3.5 h-3.5 text-[#B9997F]" />
                 <span>Featured Collection</span>
               </button>
             </div>
@@ -591,19 +591,19 @@ const ProductForm: React.FC<{
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-bold text-[#333333]">
+                  <label className="text-xs font-bold text-[#080604]">
                     Product Images
                   </label>
-                  <span className="text-[11px] font-mono px-2 py-0.5 bg-[#FAF5F8] border border-[#DFBEDB] text-[#76416F] rounded font-bold">
+                  <span className="text-[11px] font-mono px-2 py-0.5 bg-[#F5EBE0] border border-[#E6D9CB] text-[#86533A] rounded font-bold">
                     {images.length} / {MAX_IMAGES} max
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setImageInputMode(imageInputMode === 'upload' ? 'url' : 'upload')}
-                  className="text-[11px] font-bold text-[#76416F] hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-[11px] font-bold text-[#86533A] hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  <LinkIcon className="w-3 h-3 text-[#A06A98]" />
+                  <LinkIcon className="w-3 h-3 text-[#B9997F]" />
                   <span>{imageInputMode === 'upload' ? 'Add via URL' : 'Upload Files'}</span>
                 </button>
               </div>
@@ -627,7 +627,7 @@ const ProductForm: React.FC<{
                     type="button"
                     disabled={!urlInput.trim() || images.length >= MAX_IMAGES}
                     onClick={handleAddUrlImage}
-                    className="px-3 py-2 bg-[#76416F] hover:bg-[#A06A98] text-white text-xs font-bold rounded-[0.3rem] transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+                    className="px-3 py-2 bg-[#86533A] hover:bg-[#B9997F] text-white text-xs font-bold rounded-[0.3rem] transition-colors disabled:opacity-50 cursor-pointer shrink-0"
                   >
                     Add Image
                   </button>
@@ -643,8 +643,8 @@ const ProductForm: React.FC<{
                   setIsDragging(false);
                   handleFiles(e.dataTransfer.files);
                 }}
-                className={`p-3 bg-[#FAF5F8] border rounded-[0.35rem] transition-all ${
-                  isDragging ? 'border-[#A06A98] bg-[#FDF2F8]' : 'border-[#DFBEDB]/70'
+                className={`p-3 bg-[#F5EBE0] border rounded-[0.35rem] transition-all ${
+                  isDragging ? 'border-[#B9997F] bg-[#F1E7DA]' : 'border-[#E6D9CB]'
                 }`}
               >
                 <div className="grid grid-cols-3 sm:grid-cols-3 gap-2.5">
@@ -656,8 +656,8 @@ const ProductForm: React.FC<{
                         key={index}
                         className={`group relative rounded-[0.3rem] bg-white border overflow-hidden aspect-square flex items-center justify-center transition-all ${
                           isCover
-                            ? 'border-[#A06A98] ring-2 ring-[#DFBEDB] shadow-2xs'
-                            : 'border-[#E2E8F0] hover:border-[#DFBEDB]'
+                            ? 'border-[#B9997F] ring-2 ring-[#E6D9CB] shadow-2xs'
+                            : 'border-[#E6D9CB] hover:border-[#B9997F]'
                         }`}
                       >
                         <img
@@ -672,11 +672,11 @@ const ProductForm: React.FC<{
                         {/* Top Badge: Primary Cover vs Slot Index */}
                         <div className="absolute top-1 left-1 pointer-events-none">
                           {isCover ? (
-                            <span className="bg-[#76416F] text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-2xs flex items-center gap-0.5">
+                            <span className="bg-[#86533A] text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-2xs flex items-center gap-0.5">
                               <Star className="w-2.5 h-2.5 fill-current" /> Cover
                             </span>
                           ) : (
-                            <span className="bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                            <span className="bg-[#080604]/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
                               #{index + 1}
                             </span>
                           )}
@@ -688,7 +688,7 @@ const ProductForm: React.FC<{
                             <button
                               type="button"
                               onClick={() => handleSetPrimary(index)}
-                              className="p-1.5 bg-white text-[#76416F] hover:bg-[#FDF2F8] rounded-full shadow-md transition-transform hover:scale-110 cursor-pointer"
+                              className="p-1.5 bg-white text-[#86533A] hover:bg-[#F5EBE0] rounded-full shadow-md transition-transform hover:scale-110 cursor-pointer"
                               title="Set as primary cover"
                             >
                               <Star className="w-3 h-3" />
@@ -711,13 +711,13 @@ const ProductForm: React.FC<{
                   {images.length < MAX_IMAGES && (
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="border-2 border-dashed border-[#DFBEDB] hover:border-[#A06A98] bg-white hover:bg-[#FDF2F8] rounded-[0.3rem] aspect-square flex flex-col items-center justify-center p-2 text-center cursor-pointer transition-colors group"
+                      className="border-2 border-dashed border-[#E6D9CB] hover:border-[#B9997F] bg-white hover:bg-[#F1E7DA] rounded-[0.3rem] aspect-square flex flex-col items-center justify-center p-2 text-center cursor-pointer transition-colors group"
                     >
-                      <UploadCloud className="w-5 h-5 text-[#A06A98] group-hover:scale-110 transition-transform mb-1" />
-                      <p className="text-[10px] font-bold text-[#76416F]">
+                      <UploadCloud className="w-5 h-5 text-[#B9997F] group-hover:scale-110 transition-transform mb-1" />
+                      <p className="text-[10px] font-bold text-[#86533A]">
                         + Add Image
                       </p>
-                      <span className="text-[9px] text-[#888888]">
+                      <span className="text-[9px] text-[#86533A]/70">
                         ({MAX_IMAGES - images.length} left)
                       </span>
                     </div>
@@ -737,26 +737,26 @@ const ProductForm: React.FC<{
                 />
               </div>
 
-              <p className="text-[11px] text-[#888888] leading-tight">
+              <p className="text-[11px] text-[#86533A]/70 leading-tight">
                 Add 1 to {MAX_IMAGES} high-res images (1:1 square or 4:5 ratio). The 1st image is the primary cover. Hover any image to set as cover or delete.
               </p>
             </div>
 
             {/* ===================================================================== */}
-            {/* SHADE VARIANTS & INVENTORY (PREMIUM UI/UX REDESIGN)                   */}
+            {/* SHADE VARIANTS & INVENTORY                                            */}
             {/* ===================================================================== */}
-            <div className="space-y-3 pt-3 border-t border-[#E2E8F0]">
+            <div className="space-y-3 pt-3 border-t border-[#E6D9CB]">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                 <div>
-                  <label className="text-xs font-bold text-[#333333] block">
+                  <label className="text-xs font-bold text-[#080604] block">
                     Shade Variants & Inventory Matrix
                   </label>
-                  <p className="text-[11px] text-[#888888]">
+                  <p className="text-[11px] text-[#86533A]/70">
                     Manage individual shades, custom prices, and live inventory levels.
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-mono font-bold text-[#76416F] bg-[#FDF2F8] px-2.5 py-1 rounded-[0.3rem] border border-[#DFBEDB]/70 shadow-2xs">
+                  <span className="text-[11px] font-mono font-bold text-[#86533A] bg-[#F1E7DA] px-2.5 py-1 rounded-[0.3rem] border border-[#E6D9CB] shadow-2xs">
                     {shades.length} {shades.length === 1 ? 'Shade' : 'Shades'} • {totalStock} Units Total
                   </span>
                 </div>
@@ -764,14 +764,14 @@ const ProductForm: React.FC<{
 
               {/* Quick Preset Shades Chips (1-Click Addition) */}
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[10px] uppercase font-bold text-[#888888] tracking-wider shrink-0">
+                <span className="text-[10px] uppercase font-bold text-[#86533A]/70 tracking-wider shrink-0">
                   Quick Add:
                 </span>
                 {[
-                  { name: '05 Velvet Mauve', color: '#9E5B6D' },
-                  { name: '06 Royal Plum', color: '#6A2A48' },
-                  { name: '07 Terracotta', color: '#B35A38' },
-                  { name: '08 Berry Rouge', color: '#881F38' },
+                  { name: '01 Cashmere Rose', color: '#DA9A78' },
+                  { name: '02 Velvet Burgundy', color: '#773323' },
+                  { name: '03 Warm Terracotta', color: '#86533A' },
+                  { name: '04 Deep Mocha', color: '#411F11' },
                 ].map((preset) => (
                   <button
                     key={preset.name}
@@ -783,7 +783,7 @@ const ProductForm: React.FC<{
                         { name: preset.name, price: '80', stock: '25' },
                       ]);
                     }}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-white hover:bg-[#FDF2F8] border border-[#DFBEDB]/80 hover:border-[#A06A98] text-[#76416F] text-[11px] font-semibold rounded-[0.25rem] transition-colors cursor-pointer shadow-2xs"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-white hover:bg-[#F1E7DA] border border-[#E6D9CB] hover:border-[#B9997F] text-[#86533A] text-[11px] font-semibold rounded-[0.25rem] transition-colors cursor-pointer shadow-2xs"
                   >
                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: preset.color }} />
                     <span>+ {preset.name}</span>
@@ -792,29 +792,29 @@ const ProductForm: React.FC<{
               </div>
 
               {/* In-Place Editable Shades Table */}
-              <div className="border border-[#DFBEDB]/80 rounded-[0.35rem] bg-white overflow-hidden shadow-2xs">
+              <div className="border border-[#E6D9CB] rounded-[0.35rem] bg-white overflow-hidden shadow-2xs">
                 {/* Table Header */}
-                <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-[#FAF5F8] border-b border-[#E2E8F0] text-[10px] font-bold uppercase tracking-wider text-[#666666]">
+                <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-[#F5EBE0] border-b border-[#E6D9CB] text-[10px] font-bold uppercase tracking-wider text-[#86533A]">
                   <div className="col-span-5 sm:col-span-5">Shade Title</div>
                   <div className="col-span-3 sm:col-span-3">Price (₹)</div>
                   <div className="col-span-3 sm:col-span-3">Stock Qty</div>
                   <div className="col-span-1 sm:col-span-1 text-right">Action</div>
                 </div>
 
-                {/* Table Rows (Max Height with Smooth Luxury Scroll) */}
-                <div className="divide-y divide-[#F1F5F9] max-h-[170px] overflow-y-auto modal-luxury-scroll">
+                {/* Table Rows */}
+                <div className="divide-y divide-[#F1E7DA] max-h-[170px] overflow-y-auto modal-luxury-scroll">
                   {shades.map((shade, index) => {
                     const stockNum = Number(shade.stock) || 0;
                     return (
                       <div
                         key={index}
-                        className="grid grid-cols-12 gap-2 px-3 py-2 items-center hover:bg-[#FAF5F8]/50 transition-colors"
+                        className="grid grid-cols-12 gap-2 px-3 py-2 items-center hover:bg-[#F5EBE0]/50 transition-colors"
                       >
                         {/* 1. Shade Title & Swatch */}
                         <div className="col-span-5 sm:col-span-5 flex items-center gap-2 min-w-0">
-                          <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-[#76416F] to-[#DFBEDB] shrink-0 shadow-2xs border border-white" />
+                          <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-[#86533A] to-[#B9997F] shrink-0 shadow-2xs border border-white" />
                           <input
-                            className="w-full bg-transparent border border-transparent hover:border-[#DFBEDB] focus:border-[#A06A98] focus:bg-white rounded px-1.5 py-1 text-xs font-bold text-[#333333] focus:outline-none transition-all truncate"
+                            className="w-full bg-transparent border border-transparent hover:border-[#E6D9CB] focus:border-[#B9997F] focus:bg-white rounded px-1.5 py-1 text-xs font-bold text-[#080604] focus:outline-none transition-all truncate"
                             value={shade.name}
                             placeholder="Shade Name"
                             onChange={(e) => {
@@ -828,10 +828,10 @@ const ProductForm: React.FC<{
 
                         {/* 2. Price Input */}
                         <div className="col-span-3 sm:col-span-3 flex items-center">
-                          <span className="text-xs text-[#888888] font-bold mr-1">₹</span>
+                          <span className="text-xs text-[#86533A]/70 font-bold mr-1">₹</span>
                           <input
                             type="number"
-                            className="w-full bg-transparent border border-transparent hover:border-[#DFBEDB] focus:border-[#A06A98] focus:bg-white rounded px-1.5 py-1 text-xs font-mono font-bold text-[#76416F] focus:outline-none transition-all"
+                            className="w-full bg-transparent border border-transparent hover:border-[#E6D9CB] focus:border-[#B9997F] focus:bg-white rounded px-1.5 py-1 text-xs font-mono font-bold text-[#86533A] focus:outline-none transition-all"
                             value={shade.price}
                             placeholder="80"
                             onChange={(e) => {
@@ -847,7 +847,7 @@ const ProductForm: React.FC<{
                         <div className="col-span-3 sm:col-span-3 flex items-center gap-1.5">
                           <input
                             type="number"
-                            className="w-14 bg-transparent border border-transparent hover:border-[#DFBEDB] focus:border-[#A06A98] focus:bg-white rounded px-1.5 py-1 text-xs font-mono font-bold text-[#333333] focus:outline-none transition-all"
+                            className="w-14 bg-transparent border border-transparent hover:border-[#E6D9CB] focus:border-[#B9997F] focus:bg-white rounded px-1.5 py-1 text-xs font-mono font-bold text-[#080604] focus:outline-none transition-all"
                             value={shade.stock}
                             placeholder="25"
                             onChange={(e) => {
@@ -878,7 +878,7 @@ const ProductForm: React.FC<{
                               onClick={() =>
                                 setShades(shades.filter((_, itemIndex) => itemIndex !== index))
                               }
-                              className="p-1 text-[#999999] hover:text-rose-600 rounded transition-colors cursor-pointer"
+                              className="p-1 text-[#86533A]/60 hover:text-rose-600 rounded transition-colors cursor-pointer"
                               title="Delete variant"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -891,7 +891,7 @@ const ProductForm: React.FC<{
                 </div>
 
                 {/* Add New Custom Shade Inline Footer */}
-                <div className="p-2 bg-[#FAF5F8] border-t border-[#E2E8F0] flex items-center justify-between gap-2">
+                <div className="p-2 bg-[#F5EBE0] border-t border-[#E6D9CB] flex items-center justify-between gap-2">
                   <button
                     type="button"
                     onClick={() => {
@@ -901,13 +901,13 @@ const ProductForm: React.FC<{
                         { name: `Shade 0${nextNum}`, price: '80', stock: '25' },
                       ]);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#DFBEDB] hover:border-[#A06A98] hover:bg-[#FDF2F8] text-[#76416F] font-bold text-xs rounded-[0.3rem] transition-colors cursor-pointer shadow-2xs"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E6D9CB] hover:border-[#B9997F] hover:bg-[#F1E7DA] text-[#86533A] font-bold text-xs rounded-[0.3rem] transition-colors cursor-pointer shadow-2xs"
                   >
-                    <Plus className="w-3.5 h-3.5 text-[#A06A98]" />
+                    <Plus className="w-3.5 h-3.5 text-[#B9997F]" />
                     <span>Add Custom Shade</span>
                   </button>
 
-                  <span className="text-[10px] text-[#888888] italic">
+                  <span className="text-[10px] text-[#86533A]/70 italic">
                     Click any value to edit directly
                   </span>
                 </div>
@@ -915,12 +915,12 @@ const ProductForm: React.FC<{
             </div>
 
             {/* Bottom 2 Action Buttons (Save Changes & Discard) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-[#E2E8F0]">
-              {/* Button 1: Save Product (Primary Orchid-Plum) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-[#E6D9CB]">
+              {/* Button 1: Save Product (Luxury Gold to Brown Gradient) */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-10 bg-gradient-to-r from-[#A06A98] to-[#76416F] hover:opacity-95 text-white text-xs font-bold rounded-[0.3rem] transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60"
+                className="w-full h-10 bg-gradient-to-r from-[#B9997F] to-[#86533A] hover:opacity-95 text-white text-xs font-bold rounded-[0.3rem] transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60"
               >
                 {isSubmitting ? 'Saving...' : product ? 'Save Changes' : 'Create Product'}
               </button>
@@ -929,7 +929,7 @@ const ProductForm: React.FC<{
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full h-10 bg-white border border-[#E2E8F0] hover:border-rose-300 text-[#666666] hover:text-rose-600 text-xs font-bold rounded-[0.3rem] transition-colors cursor-pointer flex items-center justify-center"
+                className="w-full h-10 bg-white border border-[#E6D9CB] hover:border-rose-300 text-[#86533A] hover:text-rose-600 text-xs font-bold rounded-[0.3rem] transition-colors cursor-pointer flex items-center justify-center"
               >
                 Discard
               </button>

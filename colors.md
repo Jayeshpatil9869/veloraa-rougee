@@ -1,111 +1,56 @@
-# VELORAA ROUGEE colors
+# VELORAA ROUGEE colors — Warm Velvet Luxury & Gold Editorial
 
-Measured from the design system specifications (`:root` tokens) and from the homepage rendered at 1440px. Use the hex values in a clone. The HSL columns are the CSS variables, stored as components without `hsl()`.
+Measured from the updated luxury cosmetic design system specifications (`:root` tokens) and the 12 warm editorial pigments.
 
-## Brand tokens
+## 12-Color Signature Palette
+
+| Color Name | Hex | Role | Usage |
+|---|---|---|---|
+| **Cream** | `#F5EBE0` | Primary Light Canvas | Page background, cards, text on dark sections |
+| **Light Beige** | `#F1E7DA` | Secondary Surface | Announcement bar, story chip fills, collection bands |
+| **Champagne** | `#E6D9CB` | Architectural Line | Subtle borders, inputs, dividers, muted chips |
+| **Black** | `#080604` | Deep Contrast Canvas | High-contrast dark sections, footer, primary text on cream |
+| **Dark Black** | `#0A0A08` | Secondary Dark Surface | Elevated dark containers, dropdowns, dark inputs |
+| **Gold** | `#B9997F` | Primary Brand Accent | Buttons, active navigation marks, prices, icons |
+| **Rose Gold** | `#C57E5D` | Primary Hover / Accent | Button hovers, active links, glow highlights |
+| **Nude** | `#DA9A78` | Warm Highlight | Badges, undertone swatches, pill highlights |
+| **Brown** | `#86533A` | Warm Mid-Tone Text | Product descriptions, secondary labels, metadata |
+| **Deep Brown** | `#411F11` | Rich Dark Accent | Announcement text, sub-headings, dark gradients |
+| **Burgundy** | `#773323` | Statement Shade | Crimson lipstick shade, sale badges, rich accents |
+| **Blush** | `#E1BEA6` | Soft Wash | Hero washes, subtle chip fills, selection background |
+
+## Brand Tokens
 
 | Token | HSL | Hex | Use |
 |---|---|---|---|
-| `--background` | `0 0% 100%` | `#FFFFFF` | Page background |
-| `--foreground` | `0 0% 20%` | `#333333` | Body text, nav, headings |
-| `--primary` | `308 22% 52%` | `#A06A98` | Mauve brand, links, prices, footer headings, chips |
-| `--primary-foreground` | `210 40% 98%` | `#F8FAFC` | Text on a primary fill (Add to Bag price, photo heroes) |
-| `--secondary` | `327 69% 97%` | `#FDF2F8` | Announcement bar, footer, chips, soft fills |
-| `--secondary-foreground` | `308 29% 36%` | `#76416F` | Dark mauve text |
-| `--tertiary` | `307 34% 81%` | `#DFBEDB` | Hero wash, dots, soft borders |
-| `--tertiary-foreground` | `308 22% 52%` | `#A06A98` | Same as primary |
-| `--muted` | `210 40% 96.1%` | `#F1F5F9` | Quiet fills, skeletons |
-| `--muted-foreground` | `0 0% 40%` | `#666666` | Secondary text |
-| `--light` | `0 0% 40%` | `#666666` | Shade names under product cards |
-| `--accent` | `210 40% 96.1%` | `#F1F5F9` | Same as muted |
+| `--background` | `31 49% 92%` | `#F5EBE0` | Page background (Cream) |
+| `--foreground` | `30 33% 2%` | `#080604` | Body text, nav, headings (Black) |
+| `--primary` | `27 30% 61%` | `#B9997F` | Gold brand, links, prices, footer headings |
+| `--primary-foreground` | `30 33% 2%` | `#080604` | Text on a primary gold fill |
+| `--secondary` | `34 47% 90%` | `#F1E7DA` | Announcement bar, footer marquee, chips, soft fills |
+| `--secondary-foreground` | `17 59% 16%` | `#411F11` | Deep Brown text |
+| `--tertiary` | `24 52% 77%` | `#E1BEA6` | Hero wash, dots, soft borders (Blush) |
+| `--tertiary-foreground` | `20 40% 38%` | `#86533A` | Brown text |
+| `--muted` | `31 35% 85%` | `#E6D9CB` | Champagne fills, skeletons |
+| `--muted-foreground` | `20 40% 38%` | `#86533A` | Secondary text (Brown) |
+| `--light` | `20 40% 38%` | `#86533A` | Shade names under product cards |
+| `--accent` | `34 47% 90%` | `#F1E7DA` | Light beige accents |
 | `--destructive` | `0 84.2% 60.2%` | `#EF4444` | Errors |
-| `--border` | `214.3 31.8% 91.4%` | `#E2E8F0` | Default borders |
-| `--input` | `283 60% 92%` | `#F0DEF7` | Input border |
-| `--ring` | `308 22% 52%` | `#A06A98` | Focus ring |
-| `--card` / `--popover` | `0 0% 100%` | `#FFFFFF` | Cards and menus |
-| `--radius` | `0.3rem` | | Base radius. `rounded-md` is `calc(0.3rem - 2px)` = **2.8px** |
+| `--border` | `31 35% 85%` | `#E6D9CB` | Default borders (Champagne) |
+| `--input` | `31 35% 85%` | `#E6D9CB` | Input border (Champagne) |
+| `--ring` | `27 30% 61%` | `#B9997F` | Focus ring (Gold) |
+| `--card` / `--popover` | `31 49% 94%` | `#F5EBE0` | Cards and menus |
+| `--radius` | `0.3rem` | | Base radius |
 
-## Where each color sits
+## Where Each Color Sits
 
-| Surface | Hex |
-|---|---|
-| Announcement bar | `#FDF2F8` |
-| Header | `#FFFFFF` |
-| Header and nav text | `#333333` |
-| Hero H1 and hero CTA | `#FFFFFF` |
-| Hero slide wash | `#DFBEDB` |
-| Section headings | `#333333` |
-| Shop All / View All links | `#A06A98`, hover `#774170` |
-| Product price on the card button | `#F8FAFC` on `#A06A98` |
-| Card description and shade | `#666666` |
-| Footer band | `#FDF2F8` |
-| Footer column headings | `#A06A98` |
-| About page display title | `#333333` |
-| Collection and legal H1 on a photo | `#F8FAFC` |
-| Legal idle tabs | border `#9CA3AF`, text `#4B5563` |
-| Legal active tab | fill `#A06A98`, text `#FFFFFF` |
-| Page text on `<html>` | `#27272A` (`text-zinc-800`) until body color `#333333` takes over |
-| Text selection | tertiary lilac `#DFBEDB` |
-
-## One-off hex colors
-
-These are written directly in class names, not as tokens.
-
-| Hex | Where |
-|---|---|
-| `#FDF4F9` | Homepage collection band (close to secondary, slightly different) |
-| `#666666` | `text-[#666]` promise and blog intro |
-| `#333333` | `text-[#333333]` About title |
-| `#9F6998` | Decorative flower SVG |
-| `#774170` | Link hover `hover:text-[#774170]` |
-| `#27272A` | `text-zinc-800` on the html element |
-| `#EB001B` | Mastercard left circle |
-| `#F79E1B` | Mastercard right circle |
-| `#FF5F00` | Mastercard overlap |
-| `#FFFFFF` | Header, cards, payment-icon plates |
-| `#9CA3AF` | Legal tab idle border (`border-gray-400`) |
-| `#4B5563` | Legal tab idle text (`text-gray-600`) |
-
-## Opacity washes
-
-| Class | Result |
-|---|---|
-| `bg-tertiary/60` | `#DFBEDB` at 60% |
-| `bg-tertiary/40` | `#DFBEDB` at 40% |
-| `bg-primary/40` | `#A06A98` at 40% |
-| `bg-secondary/90` | `#FDF2F8` at 90% (story chips) |
-| `border-tertiary/20` | `#DFBEDB` at 20% (story product cards) |
-
-## Fonts
-
-Files are in `All Md files/fonts/`. Both families are TrueType. Fallback if a file fails to load is Arial.
-
-| File | Family | Weight | CSS variable | Tailwind class | Use |
-|---|---|---|---|---|---|
-| `fonts/Amithen-Regular.ttf` | Amithen | 400 | `--font-amithen` | `font-serif` | Hero H1, page titles |
-| `fonts/SofiaPro-Regular.ttf` | Sofia Pro | 400 | `--font-sofia-pro` | `font-sans` | Body, 16px / 24px |
-| `fonts/SofiaPro-Medium.ttf` | Sofia Pro | 500 | `--font-sofia-pro` | `font-medium` | Product titles, prices labels, inputs |
-| `fonts/SofiaPro-Bold.ttf` | Sofia Pro | 700 | `--font-sofia-pro` | `font-bold` | Section headings, nav |
-| `fonts/SofiaPro-ExtraBold.ttf` | Sofia Pro | 800 | `--font-sofia-pro` | `font-extrabold` | Footer headings, Shop All links |
-
-Original Next.js filenames (same bytes):
-
-- `7914e8a8324818f8-s.p.ttf` — Amithen 400
-- `e037765d34e084b3-s.p.ttf` — Sofia Pro 400
-- `7769bc5a0dcc472f-s.p.ttf` — Sofia Pro 500
-- `3e71671f4651c510-s.p.ttf` — Sofia Pro 700
-- `7ab3d031ec6a1cb6-s.p.ttf` — Sofia Pro 800
-
-`font-display: swap`.
-
-Desktop sizes that were measured:
-
-| Role | Size | Weight | Tracking | Color |
-|---|---|---|---|---|
-| Body | 16px / 24px | 400 | normal | `#333333` |
-| Nav | 14px | 700 | normal | `#333333` |
-| Hero H1 | 72px / 72px | 400 Amithen | normal | `#FFFFFF` |
-| Section H2 | 48px / 48px | 700 | -1.2px | `#333333` |
-| About H1 | 128px / 128px | 400 Amithen | normal | `#333333` |
-
-Below 768px, set the root font-size to `clamp(0.4rem, 0.6rem + 1.6vw, 1rem)` so the whole scale shrinks.
+| Surface | Hex | Description |
+|---|---|---|
+| Announcement bar | `#F1E7DA` / text `#411F11` | Light beige with deep brown text |
+| Header & Nav | text `#080604`, active `#B9997F` | Black with gold active underlines |
+| Hero CTA | fill `#B9997F`, hover `#C57E5D` | Gold to Rose Gold hover |
+| Section headings | `#080604` / `#411F11` | Black or Deep Brown |
+| Shop All / View All links | `#B9997F`, hover `#C57E5D` | Gold hovering to Rose Gold |
+| Product card button | `#B9997F` with `#080604` text | Gold Add to Bag |
+| Card description | `#86533A` | Warm Brown |
+| Footer | `#080604` with `#B9997F` accents | Deep Black with Gold typography |

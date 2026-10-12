@@ -19,17 +19,17 @@ export const BestSellersSection: React.FC<BestSellersSectionProps> = ({
   const bestSellers = productService.getBestSellers();
 
   return (
-    <section className="px-4 py-8 lg:px-20 lg:py-12 space-y-8 bg-secondary select-none">
+    <section className="px-4 py-8 lg:px-20 lg:py-12 space-y-8 bg-[var(--bg-primary)] select-none">
       {/* Header Row with Scroll Reveal */}
       <ScrollReveal direction="up" distance={24}>
         <div className="grid grid-cols-3 gap-2 items-end">
-          <h2 className="col-span-2 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#333333]">
+          <h2 className="col-span-2 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)]">
             Best Sellers
           </h2>
           <button
             type="button"
             onClick={onNavigateToBestSellers}
-            className="justify-self-end text-xs sm:text-sm md:text-base font-extrabold uppercase text-[#A06A98] hover:text-[#774170] transition-colors flex items-center gap-2 group cursor-pointer"
+            className="justify-self-end text-xs sm:text-sm md:text-base font-extrabold uppercase text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] transition-colors flex items-center gap-2 group cursor-pointer"
           >
             <span>SHOP ALL</span>
             <BrandArrow />

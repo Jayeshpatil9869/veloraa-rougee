@@ -43,22 +43,22 @@ export const ContactUsPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-white select-none">
+    <div className="w-full bg-[var(--bg-primary)] select-none transition-colors">
       {/* Centered Editorial Masthead Banner */}
-      <section className="relative w-full bg-[#FDF2F8] py-14 lg:py-20 border-b border-[#F0DEF7]/60 overflow-hidden">
+      <section className="relative w-full bg-[var(--bg-secondary)] py-14 lg:py-20 border-b border-[var(--border-subtle)] overflow-hidden">
         <ScrollReveal direction="up" distance={20}>
           <div className="max-w-[1440px] mx-auto px-4 lg:px-20 text-center relative z-10 space-y-4">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-[#DFBEDB]/40 text-xs font-bold uppercase tracking-widest text-[#76416F]">
-              <Mail className="w-3.5 h-3.5 text-[#A06A98]" />
+            <div className="inline-flex items-center gap-2 bg-[var(--bg-elevated)]/90 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-[var(--border-subtle)] text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)]">
+              <Mail className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
               Customer Support &amp; Concierge
             </div>
             <h1
-              className="font-serif text-6xl sm:text-7xl lg:text-8xl text-[#333333] leading-tight"
+              className="font-serif text-6xl sm:text-7xl lg:text-8xl text-[var(--text-primary)] leading-tight"
               style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
             >
               Contact Us
             </h1>
-            <p className="font-sans text-sm sm:text-base text-[#666666] max-w-2xl mx-auto leading-relaxed">
+            <p className="font-sans text-sm sm:text-base text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
               Have questions about formulations, order tracking, or shades? Our beauty concierge is here to assist.
             </p>
           </div>
@@ -70,20 +70,20 @@ export const ContactUsPage: React.FC = () => {
           {/* Form Column (Cols 1-7) */}
           <div className="lg:col-span-7 space-y-6">
             <div className="space-y-1">
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#A06A98]">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
                 Contact Us
               </h2>
-              <p className="text-sm font-bold text-[#333333]">
+              <p className="text-sm font-bold text-[var(--text-secondary)]">
                 Fill out the form below to get in touch with our team
               </p>
             </div>
 
             {error && <p className="text-sm text-[#EF4444]" role="alert">{error}</p>}
             {success ? (
-              <div className="p-6 bg-[#FDF2F8] border border-[#F0DEF7] rounded-brand text-center space-y-3">
+              <div className="p-6 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded-brand text-center space-y-3">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-                <h3 className="text-lg font-bold text-[#333333]">Message Sent Successfully</h3>
-                <p className="text-xs text-[#666666]">
+                <h3 className="text-lg font-bold text-[var(--text-primary)]">Message Sent Successfully</h3>
+                <p className="text-xs text-[var(--text-muted)]">
                   Thank you for reaching out. Our support concierge will reply to your inquiry shortly at the email provided.
                 </p>
               </div>
@@ -91,7 +91,7 @@ export const ContactUsPage: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#555555] block">
+                    <label className="text-xs font-semibold text-[var(--text-muted)] block">
                       First Name *
                     </label>
                     <input
@@ -100,12 +100,12 @@ export const ContactUsPage: React.FC = () => {
                       placeholder="First name"
                       value={formData.firstName}
                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                      className="w-full h-10 px-3 bg-white border border-[#F0DEF7] rounded-brand text-sm text-[#333333] placeholder-[#888888] focus:outline-none focus:ring-2 focus:ring-[#A06A98]"
+                      className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-brand text-sm text-[var(--input-text)] placeholder-[var(--text-muted)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#555555] block">
+                    <label className="text-xs font-semibold text-[var(--text-muted)] block">
                       Last Name *
                     </label>
                     <input
@@ -114,14 +114,14 @@ export const ContactUsPage: React.FC = () => {
                       placeholder="Last name"
                       value={formData.lastName}
                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                      className="w-full h-10 px-3 bg-white border border-[#F0DEF7] rounded-brand text-sm text-[#333333] placeholder-[#888888] focus:outline-none focus:ring-2 focus:ring-[#A06A98]"
+                      className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-brand text-sm text-[var(--input-text)] placeholder-[var(--text-muted)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#555555] block">
+                    <label className="text-xs font-semibold text-[var(--text-muted)] block">
                       Phone Number (Optional)
                     </label>
                     <input
@@ -129,12 +129,12 @@ export const ContactUsPage: React.FC = () => {
                       placeholder="Phone"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full h-10 px-3 bg-white border border-[#F0DEF7] rounded-brand text-sm text-[#333333] placeholder-[#888888] focus:outline-none focus:ring-2 focus:ring-[#A06A98]"
+                      className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-brand text-sm text-[var(--input-text)] placeholder-[var(--text-muted)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#555555] block">
+                    <label className="text-xs font-semibold text-[var(--text-muted)] block">
                       Email Address *
                     </label>
                     <input
@@ -143,13 +143,13 @@ export const ContactUsPage: React.FC = () => {
                       placeholder="Email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full h-10 px-3 bg-white border border-[#F0DEF7] rounded-brand text-sm text-[#333333] placeholder-[#888888] focus:outline-none focus:ring-2 focus:ring-[#A06A98]"
+                      className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-brand text-sm text-[var(--input-text)] placeholder-[var(--text-muted)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#555555] block">
+                  <label className="text-xs font-semibold text-[var(--text-muted)] block">
                     Message *
                   </label>
                   <textarea
@@ -158,14 +158,14 @@ export const ContactUsPage: React.FC = () => {
                     placeholder="Message"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full min-h-[100px] p-3 bg-white border border-[#F0DEF7] rounded-brand text-sm text-[#333333] placeholder-[#888888] focus:outline-none focus:ring-2 focus:ring-[#A06A98]"
+                    className="w-full min-h-[100px] p-3 bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-brand text-sm text-[var(--input-text)] placeholder-[var(--text-muted)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full sm:w-auto px-8 h-10 bg-[#A06A98] hover:bg-[#774170] text-[#F8FAFC] text-xs font-bold uppercase tracking-wider rounded-brand transition-colors disabled:opacity-50"
+                  className="w-full sm:w-auto px-8 h-10 btn-theme-primary text-xs font-bold uppercase tracking-wider rounded-brand transition-all disabled:opacity-50"
                 >
                   {submitting ? 'Submitting...' : 'Submit'}
                 </button>
@@ -174,35 +174,35 @@ export const ContactUsPage: React.FC = () => {
           </div>
 
           {/* Business Information Column (Cols 8-12) */}
-          <div className="lg:col-span-5 space-y-6 lg:pl-6 lg:border-l border-[#E2E8F0]">
+          <div className="lg:col-span-5 space-y-6 lg:pl-6 lg:border-l border-[var(--border-subtle)]">
             <div className="space-y-2">
-              <h2 className="text-xl font-bold text-[#A06A98]">
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">
                 Company Information
               </h2>
-              <div className="p-5 bg-[#FDF2F8]/60 border border-[#F0DEF7] rounded-brand space-y-4 text-xs sm:text-sm text-[#444444]">
+              <div className="p-5 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded-brand space-y-4 text-xs sm:text-sm text-[var(--text-muted)]">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-[#76416F] block">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-secondary)] block">
                     Official Entity
                   </span>
-                  <p className="font-bold text-base text-[#333333] mt-0.5">
+                  <p className="font-bold text-base text-[var(--text-primary)] mt-0.5">
                     {BRAND_INFO.company}
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <ShieldCheck className="w-5 h-5 text-[#A06A98] shrink-0 mt-0.5" />
+                  <ShieldCheck className="w-5 h-5 text-[var(--accent-gold)] shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-[#333333]">Registered GST</span>
-                    <p className="font-mono text-[#555555]">{BRAND_INFO.gst}</p>
+                    <span className="font-semibold text-[var(--text-primary)]">Registered GST</span>
+                    <p className="font-mono text-[var(--text-muted)]">{BRAND_INFO.gst}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-[#A06A98] shrink-0 mt-0.5" />
+                  <Mail className="w-5 h-5 text-[var(--accent-gold)] shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-[#333333]">Support Concierge</span>
+                    <span className="font-semibold text-[var(--text-primary)]">Support Concierge</span>
                     <p>
-                      <a href={`mailto:${BRAND_INFO.supportEmail}`} className="text-[#A06A98] hover:underline font-medium">
+                      <a href={`mailto:${BRAND_INFO.supportEmail}`} className="text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] hover:underline font-medium">
                         {BRAND_INFO.supportEmail}
                       </a>
                     </p>
@@ -210,10 +210,10 @@ export const ContactUsPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Clock className="w-5 h-5 text-[#A06A98] shrink-0 mt-0.5" />
+                  <Clock className="w-5 h-5 text-[var(--accent-gold)] shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-[#333333]">Concierge Desk Hours</span>
-                    <p className="text-[#555555]">Monday – Friday: 9:00 AM – 6:00 PM GST</p>
+                    <span className="font-semibold text-[var(--text-primary)]">Concierge Desk Hours</span>
+                    <p className="text-[var(--text-muted)]">Monday – Friday: 9:00 AM – 6:00 PM GST</p>
                   </div>
                 </div>
               </div>

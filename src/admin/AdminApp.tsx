@@ -375,27 +375,27 @@ export const AdminApp: React.FC<{
   // ---------------------------------------------------------------------------
   if (isCheckingAuth) {
     return (
-      <main className="min-h-screen min-h-dvh w-full bg-gradient-to-br from-[#FAF5F8] via-[#FCF1F7] to-[#F7EBF4] flex items-center justify-center p-6 relative overflow-hidden">
+      <main className="min-h-screen min-h-dvh w-full bg-gradient-to-br from-[#F5EBE0] via-[#F1E7DA] to-[#E6D9CB]/40 flex items-center justify-center p-6 relative overflow-hidden">
         {/* Soft Ambient Dynamic Blurs */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gradient-to-br from-[#DFBEDB]/40 via-[#F3D5EB]/25 to-transparent rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-28 right-10 w-[450px] h-[450px] bg-gradient-to-tl from-[#EBD1E7]/35 via-[#FDF2F8]/50 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gradient-to-br from-[#B9997F]/30 via-[#E6D9CB]/25 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-28 right-10 w-[450px] h-[450px] bg-gradient-to-tl from-[#DA9A78]/25 via-[#F1E7DA]/50 to-transparent rounded-full blur-3xl pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center p-8 sm:p-10 rounded-3xl bg-white/95 backdrop-blur-xl border border-[#DEC8DA]/80 shadow-[0_20px_50px_-10px_rgba(118,65,111,0.18)] max-w-sm w-full text-center">
-          <VeloraaRougeeLogo size="md" color="#76416F" className="mb-6" />
+        <div className="relative z-10 flex flex-col items-center justify-center p-8 sm:p-10 rounded-3xl bg-white/95 backdrop-blur-xl border border-[#E6D9CB] shadow-[0_20px_50px_-10px_rgba(65,31,17,0.12)] max-w-sm w-full text-center">
+          <VeloraaRougeeLogo size="md" color="#080604" className="mb-6" />
 
           {/* Luxury Animated Loader */}
           <div className="relative w-11 h-11 mb-5 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border-2 border-[#F3DFEE]" />
-            <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#76416F] border-r-[#A06A98] animate-spin" />
-            <Sparkles className="w-4 h-4 text-[#A06A98] animate-pulse" />
+            <div className="absolute inset-0 rounded-full border-2 border-[#E6D9CB]" />
+            <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#B9997F] border-r-[#86533A] animate-spin" />
+            <Sparkles className="w-4 h-4 text-[#B9997F] animate-pulse" />
           </div>
 
-          <p className="text-xs font-bold uppercase tracking-widest text-[#76416F]">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#411F11]">
             Veloraa Rougee Studio
           </p>
-          <p className="text-[11px] text-[#777777] mt-1 font-medium">
+          <p className="text-[11px] text-[#86533A] mt-1 font-medium">
             Verifying secure credentials…
           </p>
         </div>
@@ -410,19 +410,19 @@ export const AdminApp: React.FC<{
     return (
       <main
         ref={containerRef}
-        className="min-h-screen min-h-dvh w-full bg-gradient-to-br from-[#FAF5F8] via-[#FCF1F7] to-[#F7EBF4] flex items-center justify-center p-4 sm:p-6 md:p-8 relative overflow-x-hidden overflow-y-auto"
+        className="min-h-screen min-h-dvh w-full bg-gradient-to-br from-[#F5EBE0] via-[#F1E7DA] to-[#E6D9CB]/50 flex items-center justify-center p-4 sm:p-6 md:p-8 relative overflow-x-hidden overflow-y-auto"
       >
         {/* Soft Ambient Dynamic Blurs & Light Sheens */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-          <div className="ambient-orb-1 absolute -top-24 left-1/2 -translate-x-1/2 w-[350px] sm:w-[600px] lg:w-[800px] h-[350px] sm:h-[600px] lg:h-[800px] bg-gradient-to-br from-[#DFBEDB]/45 via-[#F3D5EB]/30 to-transparent rounded-full blur-3xl pointer-events-none" />
-          <div className="ambient-orb-2 absolute -bottom-28 right-10 w-[300px] sm:w-[500px] lg:w-[650px] h-[300px] sm:h-[500px] lg:h-[650px] bg-gradient-to-tl from-[#EBD1E7]/40 via-[#FDF2F8]/60 to-transparent rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute top-1/3 -left-20 w-[260px] sm:w-[400px] h-[260px] sm:h-[400px] bg-[#FAF0F7]/80 rounded-full blur-2xl pointer-events-none" />
+          <div className="ambient-orb-1 absolute -top-24 left-1/2 -translate-x-1/2 w-[350px] sm:w-[600px] lg:w-[800px] h-[350px] sm:h-[600px] lg:h-[800px] bg-gradient-to-br from-[#B9997F]/30 via-[#E6D9CB]/30 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="ambient-orb-2 absolute -bottom-28 right-10 w-[300px] sm:w-[500px] lg:w-[650px] h-[300px] sm:h-[500px] lg:h-[650px] bg-gradient-to-tl from-[#DA9A78]/25 via-[#F1E7DA]/60 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-1/3 -left-20 w-[260px] sm:w-[400px] h-[260px] sm:h-[400px] bg-[#F1E7DA]/60 rounded-full blur-2xl pointer-events-none" />
 
           {/* Top-Left Botanical Flower */}
           <div className="flower-reveal-1 absolute -left-8 -top-8 sm:-left-4 sm:-top-4 lg:left-8 lg:top-10 pointer-events-none">
             <div className="flower-parallax-1 will-change-transform">
               <div className="flower-float-1 will-change-transform opacity-35 sm:opacity-50 lg:opacity-75">
-                <FlowerTallSvg className="w-28 sm:w-44 md:w-56 lg:w-72 h-auto text-[#D39DC7] -scale-x-100 drop-shadow-sm" />
+                <FlowerTallSvg className="w-28 sm:w-44 md:w-56 lg:w-72 h-auto text-[#B9997F] -scale-x-100 drop-shadow-sm" />
               </div>
             </div>
           </div>
@@ -431,7 +431,7 @@ export const AdminApp: React.FC<{
           <div className="flower-reveal-2 absolute -left-6 -bottom-8 sm:-left-4 sm:-bottom-4 lg:left-10 lg:bottom-6 pointer-events-none">
             <div className="flower-parallax-2 will-change-transform">
               <div className="flower-float-2 will-change-transform opacity-30 sm:opacity-40 lg:opacity-65">
-                <FlowerShortSvg className="w-24 sm:w-36 md:w-48 lg:w-56 h-auto text-[#A06A98] drop-shadow-sm" />
+                <FlowerShortSvg className="w-24 sm:w-36 md:w-48 lg:w-56 h-auto text-[#C57E5D] drop-shadow-sm" />
               </div>
             </div>
           </div>
@@ -440,7 +440,7 @@ export const AdminApp: React.FC<{
           <div className="flower-reveal-3 absolute -right-8 -top-8 sm:-right-4 sm:-top-4 lg:right-10 lg:top-14 pointer-events-none">
             <div className="flower-parallax-3 will-change-transform">
               <div className="flower-float-3 will-change-transform opacity-30 sm:opacity-45 lg:opacity-70">
-                <FlowerShortSvg className="w-24 sm:w-40 md:w-52 lg:w-64 h-auto text-[#DFBEDB] -scale-x-100 drop-shadow-sm" />
+                <FlowerShortSvg className="w-24 sm:w-40 md:w-52 lg:w-64 h-auto text-[#E6D9CB] -scale-x-100 drop-shadow-sm" />
               </div>
             </div>
           </div>
@@ -449,7 +449,7 @@ export const AdminApp: React.FC<{
           <div className="flower-reveal-4 absolute -right-10 -bottom-10 sm:-right-6 sm:-bottom-6 lg:right-10 lg:bottom-4 pointer-events-none">
             <div className="flower-parallax-4 will-change-transform">
               <div className="flower-float-4 will-change-transform opacity-35 sm:opacity-55 lg:opacity-80">
-                <FlowerTallSvg className="w-32 sm:w-52 md:w-68 lg:w-92 h-auto text-[#9F6998] drop-shadow-sm" />
+                <FlowerTallSvg className="w-32 sm:w-52 md:w-68 lg:w-92 h-auto text-[#86533A] drop-shadow-sm" />
               </div>
             </div>
           </div>
@@ -458,24 +458,24 @@ export const AdminApp: React.FC<{
         {/* Center Luxury Card with Double Border Glow & Glassmorphism */}
         <div className="admin-login-card w-full max-w-[440px] relative z-10 my-auto">
           {/* Outer Glassmorphic Border Wrap */}
-          <div className="p-[1px] rounded-3xl bg-gradient-to-b from-white via-[#F3DFEE] to-[#DFBEDB]/70 shadow-[0_24px_70px_-12px_rgba(118,65,111,0.22),0_10px_24px_-4px_rgba(160,106,152,0.1)]">
-            <div className="bg-white/98 backdrop-blur-2xl rounded-3xl p-7 sm:p-9 md:p-10 relative overflow-hidden border border-[#DEC8DA]/70">
+          <div className="p-[1px] rounded-3xl bg-gradient-to-b from-white via-[#F1E7DA] to-[#E6D9CB]/70 shadow-[0_24px_70px_-12px_rgba(65,31,17,0.18)]">
+            <div className="bg-white/98 backdrop-blur-2xl rounded-3xl p-7 sm:p-9 md:p-10 relative overflow-hidden border border-[#E6D9CB]">
               {/* Top Luxury Shimmer Jewel Bar */}
-              <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-[#A06A98] to-transparent absolute top-0 left-0 right-0 opacity-90" />
+              <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-[#B9997F] to-transparent absolute top-0 left-0 right-0 opacity-90" />
 
               {/* Brand Logo Header */}
               <div className="login-anim-item flex flex-col items-center justify-center mb-7 pt-1">
                 <VeloraaRougeeLogo
                   size="md"
-                  color="#1A1A1A"
+                  color="#080604"
                   onClick={() => onNavigate('/en')}
                   className="cursor-pointer hover:opacity-80 transition-opacity"
                 />
                 {/* Subtle Luxury Divider */}
                 <div className="flex items-center gap-3 w-full max-w-[180px] mt-4 opacity-75">
-                  <span className="flex-1 h-[1px] bg-gradient-to-r from-transparent to-[#A06A98]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#76416F]" />
-                  <span className="flex-1 h-[1px] bg-gradient-to-l from-transparent to-[#A06A98]" />
+                  <span className="flex-1 h-[1px] bg-gradient-to-r from-transparent to-[#B9997F]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#86533A]" />
+                  <span className="flex-1 h-[1px] bg-gradient-to-l from-transparent to-[#B9997F]" />
                 </div>
               </div>
 
@@ -483,11 +483,11 @@ export const AdminApp: React.FC<{
               <form onSubmit={(event) => void login(event)} className="space-y-4 sm:space-y-5">
                 {/* Email Field */}
                 <div className="login-anim-item space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#3F2B3E] flex items-center justify-between">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#411F11] flex items-center justify-between">
                     <span>Admin Email / Username</span>
                   </label>
                   <div className="relative group/field">
-                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#76416F] group-focus-within/field:text-[#52254B] transition-colors pointer-events-none">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B9997F] group-focus-within/field:text-[#411F11] transition-colors pointer-events-none">
                       <Mail className="w-4 h-4" />
                     </div>
                     <input
@@ -497,7 +497,7 @@ export const AdminApp: React.FC<{
                       inputMode="email"
                       required
                       autoComplete="username"
-                      className="w-full bg-[#FCF8FB] border-2 border-[#D8BFD4] hover:border-[#A06A98] focus:border-[#76416F] focus:bg-white focus:ring-4 focus:ring-[#A06A98]/15 text-base sm:text-sm text-[#1E171D] font-medium placeholder-[#8F798C] rounded-xl py-3 sm:py-2.5 pl-10 pr-3.5 transition-all duration-200 outline-none shadow-xs"
+                      className="w-full bg-white border-2 border-[#E6D9CB] hover:border-[#B9997F] focus:border-[#411F11] focus:bg-white focus:ring-4 focus:ring-[#B9997F]/15 text-base sm:text-sm text-[#080604] font-medium placeholder-[#86533A]/50 rounded-xl py-3 sm:py-2.5 pl-10 pr-3.5 transition-all duration-200 outline-none shadow-xs"
                       placeholder="admin@veloraarougee.com"
                     />
                   </div>
@@ -505,11 +505,11 @@ export const AdminApp: React.FC<{
 
                 {/* Password Field */}
                 <div className="login-anim-item space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#3F2B3E] flex items-center justify-between">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#411F11] flex items-center justify-between">
                     <span>Password</span>
                   </label>
                   <div className="relative group/field">
-                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#76416F] group-focus-within/field:text-[#52254B] transition-colors pointer-events-none">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B9997F] group-focus-within/field:text-[#411F11] transition-colors pointer-events-none">
                       <Lock className="w-4 h-4" />
                     </div>
                     <input
@@ -518,14 +518,14 @@ export const AdminApp: React.FC<{
                       type={showPassword ? 'text' : 'password'}
                       required
                       autoComplete="current-password"
-                      className="w-full bg-[#FCF8FB] border-2 border-[#D8BFD4] hover:border-[#A06A98] focus:border-[#76416F] focus:bg-white focus:ring-4 focus:ring-[#A06A98]/15 text-base sm:text-sm text-[#1E171D] font-medium placeholder-[#8F798C] rounded-xl py-3 sm:py-2.5 pl-10 pr-11 transition-all duration-200 outline-none shadow-xs"
+                      className="w-full bg-white border-2 border-[#E6D9CB] hover:border-[#B9997F] focus:border-[#411F11] focus:bg-white focus:ring-4 focus:ring-[#B9997F]/15 text-base sm:text-sm text-[#080604] font-medium placeholder-[#86533A]/50 rounded-xl py-3 sm:py-2.5 pl-10 pr-11 transition-all duration-200 outline-none shadow-xs"
                       placeholder="••••••••••••"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[#76416F] hover:text-[#52254B] hover:bg-[#F8EBF5] transition-all p-2 rounded-lg cursor-pointer"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[#86533A] hover:text-[#080604] hover:bg-[#F1E7DA] transition-all p-2 rounded-lg cursor-pointer"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -544,7 +544,7 @@ export const AdminApp: React.FC<{
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 font-bold uppercase tracking-widest text-xs sm:text-[13px] rounded-xl bg-gradient-to-r from-[#76416F] via-[#8C4E84] to-[#A06A98] hover:brightness-105 active:scale-[0.98] text-white shadow-[0_10px_25px_-5px_rgba(118,65,111,0.38)] hover:shadow-[0_14px_30px_-5px_rgba(118,65,111,0.48)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 relative overflow-hidden touch-manipulation group"
+                    className="w-full py-3.5 font-bold uppercase tracking-widest text-xs sm:text-[13px] rounded-xl bg-gradient-to-r from-[#B9997F] via-[#C57E5D] to-[#86533A] hover:brightness-105 active:scale-[0.98] text-[#080604] shadow-[0_10px_25px_-5px_rgba(65,31,17,0.25)] hover:shadow-[0_14px_30px_-5px_rgba(65,31,17,0.35)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 relative overflow-hidden touch-manipulation group"
                   >
                     {/* Shimmer Sweep Effect */}
                     <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 pointer-events-none" />
@@ -554,8 +554,8 @@ export const AdminApp: React.FC<{
                 </div>
 
                 {/* Footer Security Badge & Storefront Link */}
-                <div className="login-anim-item pt-4 border-t border-[#F1E6EE] space-y-3 text-center">
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#666666] font-medium">
+                <div className="login-anim-item pt-4 border-t border-[#E6D9CB] space-y-3 text-center">
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#86533A] font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span>256-Bit TLS Encrypted Gateway</span>
                   </div>
@@ -563,10 +563,10 @@ export const AdminApp: React.FC<{
                   <button
                     type="button"
                     onClick={() => onNavigate('/en')}
-                    className="group text-xs font-bold text-[#76416F] hover:text-[#52254B] transition-colors inline-flex items-center gap-1.5 py-1 cursor-pointer touch-manipulation"
+                    className="group text-xs font-bold text-[#411F11] hover:text-[#080604] transition-colors inline-flex items-center gap-1.5 py-1 cursor-pointer touch-manipulation"
                   >
                     <span className="transition-transform group-hover:-translate-x-1 duration-200">←</span>
-                    <span className="underline underline-offset-4 decoration-[#DFBEDB] group-hover:decoration-[#76416F] transition-all">
+                    <span className="underline underline-offset-4 decoration-[#B9997F] group-hover:decoration-[#411F11] transition-all">
                       Return to Customer Storefront
                     </span>
                   </button>
@@ -604,19 +604,19 @@ export const AdminApp: React.FC<{
             onClick={() => onNavigate(`/admin/${item.id}`)}
             className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-[0.3rem] text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
               isActive
-                ? 'text-[#76416F] bg-gradient-to-r from-[#FDF2F8] to-[#FAF5F8] border-l-[3px] border-[#A06A98] font-bold shadow-2xs'
-                : 'text-[#666666] font-medium hover:text-[#A06A98] hover:bg-[#FAF5F8]'
+                ? 'text-[#411F11] bg-gradient-to-r from-[#F1E7DA] to-[#F5EBE0] border-l-[3px] border-[#B9997F] font-bold shadow-2xs'
+                : 'text-[#86533A] font-medium hover:text-[#080604] hover:bg-[#F1E7DA]/50'
             }`}
           >
             <div className="flex items-center gap-3">
               <Icon
                 className={`w-4 h-4 ${
-                  isActive ? 'text-[#A06A98]' : 'text-[#999999]'
+                  isActive ? 'text-[#B9997F]' : 'text-[#86533A]'
                 }`}
               />
               <span>{item.label}</span>
             </div>
-            {isActive && <ChevronRight className="w-3.5 h-3.5 text-[#A06A98]" />}
+            {isActive && <ChevronRight className="w-3.5 h-3.5 text-[#B9997F]" />}
           </button>
         );
       })}
@@ -626,7 +626,7 @@ export const AdminApp: React.FC<{
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-[#FDF4F9] text-[#333333] lg:grid lg:grid-cols-[260px_1fr] relative"
+      className="min-h-screen bg-[#F5EBE0]/40 text-[#080604] lg:grid lg:grid-cols-[260px_1fr] relative"
     >
       {/* ========================================================================= */}
       {/* 1. Mobile Off-Canvas Drawer Backdrop & Sheet                              */}
@@ -642,24 +642,24 @@ export const AdminApp: React.FC<{
           >
             <div>
               {/* Mobile Drawer Header */}
-              <div className="p-5 border-b border-[#E2E8F0] flex items-center justify-between bg-[#FDF2F8]/60">
+              <div className="p-5 border-b border-[#E6D9CB] flex items-center justify-between bg-[#F1E7DA]/80">
                 <div className="flex items-center gap-2.5">
                   <VeloraaRougeeLogo
                     size="sm"
-                    color="#A06A98"
+                    color="#080604"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       onNavigate('/admin/dashboard');
                     }}
                   />
-                  <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[0.25rem] bg-[#76416F] text-white">
+                  <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[0.25rem] bg-[#411F11] text-white">
                     Studio
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-1.5 text-[#666666] hover:text-[#333333] hover:bg-white rounded-[0.3rem]"
+                  className="p-1.5 text-[#86533A] hover:text-[#080604] hover:bg-white rounded-[0.3rem]"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -670,10 +670,10 @@ export const AdminApp: React.FC<{
             </div>
 
             {/* Mobile Drawer Footer */}
-            <div className="p-4 border-t border-[#E2E8F0] bg-[#FAF5F8]/50 space-y-3">
+            <div className="p-4 border-t border-[#E6D9CB] bg-[#F1E7DA]/40 space-y-3">
               <button
                 onClick={() => onNavigate('/en')}
-                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-[0.3rem] bg-white border border-[#E2E8F0] text-xs font-bold text-[#333333] hover:text-[#A06A98]"
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-[0.3rem] bg-white border border-[#E6D9CB] text-xs font-bold text-[#080604] hover:text-[#B9997F]"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>View Live Store</span>
@@ -693,46 +693,46 @@ export const AdminApp: React.FC<{
       {/* ========================================================================= */}
       {/* 2. Desktop Fixed Left Sidebar Shell (Sticky On Scroll)                   */}
       {/* ========================================================================= */}
-      <aside className="hidden lg:flex bg-white border-r border-[#E2E8F0] flex-col justify-between h-screen h-dvh max-h-screen sticky top-0 self-start z-40 shadow-[4px_0_24px_-4px_rgba(118,65,111,0.04)]">
+      <aside className="hidden lg:flex bg-white border-r border-[#E6D9CB] flex-col justify-between h-screen h-dvh max-h-screen sticky top-0 self-start z-40 shadow-[4px_0_24px_-4px_rgba(65,31,17,0.04)]">
         {/* Top Header & Scrollable Nav Region */}
         <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
           {/* Brand Header */}
-          <div className="p-6 border-b border-[#E2E8F0]/80 bg-gradient-to-b from-[#FAF5F8]/80 to-white shrink-0">
+          <div className="p-6 border-b border-[#E6D9CB] bg-gradient-to-b from-[#F1E7DA]/60 to-white shrink-0">
             <div className="flex items-center justify-between gap-2 mb-2">
               <VeloraaRougeeLogo
                 size="md"
-                color="#A06A98"
+                color="#080604"
                 onClick={() => onNavigate('/admin/dashboard')}
                 className="cursor-pointer"
               />
-              <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[0.3rem] bg-[#FDF2F8] text-[#76416F] border border-[#DFBEDB]/60 shadow-2xs">
+              <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[0.3rem] bg-[#F1E7DA] text-[#411F11] border border-[#E6D9CB] shadow-2xs">
                 Studio
               </span>
             </div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#76416F]/75">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#86533A]">
               Luxury Backoffice Suite
             </p>
           </div>
 
           {/* Desktop Nav Links - Smoothly scrollable if screen height is constrained */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden [scrollbar-width:thin] [scrollbar-color:#E8DAE5_transparent]">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden [scrollbar-width:thin] [scrollbar-color:#E6D9CB_transparent]">
             {renderNavLinks()}
           </div>
         </div>
 
         {/* Desktop Sidebar Footer - Always docked cleanly at bottom of viewport */}
-        <div className="p-4 border-t border-[#E2E8F0] bg-[#FAF5F8]/70 space-y-3 shrink-0">
-          <div className="flex items-center justify-between text-xs font-semibold text-[#666666]">
+        <div className="p-4 border-t border-[#E6D9CB] bg-[#F1E7DA]/40 space-y-3 shrink-0">
+          <div className="flex items-center justify-between text-xs font-semibold text-[#86533A]">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               API Connected
             </span>
-            <span className="text-[10px] text-[#999999] font-mono">v2.4.0</span>
+            <span className="text-[10px] text-[#86533A] font-mono">v2.4.0</span>
           </div>
 
           <button
             onClick={() => onNavigate('/en')}
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-[0.3rem] bg-white border border-[#E2E8F0] hover:border-[#DFBEDB] text-xs font-bold text-[#333333] hover:text-[#A06A98] transition-all shadow-2xs cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-[0.3rem] bg-white border border-[#E6D9CB] hover:border-[#B9997F] text-xs font-bold text-[#080604] hover:text-[#B9997F] transition-all shadow-2xs cursor-pointer"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span>View Live Store</span>
@@ -745,25 +745,25 @@ export const AdminApp: React.FC<{
       {/* ========================================================================= */}
       <section className="min-w-0 flex flex-col min-h-screen">
         {/* Top Application Bar */}
-        <header className="h-16 sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] px-4 sm:px-6 lg:px-10 flex items-center justify-between gap-3">
+        <header className="h-16 sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E6D9CB] px-4 sm:px-6 lg:px-10 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             {/* Mobile Hamburger Button */}
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-[#333333] hover:text-[#A06A98] hover:bg-[#FAF5F8] rounded-[0.3rem] cursor-pointer"
+              className="lg:hidden p-2 text-[#080604] hover:text-[#B9997F] hover:bg-[#F1E7DA] rounded-[0.3rem] cursor-pointer"
               aria-label="Open mobile menu"
             >
               <Menu className="w-5 h-5" />
             </button>
 
             {/* Breadcrumb Path */}
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-[#666666]">
-              <span className="font-semibold text-[#999999] hidden sm:inline">Admin</span>
-              <span className="text-[#CCCCCC] hidden sm:inline">/</span>
-              <span className="font-bold text-[#333333] flex items-center gap-1.5">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-[#86533A]">
+              <span className="font-semibold text-[#86533A] hidden sm:inline">Admin</span>
+              <span className="text-[#E6D9CB] hidden sm:inline">/</span>
+              <span className="font-bold text-[#080604] flex items-center gap-1.5">
                 {currentNav?.icon && (
-                  <currentNav.icon className="w-4 h-4 text-[#A06A98]" />
+                  <currentNav.icon className="w-4 h-4 text-[#B9997F]" />
                 )}
                 <span>{title}</span>
               </span>
@@ -773,18 +773,18 @@ export const AdminApp: React.FC<{
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Live Time Clock */}
             {currentTime && (
-              <span className="text-xs text-[#888888] font-medium hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-[#FAF5F8] rounded-[0.3rem] border border-[#E2E8F0]">
-                <Clock className="w-3.5 h-3.5 text-[#A06A98]" />
+              <span className="text-xs text-[#86533A] font-medium hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-[#F1E7DA]/60 rounded-[0.3rem] border border-[#E6D9CB]">
+                <Clock className="w-3.5 h-3.5 text-[#B9997F]" />
                 {currentTime}
               </span>
             )}
 
             {/* Admin User Profile Badge */}
-            <div className="flex items-center gap-2 sm:gap-2.5 pl-2 sm:pl-3 py-1 pr-1 sm:pr-1.5 bg-[#FAF5F8] border border-[#E2E8F0] rounded-full">
-              <span className="text-xs font-bold text-[#333333] hidden sm:inline">
+            <div className="flex items-center gap-2 sm:gap-2.5 pl-2 sm:pl-3 py-1 pr-1 sm:pr-1.5 bg-[#F1E7DA]/60 border border-[#E6D9CB] rounded-full">
+              <span className="text-xs font-bold text-[#080604] hidden sm:inline">
                 {admin.email}
               </span>
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#A06A98] to-[#76416F] text-white text-xs font-bold flex items-center justify-center shadow-2xs">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#B9997F] to-[#86533A] text-[#080604] text-xs font-bold flex items-center justify-center shadow-2xs">
                 {userInitials}
               </div>
             </div>
@@ -792,7 +792,7 @@ export const AdminApp: React.FC<{
             {/* Logout Button */}
             <button
               onClick={() => void handleLogout()}
-              className="p-2 text-[#666666] hover:text-rose-600 hover:bg-rose-50 rounded-[0.3rem] transition-colors cursor-pointer"
+              className="p-2 text-[#86533A] hover:text-rose-600 hover:bg-rose-50 rounded-[0.3rem] transition-colors cursor-pointer"
               title="Log out of Admin"
               aria-label="Log out"
             >

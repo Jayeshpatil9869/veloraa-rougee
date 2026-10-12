@@ -3,7 +3,7 @@ import gsap from 'gsap';
 import { LucideIcon, Search, AlertCircle, CheckCircle2, Info, X, TrendingUp, TrendingDown } from 'lucide-react';
 
 export const inputClass =
-  'h-10 w-full px-3.5 bg-[#FAF5F8] border border-[#E2E8F0] rounded-[0.3rem] text-sm text-[#333333] placeholder:text-[#999999] focus:outline-none focus:border-[#A06A98] focus:bg-white focus:ring-1 focus:ring-[#A06A98] transition-all duration-200';
+  'h-10 w-full px-3.5 bg-white border border-[#E6D9CB] rounded-[0.3rem] text-sm text-[#080604] placeholder:text-[#999999] focus:outline-none focus:border-[#B9997F] focus:bg-white focus:ring-1 focus:ring-[#B9997F] transition-all duration-200';
 
 export function rupees(paise: number) {
   return `₹${(Number(paise) / 100).toLocaleString('en-IN', {
@@ -31,7 +31,7 @@ export function StatusBadge({
   } else if (['cancelled', 'refunded', 'rejected', 'failed', 'hidden', 'out of stock', 'archived', 'error'].includes(norm)) {
     tone = 'bg-rose-50 text-rose-700 border-rose-200';
   } else if (['lips', 'brows', 'eyes', 'face', 'bundles', 'vip', 'email', 'google'].includes(norm)) {
-    tone = 'bg-[#FDF2F8] text-[#76416F] border-[#DFBEDB]';
+    tone = 'bg-[#F1E7DA] text-[#411F11] border-[#E6D9CB]';
   }
 
   return (
@@ -53,7 +53,7 @@ export function PrimaryButton({
   return (
     <button
       {...props}
-      className={`group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#A06A98] to-[#76416F] hover:from-[#905788] hover:to-[#683561] text-[#F8FAFC] active:scale-[0.98] rounded-[0.3rem] px-4 py-2 font-medium text-sm transition-all duration-200 shadow-xs hover:shadow-md disabled:opacity-60 disabled:pointer-events-none cursor-pointer overflow-hidden ${className}`}
+      className={`group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#B9997F] to-[#86533A] hover:from-[#A8886E] hover:to-[#72422C] text-[#080604] font-semibold active:scale-[0.98] rounded-[0.3rem] px-4 py-2 text-sm transition-all duration-200 shadow-xs hover:shadow-md disabled:opacity-60 disabled:pointer-events-none cursor-pointer overflow-hidden ${className}`}
     >
       <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
       {Icon && <Icon className="w-4 h-4 transition-transform group-hover:scale-110" />}
@@ -71,7 +71,7 @@ export function SoftButton({
   return (
     <button
       {...props}
-      className={`inline-flex items-center justify-center gap-2 bg-[#FDF2F8] text-[#76416F] hover:bg-[#FCE7F3] hover:text-[#5B2E55] border border-[#DFBEDB]/50 rounded-[0.3rem] px-3.5 py-2 font-medium text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer ${className}`}
+      className={`inline-flex items-center justify-center gap-2 bg-[#F1E7DA] text-[#411F11] hover:bg-[#E6D9CB] hover:text-[#080604] border border-[#E6D9CB] rounded-[0.3rem] px-3.5 py-2 font-medium text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer ${className}`}
     >
       {Icon && <Icon className="w-4 h-4" />}
       {children}
@@ -88,7 +88,7 @@ export function OutlineButton({
   return (
     <button
       {...props}
-      className={`inline-flex items-center justify-center gap-2 border border-[#A06A98] text-[#A06A98] hover:bg-[#A06A98] hover:text-white rounded-[0.3rem] px-3.5 py-2 font-medium text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer ${className}`}
+      className={`inline-flex items-center justify-center gap-2 border border-[#B9997F] text-[#411F11] hover:bg-[#B9997F] hover:text-[#080604] rounded-[0.3rem] px-3.5 py-2 font-medium text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer ${className}`}
     >
       {Icon && <Icon className="w-4 h-4" />}
       {children}
@@ -105,7 +105,7 @@ export function GhostButton({
   return (
     <button
       {...props}
-      className={`inline-flex items-center justify-center gap-1.5 text-[#666666] hover:text-[#A06A98] hover:bg-[#FDF2F8] px-3 py-1.5 rounded-[0.3rem] text-sm font-medium transition-colors duration-200 disabled:opacity-60 cursor-pointer ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 text-[#86533A] hover:text-[#080604] hover:bg-[#F1E7DA]/60 px-3 py-1.5 rounded-[0.3rem] text-sm font-medium transition-colors duration-200 disabled:opacity-60 cursor-pointer ${className}`}
     >
       {Icon && <Icon className="w-4 h-4" />}
       {children}
@@ -144,15 +144,15 @@ export function StatCard({
   icon?: LucideIcon;
 }) {
   return (
-    <article className="stat-card-anim bg-white border border-[#E2E8F0] rounded-[0.3rem] p-5 sm:p-6 relative overflow-hidden shadow-xs hover:border-[#DFBEDB] hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
-      {/* Signature Orchid-to-Plum Gradient Top Accent Bar */}
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#A06A98] via-[#DFBEDB] to-[#76416F] group-hover:h-1.5 transition-all" />
+    <article className="stat-card-anim bg-white border border-[#E6D9CB] rounded-[0.3rem] p-5 sm:p-6 relative overflow-hidden shadow-xs hover:border-[#B9997F] hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
+      {/* Signature Gold-to-Brown Gradient Top Accent Bar */}
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#B9997F] via-[#E6D9CB] to-[#C57E5D] group-hover:h-1.5 transition-all" />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-wider text-[#666666] mb-1.5">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#86533A] mb-1.5">
             {label}
           </p>
-          <h3 className="text-2xl sm:text-3xl font-bold text-[#333333] tracking-tight truncate font-sans">
+          <h3 className="text-2xl sm:text-3xl font-bold text-[#080604] tracking-tight truncate font-sans">
             {value}
           </h3>
           {trend && (
@@ -176,8 +176,8 @@ export function StatCard({
           )}
         </div>
         {Icon && (
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-[0.3rem] bg-gradient-to-br from-[#FDF2F8] to-[#FAF5F8] text-[#76416F] flex items-center justify-center shrink-0 border border-[#DFBEDB]/60 group-hover:scale-110 group-hover:bg-[#FDF2F8] transition-all duration-300 shadow-2xs">
-            <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-[0.3rem] bg-gradient-to-br from-[#F1E7DA] to-[#F5EBE0] text-[#411F11] flex items-center justify-center shrink-0 border border-[#E6D9CB] group-hover:scale-110 group-hover:bg-[#F1E7DA] transition-all duration-300 shadow-2xs">
+            <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#B9997F]" />
           </div>
         )}
       </div>
@@ -208,20 +208,20 @@ export function WeeklySalesBarChart({
           return (
             <div key={idx} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
               {/* Tooltip on Hover */}
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-[#333333] text-white text-[10px] sm:text-xs py-1 px-2 rounded-[0.3rem] pointer-events-none whitespace-nowrap shadow-md mb-1 -translate-y-1">
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-[#080604] text-white text-[10px] sm:text-xs py-1 px-2 rounded-[0.3rem] pointer-events-none whitespace-nowrap shadow-md mb-1 -translate-y-1">
                 ₹{(item.amount / 100).toLocaleString('en-IN')} ({item.orders} orders)
               </div>
 
-              {/* Bar Fill with Luxury Mauve Gradient */}
+              {/* Bar Fill with Luxury Gold/Brown Gradient */}
               <div
-                className="w-full max-w-[42px] bg-gradient-to-t from-[#76416F] via-[#A06A98] to-[#DFBEDB] rounded-t-[0.3rem] transition-all duration-500 group-hover:brightness-110 group-hover:shadow-md cursor-pointer relative"
+                className="w-full max-w-[42px] bg-gradient-to-t from-[#86533A] via-[#B9997F] to-[#E6D9CB] rounded-t-[0.3rem] transition-all duration-500 group-hover:brightness-110 group-hover:shadow-md cursor-pointer relative"
                 style={{ height: `${heightPercent}%` }}
               >
                 <div className="absolute inset-x-0 top-0 h-1 bg-white/40 rounded-t-[0.3rem]" />
               </div>
 
               {/* Day Label */}
-              <span className="text-[11px] sm:text-xs font-bold text-[#666666] group-hover:text-[#A06A98] transition-colors">
+              <span className="text-[11px] sm:text-xs font-bold text-[#86533A] group-hover:text-[#080604] transition-colors">
                 {item.day}
               </span>
             </div>
@@ -242,13 +242,13 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E2E8F0]/80 mb-6">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E6D9CB] mb-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#333333] tracking-tight font-sans">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#080604] tracking-tight font-sans">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-xs sm:text-sm text-[#666666] mt-1 font-medium leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#86533A] mt-1 font-medium leading-relaxed">
             {subtitle}
           </p>
         )}
@@ -271,13 +271,13 @@ export function SearchInput({
 }) {
   return (
     <div className={`relative ${className}`}>
-      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#999999] pointer-events-none" />
+      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#86533A] pointer-events-none" />
       <input
         type="text"
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="h-10 w-full pl-9 pr-3.5 bg-[#FAF5F8] border border-[#E2E8F0] rounded-[0.3rem] text-xs sm:text-sm text-[#333333] placeholder:text-[#999999] focus:outline-none focus:border-[#A06A98] focus:bg-white focus:ring-1 focus:ring-[#A06A98] transition-all duration-200"
+        className="h-10 w-full pl-9 pr-3.5 bg-white border border-[#E6D9CB] rounded-[0.3rem] text-xs sm:text-sm text-[#080604] placeholder:text-[#999999] focus:outline-none focus:border-[#B9997F] focus:bg-white focus:ring-1 focus:ring-[#B9997F] transition-all duration-200"
       />
     </div>
   );
@@ -293,7 +293,7 @@ export function FilterTabs<T extends string>({
   onChange: (id: T) => void;
 }) {
   return (
-    <div className="flex items-center gap-1.5 p-1 bg-[#FAF5F8] border border-[#E2E8F0] rounded-[0.3rem] overflow-x-auto max-w-full">
+    <div className="flex items-center gap-1.5 p-1 bg-[#F1E7DA]/60 border border-[#E6D9CB] rounded-[0.3rem] overflow-x-auto max-w-full">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -303,15 +303,15 @@ export function FilterTabs<T extends string>({
             onClick={() => onChange(tab.id)}
             className={`px-3 py-1.5 rounded-[0.3rem] text-xs font-bold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0 ${
               isActive
-                ? 'bg-white text-[#76416F] shadow-2xs border border-[#DFBEDB]/60'
-                : 'text-[#666666] hover:text-[#333333] hover:bg-white/60'
+                ? 'bg-white text-[#411F11] shadow-2xs border border-[#E6D9CB]'
+                : 'text-[#86533A] hover:text-[#080604] hover:bg-white/60'
             }`}
           >
             {tab.label}
             {tab.count !== undefined && (
               <span
                 className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                  isActive ? 'bg-[#FDF2F8] text-[#76416F]' : 'bg-[#E2E8F0] text-[#666666]'
+                  isActive ? 'bg-[#F1E7DA] text-[#411F11]' : 'bg-[#E6D9CB] text-[#411F11]'
                 }`}
               >
                 {tab.count}
@@ -338,11 +338,11 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={`bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs overflow-hidden ${className}`}>
-      <header className="px-5 py-4 border-b border-[#E2E8F0] bg-gradient-to-r from-[#FDF2F8]/60 to-white flex flex-wrap items-center justify-between gap-3">
+    <section className={`bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs overflow-hidden ${className}`}>
+      <header className="px-5 py-4 border-b border-[#E6D9CB] bg-gradient-to-r from-[#F1E7DA]/60 to-white flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold text-[#333333]">{title}</h2>
-          {subtitle && <p className="text-xs text-[#666666] mt-0.5">{subtitle}</p>}
+          <h2 className="text-base font-bold text-[#080604]">{title}</h2>
+          {subtitle && <p className="text-xs text-[#86533A] mt-0.5">{subtitle}</p>}
         </div>
         {action}
       </header>
@@ -362,16 +362,16 @@ export function DataTable({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="bg-white border border-[#E2E8F0] rounded-[0.3rem] p-12 text-center shadow-xs">
-        <p className="text-sm font-medium text-[#666666]">{emptyMessage}</p>
+      <div className="bg-white border border-[#E6D9CB] rounded-[0.3rem] p-12 text-center shadow-xs">
+        <p className="text-sm font-medium text-[#86533A]">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-[0.3rem] overflow-x-auto shadow-xs">
-      <table className="w-full text-sm text-[#333333] text-left border-collapse min-w-[640px]">
-        <thead className="bg-[#FDF2F8]/90 text-[#76416F] text-xs uppercase tracking-wider font-bold border-b border-[#E2E8F0]">
+    <div className="bg-white border border-[#E6D9CB] rounded-[0.3rem] overflow-x-auto shadow-xs">
+      <table className="w-full text-sm text-[#080604] text-left border-collapse min-w-[640px]">
+        <thead className="bg-[#F1E7DA]/80 text-[#411F11] text-xs uppercase tracking-wider font-bold border-b border-[#E6D9CB]">
           <tr>
             {columns.map((column, idx) => (
               <th
@@ -385,11 +385,11 @@ export function DataTable({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#F1F5F9]">
+        <tbody className="divide-y divide-[#E6D9CB]/50">
           {rows.map((row, index) => (
             <tr
               key={index}
-              className="hover:bg-[#FAF5F8]/70 transition-colors duration-150"
+              className="hover:bg-[#F1E7DA]/30 transition-colors duration-150"
             >
               {row.map((cell, cellIndex) => (
                 <td
@@ -484,20 +484,20 @@ export function Modal({
     >
       <div
         ref={modalRef}
-        className={`w-full ${maxWidth} max-h-[92vh] h-auto flex flex-col bg-white border border-[#DFBEDB]/80 rounded-xl sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.22)] overflow-hidden relative my-auto`}
+        className={`w-full ${maxWidth} max-h-[92vh] h-auto flex flex-col bg-white border border-[#E6D9CB] rounded-xl sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.22)] overflow-hidden relative my-auto`}
         onClick={(event) => event.stopPropagation()}
         onWheel={(event) => event.stopPropagation()}
       >
         {/* Top Luxury Gradient Accent Bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#A06A98] via-[#DFBEDB] to-[#76416F] absolute top-0 left-0 right-0 z-20 shrink-0" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#B9997F] via-[#E6D9CB] to-[#C57E5D] absolute top-0 left-0 right-0 z-20 shrink-0" />
 
-        <header className="px-5 sm:px-7 py-4 border-b border-[#E2E8F0] bg-gradient-to-r from-[#FDF2F8]/90 via-[#FAF5F8]/70 to-white flex items-center justify-between shrink-0 pt-4.5 z-10">
+        <header className="px-5 sm:px-7 py-4 border-b border-[#E6D9CB] bg-gradient-to-r from-[#F1E7DA]/80 via-[#F5EBE0]/60 to-white flex items-center justify-between shrink-0 pt-4.5 z-10">
           <div className="min-w-0 pr-4">
-            <h2 className="text-lg sm:text-xl font-bold text-[#333333] tracking-tight font-sans truncate">
+            <h2 className="text-lg sm:text-xl font-bold text-[#080604] tracking-tight font-sans truncate">
               {title}
             </h2>
             {subtitle && (
-              <p className="text-xs text-[#666666] mt-0.5 font-medium leading-relaxed truncate sm:whitespace-normal">
+              <p className="text-xs text-[#86533A] mt-0.5 font-medium leading-relaxed truncate sm:whitespace-normal">
                 {subtitle}
               </p>
             )}
@@ -505,7 +505,7 @@ export function Modal({
           <button
             type="button"
             onClick={requestClose}
-            className="p-1.5 text-[#666666] hover:text-[#333333] hover:bg-white rounded-[0.3rem] transition-colors cursor-pointer border border-transparent hover:border-[#DFBEDB]/60 shrink-0"
+            className="p-1.5 text-[#86533A] hover:text-[#080604] hover:bg-white rounded-[0.3rem] transition-colors cursor-pointer border border-transparent hover:border-[#E6D9CB] shrink-0"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -517,7 +517,7 @@ export function Modal({
         </div>
 
         {footer && (
-          <footer className="px-5 sm:px-7 py-3.5 border-t border-[#E2E8F0] bg-[#FAF5F8] flex items-center justify-between gap-3 shrink-0 z-10">
+          <footer className="px-5 sm:px-7 py-3.5 border-t border-[#E6D9CB] bg-[#F1E7DA]/30 flex items-center justify-between gap-3 shrink-0 z-10">
             {footer}
           </footer>
         )}
@@ -528,13 +528,13 @@ export function Modal({
             className="absolute inset-0 z-50 bg-black/40 flex items-center justify-center p-4 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white border border-[#DFBEDB] rounded-xl p-5 sm:p-6 max-w-sm w-full shadow-2xl text-center space-y-4">
-              <div className="w-11 h-11 rounded-full bg-[#FDF2F8] border border-[#DFBEDB] text-[#A06A98] mx-auto flex items-center justify-center">
-                <AlertCircle className="w-5 h-5 text-[#A06A98]" />
+            <div className="bg-white border border-[#E6D9CB] rounded-xl p-5 sm:p-6 max-w-sm w-full shadow-2xl text-center space-y-4">
+              <div className="w-11 h-11 rounded-full bg-[#F1E7DA] border border-[#E6D9CB] text-[#B9997F] mx-auto flex items-center justify-center">
+                <AlertCircle className="w-5 h-5 text-[#B9997F]" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm sm:text-base font-bold text-[#333333]">Discard Unsaved Changes?</h3>
-                <p className="text-xs text-[#666666] leading-relaxed">
+                <h3 className="text-sm sm:text-base font-bold text-[#080604]">Discard Unsaved Changes?</h3>
+                <p className="text-xs text-[#86533A] leading-relaxed">
                   Are you sure you want to exit? Any changes made to this formula will not be saved.
                 </p>
               </div>
@@ -552,7 +552,7 @@ export function Modal({
                 <button
                   type="button"
                   onClick={() => setShowConfirm(false)}
-                  className="flex-1 py-2 px-3 text-xs font-bold text-white bg-gradient-to-r from-[#A06A98] to-[#76416F] hover:opacity-95 rounded-[0.3rem] transition-opacity cursor-pointer shadow-xs"
+                  className="flex-1 py-2 px-3 text-xs font-bold text-[#080604] bg-gradient-to-r from-[#B9997F] to-[#86533A] hover:opacity-95 rounded-[0.3rem] transition-opacity cursor-pointer shadow-xs font-semibold"
                 >
                   Continue
                 </button>

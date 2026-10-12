@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { X, ChevronRight } from 'lucide-react';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { CATEGORIES } from '../../data/products';
 
 interface MobileMenuProps {
@@ -50,7 +51,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
     >
       {/* Dimmed Backdrop */}
       <div
-        className={`absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-700 ${
+        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-700 ${
           isOpen ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
@@ -59,10 +60,10 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
         onClick={onClose}
       />
 
-      {/* Luxury Left-to-Right Expanding Drawer Panel (0% -> min(88vw, 360px)) */}
+      {/* Luxury Left-to-Right Expanding Drawer Panel */}
       <div
         data-lenis-prevent
-        className="fixed top-0 left-0 h-full bg-white shadow-2xl flex flex-col z-50 overflow-hidden"
+        className="fixed top-0 left-0 h-full bg-[var(--bg-elevated)] border-r border-[var(--border-subtle)] shadow-2xl flex flex-col z-50 overflow-hidden"
         style={{
           width: isOpen ? 'min(88vw, 360px)' : '0%',
           transition: 'width 0.85s cubic-bezier(0.19, 1, 0.22, 1)',
@@ -74,13 +75,13 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
           className="w-full h-full flex flex-col min-w-[280px] sm:min-w-[340px] p-6 min-h-0 overflow-hidden"
         >
           {/* Header */}
-          <div className="flex items-center justify-between pb-6 border-b border-[#E2E8F0] shrink-0">
+          <div className="flex items-center justify-between pb-6 border-b border-[var(--border-subtle)] shrink-0 text-[var(--text-primary)]">
             <VeloraaRougeeLogo size="sm" onClick={() => handleNav('/en')} />
             <button
               type="button"
               onClick={onClose}
               aria-label="Close menu"
-              className="p-2 text-[#666666] hover:text-[#333333] cursor-pointer"
+              className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
             >
               <X className="w-6 h-6" />
             </button>
@@ -91,72 +92,72 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
             <div className="space-y-3">
               <button
                 onClick={() => handleNav('/en')}
-                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[#333333] hover:text-[#A06A98] flex items-center justify-between cursor-pointer"
+                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[var(--text-primary)] hover:text-[var(--accent-gold)] flex items-center justify-between cursor-pointer"
               >
                 <span>Home</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
 
               <button
                 onClick={() => handleNav('/en/collection')}
-                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[#333333] hover:text-[#A06A98] flex items-center justify-between cursor-pointer"
+                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[var(--text-primary)] hover:text-[var(--accent-gold)] flex items-center justify-between cursor-pointer"
               >
                 <span>Shop All Products</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
 
               <button
                 onClick={() => handleNav('/en/about-us')}
-                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[#333333] hover:text-[#A06A98] flex items-center justify-between cursor-pointer"
+                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[var(--text-primary)] hover:text-[var(--accent-gold)] flex items-center justify-between cursor-pointer"
               >
                 <span>About Us</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
 
               <button
                 onClick={() => handleNav('/en/stories')}
-                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[#333333] hover:text-[#A06A98] flex items-center justify-between cursor-pointer"
+                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[var(--text-primary)] hover:text-[var(--accent-gold)] flex items-center justify-between cursor-pointer"
               >
                 <span>Stories &amp; Blog</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
 
               <button
                 onClick={() => handleNav('/en/locations')}
-                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[#333333] hover:text-[#A06A98] flex items-center justify-between cursor-pointer"
+                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[var(--text-primary)] hover:text-[var(--accent-gold)] flex items-center justify-between cursor-pointer"
               >
                 <span>Store Locations</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
 
               <button
                 onClick={() => handleNav('/en/contact-us')}
-                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[#333333] hover:text-[#A06A98] flex items-center justify-between cursor-pointer"
+                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[var(--text-primary)] hover:text-[var(--accent-gold)] flex items-center justify-between cursor-pointer"
               >
                 <span>Contact Concierge</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
 
               <button
                 onClick={() => handleNav('/en/wishlist')}
-                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[#333333] hover:text-[#A06A98] flex items-center justify-between cursor-pointer"
+                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[var(--text-primary)] hover:text-[var(--accent-gold)] flex items-center justify-between cursor-pointer"
               >
                 <span>Wishlist</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
               </button>
 
               <button
                 onClick={() => handleNav('/en/account')}
-                className="mobile-menu-item w-full text-left py-2.5 px-3 mt-2 bg-[#FDF2F8] rounded-xl text-xs font-bold uppercase tracking-widest text-[#76416F] hover:bg-[#FDF2F8]/80 flex items-center justify-between border border-[#F0DEF7] cursor-pointer"
+                className="mobile-menu-item w-full text-left py-2.5 px-3 mt-2 bg-[var(--bg-secondary)] rounded-xl text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] hover:opacity-90 flex items-center justify-between border border-[var(--border-subtle)] cursor-pointer"
               >
                 <span>Sign In / Register</span>
-                <ChevronRight className="w-4 h-4 text-[#A06A98]" />
+                <ChevronRight className="w-4 h-4 text-[var(--accent-gold)]" />
               </button>
             </div>
 
             {/* Categories Submenu */}
-            <div className="pt-4 border-t border-[#E2E8F0]">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#A06A98] mb-3 block">
+            <div className="pt-4 border-t border-[var(--border-subtle)]">
+              <span className="text-xs font-bold uppercase tracking-widest text-[var(--accent-gold)] mb-3 block">
                 Categories
               </span>
               <div className="grid grid-cols-2 gap-2">
@@ -164,7 +165,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
                   <button
                     key={cat.id}
                     onClick={() => handleNav(`/en/collection/${cat.slug}`)}
-                    className="mobile-menu-item text-left text-sm py-1.5 text-[#666666] hover:text-[#A06A98] transition-colors cursor-pointer"
+                    className="mobile-menu-item text-left text-sm py-1.5 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors cursor-pointer"
                   >
                     {cat.name}
                   </button>
@@ -173,9 +174,15 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
             </div>
           </div>
 
-          {/* Footer info in drawer */}
-          <div className="pt-4 border-t border-[#E2E8F0] shrink-0 space-y-1">
-            <p className="text-[11px] text-[#888888]">
+          {/* Drawer Footer with Theme Toggle */}
+          <div className="pt-4 border-t border-[var(--border-subtle)] shrink-0 space-y-3">
+            <div className="flex items-center justify-between p-2 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
+              <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] px-1">
+                Appearance
+              </span>
+              <ThemeToggle showLabel className="py-1 px-2.5" />
+            </div>
+            <p className="text-[11px] text-[var(--text-muted)]">
               GST: 27BJKPG4947G1ZZ
             </p>
           </div>
