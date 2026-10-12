@@ -2,25 +2,19 @@ function getApiBaseUrl(): string {
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
 
-    // 1. Localhost development only
+    // 1. Localhost development only – use VITE_API_URL or empty (same-origin proxy)
     if (host === 'localhost' || host === '127.0.0.1') {
       const envUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '');
       return envUrl || '';
     }
 
-    // 2. Production custom domains (veloraarougee.com, admin.veloraarougee.com, etc.)
-    if (
-      host === 'veloraarougee.com' ||
-      host === 'www.veloraarougee.com' ||
-      host === 'admin.veloraarougee.com' ||
-      host.endsWith('.veloraarougee.com')
-    ) {
-      if (host === 'api.veloraarougee.com') return '';
-      return 'https://api.veloraarougee.com';
-    }
+    // 2. api.veloraarougee.com – the API itself, no prefix needed
+    if (host === 'api.veloraarougee.com') return '';
 
-    // 3. Vercel preview deployments (*.vercel.app) or other hosts
-    return '';
+    // 3. All other production/preview hosts (veloraarougee.com, admin.veloraarougee.com,
+    //    *.vercel.app, etc.) – use same-origin /api/* to avoid CORS entirely.
+    //    Vercel's rewrite `/api/(.*)` → `/api?__path=/$1` routes these to the serverless fn.
+    return '/api';
   }
 
   return '';
