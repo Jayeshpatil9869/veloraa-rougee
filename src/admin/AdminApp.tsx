@@ -106,6 +106,7 @@ export const AdminApp: React.FC<{
   }[]>([]);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const notifLeaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -121,6 +122,32 @@ export const AdminApp: React.FC<{
     const interval = setInterval(loadNotifications, 12000);
     return () => clearInterval(interval);
   }, [admin]);
+
+  // Click outside listener so dropdown stays open during scroll and closes when clicking elsewhere
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setIsNotificationOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleNotifMouseEnter = () => {
+    if (notifLeaveTimerRef.current) {
+      clearTimeout(notifLeaveTimerRef.current);
+      notifLeaveTimerRef.current = null;
+    }
+    setIsNotificationOpen(true);
+  };
+
+  const handleNotifMouseLeave = () => {
+    if (notifLeaveTimerRef.current) clearTimeout(notifLeaveTimerRef.current);
+    notifLeaveTimerRef.current = setTimeout(() => {
+      setIsNotificationOpen(false);
+    }, 450);
+  };
 
   const handleMarkAllRead = async () => {
     try {
@@ -833,8 +860,8 @@ export const AdminApp: React.FC<{
             <div
               className="relative py-1"
               ref={notifRef}
-              onMouseEnter={() => setIsNotificationOpen(true)}
-              onMouseLeave={() => setIsNotificationOpen(false)}
+              onMouseEnter={handleNotifMouseEnter}
+              onMouseLeave={handleNotifMouseLeave}
             >
               <button
                 type="button"
@@ -854,10 +881,14 @@ export const AdminApp: React.FC<{
               </button>
 
               {isNotificationOpen && (
-                <div className="absolute right-0 top-full pt-1.5 w-80 sm:w-96 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-150">
-                  <div className="bg-white border border-[#F0DEF7] rounded-2xl shadow-[0_16px_40px_rgba(119,65,112,0.18)] overflow-hidden">
+                <div
+                  className="absolute right-0 top-full pt-1.5 w-80 sm:w-96 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-150"
+                  onMouseEnter={handleNotifMouseEnter}
+                  onMouseLeave={handleNotifMouseLeave}
+                >
+                  <div className="bg-white border border-[#F0DEF7] rounded-2xl shadow-[0_16px_40px_rgba(119,65,112,0.18)] overflow-hidden flex flex-col max-h-[460px]">
                     {/* Header */}
-                    <div className="px-4 py-3 border-b border-[#F0DEF7] bg-gradient-to-r from-[#FAF5F8] to-white flex items-center justify-between">
+                    <div className="px-4 py-3 border-b border-[#F0DEF7] bg-gradient-to-r from-[#FAF5F8] to-white flex items-center justify-between shrink-0">
                       <div className="flex items-center gap-2">
                         <Bell className="w-4 h-4 text-[#A06A98]" />
                         <span className="text-xs font-bold uppercase tracking-wider text-[#333333]">
@@ -880,19 +911,29 @@ export const AdminApp: React.FC<{
                       )}
                     </div>
 
-                    {/* Notification list */}
-                    <div className="max-h-80 overflow-y-auto divide-y divide-[#F0DEF7]/60">
+                    {/* Notification list - fully scrollable */}
+                    <div
+                      className="flex-1 min-h-0 max-h-[350px] overflow-y-auto overscroll-contain divide-y divide-[#F0DEF7]/60 touch-pan-y"
+                      tabIndex={0}
+                      style={{
+                        scrollbarWidth: 'thin',
+                        scrollbarColor: '#A06A98 #FAF5F8',
+                      }}
+                    >
                       {notifications.length === 0 ? (
                         <div className="p-6 text-center text-xs text-[#888888]">
                           No recent alerts or activity.
                         </div>
                       ) : (
-                        notifications.slice(0, 15).map((n) => {
+                        notifications.slice(0, 40).map((n) => {
                           const isUnread = !n.read_at;
                           return (
                             <div
                               key={n.id}
-                              onClick={() => void handleNotificationClick(n)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                void handleNotificationClick(n);
+                              }}
                               className={`p-3 sm:p-3.5 transition-colors cursor-pointer flex items-start gap-3 ${
                                 isUnread ? 'bg-[#FDF6FA]/80 hover:bg-[#FBEBF6]' : 'hover:bg-slate-50'
                               }`}
