@@ -1,5 +1,13 @@
 {
-  "framework": "vite",
+  "buildCommand": "node node_modules/vite/bin/vite.js build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install && npm install --prefix server",
+  "functions": {
+    "server/api/index.ts": {
+      "runtime": "nodejs20.x",
+      "memory": 512
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",
@@ -9,14 +17,18 @@
           "value": "api.veloraarougee.com"
         }
       ],
-      "destination": "/api"
+      "destination": "/server/api/index"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "/server/api/index"
     },
     {
-      "source": "/((?!robots\\.txt|sitemap\\.xml|assets/|fonts/|brand/|favicon\\.svg|api).*)",
+      "source": "/api",
+      "destination": "/server/api/index"
+    },
+    {
+      "source": "/((?!robots\\.txt|sitemap\\.xml|assets/|fonts/|brand/|favicon\\.svg).*)",
       "destination": "/index.html"
     }
   ],

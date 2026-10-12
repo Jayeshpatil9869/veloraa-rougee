@@ -67,6 +67,13 @@ export const AdminApp: React.FC<{
   path: string;
   onNavigate: (path: string) => void;
 }> = ({ path, onNavigate }) => {
+  // When accessed via admin.veloraarougee.com the URL root is "/" not "/admin"
+  const isAdminSubdomain = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
+  const adminNav = (to: string) => {
+    // to is like '/admin/products'. On subdomain we strip the /admin prefix.
+    const finalPath = isAdminSubdomain ? to.replace(/^\/admin/, '') || '/' : to;
+    onNavigate(finalPath);
+  };
   const module = moduleFromPath(path);
   // Synchronous session hydration from localStorage prevents flash of login screen on page reload
   const [admin, setAdmin] = useState<{ email: string; fullName?: string } | null>(() => {
@@ -406,13 +413,14 @@ export const AdminApp: React.FC<{
   }, []);
 
   useEffect(() => {
-    const requested = path.split('/')[2] || 'dashboard';
+    const clean = path.replace(/^\/admin\/?/, '');
+    const requested = clean.split('/')[0] || 'dashboard';
     if (!NAV.some((item) => item.id === requested)) {
-      onNavigate('/admin/dashboard');
+      adminNav('/admin/dashboard');
     }
     // Close mobile drawer on navigation
     setIsMobileMenuOpen(false);
-  }, [path, onNavigate]);
+  }, [path]);
 
   const login = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -701,7 +709,7 @@ export const AdminApp: React.FC<{
         return (
           <button
             key={item.id}
-            onClick={() => onNavigate(`/admin/${item.id}`)}
+            onClick={() => adminNav(`/admin/${item.id}`)}
             className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-[0.3rem] text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
               isActive
                 ? 'text-[var(--accent-primary)] bg-gradient-to-r from-[var(--bg-secondary)] to-[var(--bg-primary)] border-l-[3px] border-[var(--accent-primary)] font-bold shadow-2xs dark:bg-gradient-to-r dark:from-[#1A100A] dark:to-[#100B08] dark:border-[#D1AF92] dark:shadow-[0_0_12px_rgba(209,175,146,0.14)]'
@@ -749,7 +757,7 @@ export const AdminApp: React.FC<{
                     color="currentColor"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
-                      onNavigate('/admin/dashboard');
+                      adminNav('/admin/dashboard');
                     }}
                   />
                   <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[0.25rem] bg-[var(--accent-primary)] text-[var(--button-primary-text)]">
@@ -807,7 +815,7 @@ export const AdminApp: React.FC<{
                 <VeloraaRougeeLogo
                   size="md"
                   color="currentColor"
-                  onClick={() => onNavigate('/admin/dashboard')}
+                  onClick={() => adminNav('/admin/dashboard')}
                   className="cursor-pointer"
                 />
               </div>
@@ -1041,12 +1049,12 @@ export const AdminApp: React.FC<{
         {/* Dynamic Workspace Container */}
         <main className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10">
           {module === 'dashboard' && (
-            <Dashboard onOpenOrder={(id) => onNavigate(`/admin/orders/${id}`)} />
+            <Dashboard onOpenOrder={(id) => adminNav(`/admin/orders/${id}`)} />
           )}
           {module === 'products' && <ProductsModule />}
           {module === 'categories' && <CategoriesModule />}
           {module === 'orders' && (
-            <OrdersModule path={path} onOpen={(id) => onNavigate(`/admin/orders/${id}`)} />
+            <OrdersModule path={path} onOpen={(id) => adminNav(`/admin/orders/${id}`)} />
           )}
           {module === 'payments' && <PaymentsModule />}
           {module === 'customers' && <CustomersModule />}

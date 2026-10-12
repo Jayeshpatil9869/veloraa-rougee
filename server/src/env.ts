@@ -1,13 +1,13 @@
-import { config as loadEnv } from 'dotenv';
 import { z } from 'zod';
 
-loadEnv({ path: '../.env' });
-loadEnv();
+// In production (Vercel), env vars come directly from process.env set in the dashboard.
+// In local development, .env is loaded by the dev script (scripts/dev.mjs) or tsx.
+// We do NOT use dotenv here to avoid path issues in serverless environments.
 
 const schema = z.object({
   NODE_ENV: z.string().default('development'),
   PORT: z.coerce.number().default(4000),
-  APP_ORIGIN: z.string().default('http://localhost:3000'),
+  APP_ORIGIN: z.string().default('https://veloraarougee.com'),
   SUPABASE_URL: z.string().optional(),
   SUPABASE_ANON_KEY: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
