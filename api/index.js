@@ -57879,7 +57879,7 @@ var require_index_umd = __commonJS({
   }
 });
 
-// api/index.ts
+// server/src/api-handler.ts
 import { Socket } from "node:net";
 
 // server/src/app.ts
@@ -73113,7 +73113,7 @@ async function buildApp() {
   return app;
 }
 
-// api/index.ts
+// server/src/api-handler.ts
 var config = {
   api: {
     bodyParser: false
