@@ -331,7 +331,7 @@ export async function registerAuth(app: FastifyInstance) {
       user_agent: request.headers['user-agent'] ?? null,
     }));
     await ok(db().from('admin_users').update({ last_login_at: new Date().toISOString() }).eq('id', admin.id));
-    reply.setCookie('vr_admin', token, { ...cookieBase(), maxAge: 60 * 60 * 12 });
+    reply.setCookie('vr_admin', token, { ...cookieBase(request), maxAge: 60 * 60 * 12 });
     await audit({
       actorType: 'admin',
       actorId: admin.id,
@@ -342,15 +342,17 @@ export async function registerAuth(app: FastifyInstance) {
       summary: `${admin.email} signed in`,
       ip: clientIp(request),
     });
-    return { email: admin.email, roleId: admin.role_id, fullName: admin.full_name };
+    return { email: admin.email, roleId: admin.role_id, fullName: admin.full_name, token };
   });
 
   app.post('/admin/auth/logout', async (request, reply) => {
-    const token = request.cookies.vr_admin;
+    const authHeader = request.headers.authorization;
+    const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    const token = request.cookies.vr_admin || bearerToken;
     if (token) {
       await ok(db().from('admin_sessions').delete().eq('token_hash', sha256(token)));
     }
-    reply.clearCookie('vr_admin', { path: '/' });
+    reply.clearCookie('vr_admin', { ...cookieBase(request), maxAge: 0 });
     return { ok: true };
   });
 

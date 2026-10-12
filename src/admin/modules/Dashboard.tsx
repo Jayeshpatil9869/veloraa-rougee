@@ -46,9 +46,10 @@ interface Analytics {
   recentOrders: RecentOrder[];
 }
 
-export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
-  onOpenOrder,
-}) => {
+export const Dashboard: React.FC<{
+  onOpenOrder: (id: string) => void;
+  onNavigate?: (path: string) => void;
+}> = ({ onOpenOrder, onNavigate }) => {
   const [data, setData] = useState<Analytics | null>(null);
   const [error, setError] = useState('');
   const dashboardRef = useRef<HTMLDivElement>(null);
@@ -134,14 +135,14 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <PrimaryButton
               icon={Package}
-              onClick={() => (window.location.href = '/admin/products')}
+              onClick={() => onNavigate ? onNavigate('/admin/products') : (window.location.href = '/admin/products')}
               className="text-xs font-bold uppercase tracking-wider"
             >
               Add Formula
             </PrimaryButton>
             <SoftButton
               icon={Tag}
-              onClick={() => (window.location.href = '/admin/coupons')}
+              onClick={() => onNavigate ? onNavigate('/admin/coupons') : (window.location.href = '/admin/coupons')}
               className="text-xs font-bold uppercase tracking-wider"
             >
               Promo Code

@@ -28,7 +28,15 @@ const schema = z.object({
   ADMIN_NAME: z.string().default('Veloraa Admin'),
 });
 
-export const env = schema.parse(process.env);
+const parsed = schema.parse(process.env);
+
+export const env = {
+  ...parsed,
+  APP_ORIGIN:
+    parsed.NODE_ENV === 'production' && parsed.APP_ORIGIN.includes('localhost')
+      ? 'https://veloraarougee.com'
+      : parsed.APP_ORIGIN,
+};
 
 export const payuBase = env.PAYU_MODE === 'live' ? 'https://secure.payu.in' : 'https://test.payu.in';
 export const payuVerifyUrl = `${payuBase}/merchant/postservice?form=2`;

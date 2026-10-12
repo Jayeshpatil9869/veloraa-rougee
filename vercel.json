@@ -1,11 +1,11 @@
 {
-  "buildCommand": "node node_modules/vite/bin/vite.js build",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install && npm install --prefix server",
   "functions": {
-    "server/api/index.ts": {
-      "runtime": "nodejs20.x",
-      "memory": 512
+    "api/index.js": {
+      "memory": 512,
+      "maxDuration": 30
     }
   },
   "rewrites": [
@@ -17,15 +17,15 @@
           "value": "api.veloraarougee.com"
         }
       ],
-      "destination": "/server/api/index"
+      "destination": "/api?__path=/$1"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/server/api/index"
+      "destination": "/api?__path=/$1"
     },
     {
       "source": "/api",
-      "destination": "/server/api/index"
+      "destination": "/api?__path=/health"
     },
     {
       "source": "/((?!robots\\.txt|sitemap\\.xml|assets/|fonts/|brand/|favicon\\.svg).*)",
@@ -33,6 +33,27 @@
     }
   ],
   "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://veloraarougee.com"
+        },
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type,Authorization,X-Requested-With,Accept,Origin"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
