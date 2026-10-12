@@ -12,22 +12,23 @@ interface ThemeContextValue {
 const STORAGE_KEY = 'vr-theme';
 
 const getInitialTheme = (): Theme => {
-  if (typeof window === 'undefined') return 'light';
+  if (typeof window === 'undefined') return 'dark';
   try {
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
     if (stored === 'light' || stored === 'dark') {
       return stored;
     }
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    return media.matches ? 'dark' : 'light';
+    // Default to dark — only use light if user's OS explicitly prefers light
+    const media = window.matchMedia('(prefers-color-scheme: light)');
+    return media.matches ? 'light' : 'dark';
   } catch {
-    return 'light';
+    return 'dark';
   }
 };
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: 'light',
-  isDark: false,
+  theme: 'dark',
+  isDark: true,
   setTheme: () => {},
   toggleTheme: () => {},
 });
@@ -54,12 +55,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Listen to OS preference changes if no manual preference stored
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const media = window.matchMedia('(prefers-color-scheme: light)');
 
     const handleMediaChange = (e: MediaQueryListEvent) => {
       const hasManualChoice = Boolean(localStorage.getItem(STORAGE_KEY));
       if (!hasManualChoice) {
-        const nextTheme = e.matches ? 'dark' : 'light';
+        // dark is the default; only switch to light if OS explicitly prefers light
+        const nextTheme: Theme = e.matches ? 'light' : 'dark';
         setThemeState(nextTheme);
         applyTheme(nextTheme);
       }

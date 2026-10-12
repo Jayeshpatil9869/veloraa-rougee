@@ -7,4 +7,7 @@ coverage/
 .env*
 !.env.example
 tmp-sql/
+
+# Generated API bundle (rebuilt by `npm run build:api` on every deploy)
+api/index.js
 .env.example
