@@ -129,14 +129,14 @@ export const CategoriesModule: React.FC = () => {
 
         {/* Existing Categories Table */}
         <div className="lg:col-span-8">
-          <section className="bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs overflow-hidden">
-            <header className="px-6 py-4 border-b border-[#E6D9CB] bg-[#F1E7DA]/40 flex items-center justify-between">
+          <section className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs overflow-hidden">
+            <header className="px-6 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-[#080604] flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-[#B9997F]" />
+                <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-[var(--accent-primary)]" />
                   Active Collections
                 </h2>
-                <p className="text-xs text-[#86533A]/70 mt-0.5">
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   {rows.length} taxonomy records listed in storefront
                 </p>
               </div>

@@ -118,7 +118,7 @@ export const EnquiriesModule: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -207,24 +207,24 @@ export const EnquiriesModule: React.FC = () => {
           maxWidth="max-w-lg"
         >
           <div className="space-y-4 text-xs">
-            <div className="p-3 bg-[#F5EBE0] rounded-[0.3rem] border border-[#E6D9CB] space-y-1">
-              <p className="font-semibold text-[#080604]">Contact Information:</p>
-              <p className="text-[#86533A]/70">Email: <a href={`mailto:${viewing.email}`} className="text-[#86533A] font-bold underline">{viewing.email}</a></p>
-              {viewing.phone && <p className="text-[#86533A]/70">Phone: <span className="font-mono text-[#080604]">{viewing.phone}</span></p>}
+            <div className="p-3 bg-[var(--bg-secondary)] rounded-[0.3rem] border border-[var(--border-subtle)] space-y-1">
+              <p className="font-semibold text-[var(--text-primary)]">Contact Information:</p>
+              <p className="text-[var(--text-muted)]">Email: <a href={`mailto:${viewing.email}`} className="text-[var(--accent-primary)] font-bold underline">{viewing.email}</a></p>
+              {viewing.phone && <p className="text-[var(--text-muted)]">Phone: <span className="font-mono text-[var(--text-primary)]">{viewing.phone}</span></p>}
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-bold uppercase tracking-wider text-[#86533A] text-[11px]">
+              <label className="font-bold uppercase tracking-wider text-[var(--text-secondary)] text-[11px]">
                 Customer Message
               </label>
-              <div className="p-4 bg-white border border-[#E6D9CB] rounded-[0.3rem] text-[#080604] leading-relaxed whitespace-pre-wrap">
+              <div className="p-4 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap">
                 {viewing.message}
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-[#E6D9CB]">
+            <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)]">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-[#86533A]">Status:</span>
+                <span className="font-bold text-[var(--text-secondary)]">Status:</span>
                 <StatusBadge value={viewing.status} />
               </div>
               <a

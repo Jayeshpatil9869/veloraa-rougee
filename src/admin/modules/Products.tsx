@@ -119,7 +119,7 @@ export const ProductsModule: React.FC = () => {
       {error && <Notice variant="error">{error}</Notice>}
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -525,8 +525,8 @@ const ProductForm: React.FC<{
                     onClick={() => setStatus(item.id)}
                     className={`py-2 px-2 text-xs font-bold rounded-[0.3rem] border transition-all cursor-pointer text-center ${
                       status === item.id
-                        ? 'border-[#B9997F] bg-[#F1E7DA] text-[#86533A] shadow-2xs'
-                        : 'border-[#E6D9CB] bg-white text-[#86533A]/70 hover:border-[#B9997F]'
+                        ? 'border-[var(--accent-primary)] bg-[var(--bg-secondary)] text-[var(--accent-primary)] shadow-2xs'
+                        : 'border-[var(--border-subtle)] bg-[var(--card-bg)] text-[var(--text-muted)] hover:border-[var(--accent-primary)]'
                     }`}
                   >
                     {item.label}
@@ -537,7 +537,7 @@ const ProductForm: React.FC<{
 
             {/* Formula Description */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#080604] block">
+              <label className="text-xs font-bold text-[var(--text-primary)] block">
                 Formula Description & Sensory Notes
               </label>
               <textarea
@@ -546,7 +546,7 @@ const ProductForm: React.FC<{
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
               />
-              <p className="text-[11px] text-[#86533A]/70">
+              <p className="text-[11px] text-[var(--text-muted)]">
                 Describe wear-time, application technique, texture, and botanical ingredients.
               </p>
             </div>
@@ -558,11 +558,11 @@ const ProductForm: React.FC<{
                 onClick={() => setBestseller(!bestseller)}
                 className={`px-3 py-1.5 text-xs font-bold rounded-[0.3rem] border transition-all cursor-pointer flex items-center gap-1.5 ${
                   bestseller
-                    ? 'bg-[#F1E7DA] border-[#B9997F] text-[#86533A]'
-                    : 'bg-white border-[#E6D9CB] text-[#86533A]/70 hover:border-[#B9997F]'
+                    ? 'bg-[var(--bg-secondary)] border-[var(--accent-primary)] text-[var(--accent-primary)]'
+                    : 'bg-[var(--card-bg)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--accent-primary)]'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#B9997F]" />
+                <Sparkles className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                 <span>Bestseller</span>
               </button>
 
@@ -571,11 +571,11 @@ const ProductForm: React.FC<{
                 onClick={() => setFeatured(!featured)}
                 className={`px-3 py-1.5 text-xs font-bold rounded-[0.3rem] border transition-all cursor-pointer flex items-center gap-1.5 ${
                   featured
-                    ? 'bg-[#F1E7DA] border-[#B9997F] text-[#86533A]'
-                    : 'bg-white border-[#E6D9CB] text-[#86533A]/70 hover:border-[#B9997F]'
+                    ? 'bg-[var(--bg-secondary)] border-[var(--accent-primary)] text-[var(--accent-primary)]'
+                    : 'bg-[var(--card-bg)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--accent-primary)]'
                 }`}
               >
-                <Tag className="w-3.5 h-3.5 text-[#B9997F]" />
+                <Tag className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                 <span>Featured Collection</span>
               </button>
             </div>
@@ -654,10 +654,10 @@ const ProductForm: React.FC<{
                     return (
                       <div
                         key={index}
-                        className={`group relative rounded-[0.3rem] bg-white border overflow-hidden aspect-square flex items-center justify-center transition-all ${
+                        className={`group relative rounded-[0.3rem] bg-[var(--card-bg)] border overflow-hidden aspect-square flex items-center justify-center transition-all ${
                           isCover
-                            ? 'border-[#B9997F] ring-2 ring-[#E6D9CB] shadow-2xs'
-                            : 'border-[#E6D9CB] hover:border-[#B9997F]'
+                            ? 'border-[var(--accent-primary)] ring-2 ring-[var(--border-subtle)] shadow-2xs'
+                            : 'border-[var(--border-subtle)] hover:border-[var(--accent-primary)]'
                         }`}
                       >
                         <img
@@ -672,11 +672,11 @@ const ProductForm: React.FC<{
                         {/* Top Badge: Primary Cover vs Slot Index */}
                         <div className="absolute top-1 left-1 pointer-events-none">
                           {isCover ? (
-                            <span className="bg-[#86533A] text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-2xs flex items-center gap-0.5">
+                            <span className="bg-[var(--accent-primary)] text-[var(--button-primary-text)] text-[9px] font-bold px-1.5 py-0.5 rounded shadow-2xs flex items-center gap-0.5">
                               <Star className="w-2.5 h-2.5 fill-current" /> Cover
                             </span>
                           ) : (
-                            <span className="bg-[#080604]/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                            <span className="bg-black/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
                               #{index + 1}
                             </span>
                           )}
@@ -688,7 +688,7 @@ const ProductForm: React.FC<{
                             <button
                               type="button"
                               onClick={() => handleSetPrimary(index)}
-                              className="p-1.5 bg-white text-[#86533A] hover:bg-[#F5EBE0] rounded-full shadow-md transition-transform hover:scale-110 cursor-pointer"
+                              className="p-1.5 bg-[var(--card-bg)] text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-full shadow-md transition-transform hover:scale-110 cursor-pointer"
                               title="Set as primary cover"
                             >
                               <Star className="w-3 h-3" />
@@ -697,7 +697,7 @@ const ProductForm: React.FC<{
                           <button
                             type="button"
                             onClick={() => handleRemoveImage(index)}
-                            className="p-1.5 bg-white text-rose-600 hover:bg-rose-50 rounded-full shadow-md transition-transform hover:scale-110 cursor-pointer"
+                            className="p-1.5 bg-[var(--card-bg)] text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 rounded-full shadow-md transition-transform hover:scale-110 cursor-pointer"
                             title="Delete image"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -711,13 +711,13 @@ const ProductForm: React.FC<{
                   {images.length < MAX_IMAGES && (
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="border-2 border-dashed border-[#E6D9CB] hover:border-[#B9997F] bg-white hover:bg-[#F1E7DA] rounded-[0.3rem] aspect-square flex flex-col items-center justify-center p-2 text-center cursor-pointer transition-colors group"
+                      className="border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--accent-primary)] bg-[var(--card-bg)] hover:bg-[var(--bg-secondary)] rounded-[0.3rem] aspect-square flex flex-col items-center justify-center p-2 text-center cursor-pointer transition-colors group"
                     >
-                      <UploadCloud className="w-5 h-5 text-[#B9997F] group-hover:scale-110 transition-transform mb-1" />
-                      <p className="text-[10px] font-bold text-[#86533A]">
+                      <UploadCloud className="w-5 h-5 text-[var(--accent-primary)] group-hover:scale-110 transition-transform mb-1" />
+                      <p className="text-[10px] font-bold text-[var(--text-secondary)]">
                         + Add Image
                       </p>
-                      <span className="text-[9px] text-[#86533A]/70">
+                      <span className="text-[9px] text-[var(--text-muted)]">
                         ({MAX_IMAGES - images.length} left)
                       </span>
                     </div>
@@ -783,7 +783,7 @@ const ProductForm: React.FC<{
                         { name: preset.name, price: '80', stock: '25' },
                       ]);
                     }}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-white hover:bg-[#F1E7DA] border border-[#E6D9CB] hover:border-[#B9997F] text-[#86533A] text-[11px] font-semibold rounded-[0.25rem] transition-colors cursor-pointer shadow-2xs"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--card-bg)] hover:bg-[var(--bg-secondary)] border border-[var(--border-subtle)] hover:border-[var(--accent-primary)] text-[var(--text-secondary)] text-[11px] font-semibold rounded-[0.25rem] transition-colors cursor-pointer shadow-2xs"
                   >
                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: preset.color }} />
                     <span>+ {preset.name}</span>
@@ -792,9 +792,9 @@ const ProductForm: React.FC<{
               </div>
 
               {/* In-Place Editable Shades Table */}
-              <div className="border border-[#E6D9CB] rounded-[0.35rem] bg-white overflow-hidden shadow-2xs">
+              <div className="border border-[var(--border-subtle)] rounded-[0.35rem] bg-[var(--card-bg)] overflow-hidden shadow-2xs">
                 {/* Table Header */}
-                <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-[#F5EBE0] border-b border-[#E6D9CB] text-[10px] font-bold uppercase tracking-wider text-[#86533A]">
+                <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-[var(--bg-secondary)] border-b border-[var(--border-subtle)] text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   <div className="col-span-5 sm:col-span-5">Shade Title</div>
                   <div className="col-span-3 sm:col-span-3">Price (₹)</div>
                   <div className="col-span-3 sm:col-span-3">Stock Qty</div>
@@ -802,19 +802,19 @@ const ProductForm: React.FC<{
                 </div>
 
                 {/* Table Rows */}
-                <div className="divide-y divide-[#F1E7DA] max-h-[170px] overflow-y-auto modal-luxury-scroll">
+                <div className="divide-y divide-[var(--border-subtle)]/60 max-h-[170px] overflow-y-auto modal-luxury-scroll">
                   {shades.map((shade, index) => {
                     const stockNum = Number(shade.stock) || 0;
                     return (
                       <div
                         key={index}
-                        className="grid grid-cols-12 gap-2 px-3 py-2 items-center hover:bg-[#F5EBE0]/50 transition-colors"
+                        className="grid grid-cols-12 gap-2 px-3 py-2 items-center hover:bg-[var(--bg-secondary)]/50 transition-colors"
                       >
                         {/* 1. Shade Title & Swatch */}
                         <div className="col-span-5 sm:col-span-5 flex items-center gap-2 min-w-0">
-                          <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-[#86533A] to-[#B9997F] shrink-0 shadow-2xs border border-white" />
+                          <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-[var(--accent-secondary)] to-[var(--accent-primary)] shrink-0 shadow-2xs border border-[var(--border-subtle)]" />
                           <input
-                            className="w-full bg-transparent border border-transparent hover:border-[#E6D9CB] focus:border-[#B9997F] focus:bg-white rounded px-1.5 py-1 text-xs font-bold text-[#080604] focus:outline-none transition-all truncate"
+                            className="w-full bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1.5 py-1 text-xs font-bold text-[var(--text-primary)] focus:outline-none transition-all truncate"
                             value={shade.name}
                             placeholder="Shade Name"
                             onChange={(e) => {
@@ -828,10 +828,10 @@ const ProductForm: React.FC<{
 
                         {/* 2. Price Input */}
                         <div className="col-span-3 sm:col-span-3 flex items-center">
-                          <span className="text-xs text-[#86533A]/70 font-bold mr-1">₹</span>
+                          <span className="text-xs text-[var(--text-muted)] font-bold mr-1">₹</span>
                           <input
                             type="number"
-                            className="w-full bg-transparent border border-transparent hover:border-[#E6D9CB] focus:border-[#B9997F] focus:bg-white rounded px-1.5 py-1 text-xs font-mono font-bold text-[#86533A] focus:outline-none transition-all"
+                            className="w-full bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1.5 py-1 text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none transition-all"
                             value={shade.price}
                             placeholder="80"
                             onChange={(e) => {
@@ -847,7 +847,7 @@ const ProductForm: React.FC<{
                         <div className="col-span-3 sm:col-span-3 flex items-center gap-1.5">
                           <input
                             type="number"
-                            className="w-14 bg-transparent border border-transparent hover:border-[#E6D9CB] focus:border-[#B9997F] focus:bg-white rounded px-1.5 py-1 text-xs font-mono font-bold text-[#080604] focus:outline-none transition-all"
+                            className="w-14 bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1.5 py-1 text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none transition-all"
                             value={shade.stock}
                             placeholder="25"
                             onChange={(e) => {
@@ -860,10 +860,10 @@ const ProductForm: React.FC<{
                           <span
                             className={`hidden sm:inline-block text-[9px] font-bold px-1.5 py-0.5 rounded ${
                               stockNum > 10
-                                ? 'bg-emerald-50 text-emerald-700'
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                                 : stockNum > 0
-                                  ? 'bg-amber-50 text-amber-700'
-                                  : 'bg-rose-50 text-rose-700'
+                                  ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                                  : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
                             }`}
                           >
                             {stockNum > 10 ? 'In Stock' : stockNum > 0 ? 'Low' : 'Out'}
@@ -878,7 +878,7 @@ const ProductForm: React.FC<{
                               onClick={() =>
                                 setShades(shades.filter((_, itemIndex) => itemIndex !== index))
                               }
-                              className="p-1 text-[#86533A]/60 hover:text-rose-600 rounded transition-colors cursor-pointer"
+                              className="p-1 text-[var(--text-muted)] hover:text-rose-600 dark:hover:text-rose-400 rounded transition-colors cursor-pointer"
                               title="Delete variant"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -891,7 +891,7 @@ const ProductForm: React.FC<{
                 </div>
 
                 {/* Add New Custom Shade Inline Footer */}
-                <div className="p-2 bg-[#F5EBE0] border-t border-[#E6D9CB] flex items-center justify-between gap-2">
+                <div className="p-2 bg-[var(--bg-secondary)] border-t border-[var(--border-subtle)] flex items-center justify-between gap-2">
                   <button
                     type="button"
                     onClick={() => {
@@ -901,13 +901,13 @@ const ProductForm: React.FC<{
                         { name: `Shade 0${nextNum}`, price: '80', stock: '25' },
                       ]);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E6D9CB] hover:border-[#B9997F] hover:bg-[#F1E7DA] text-[#86533A] font-bold text-xs rounded-[0.3rem] transition-colors cursor-pointer shadow-2xs"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--card-bg)] border border-[var(--border-subtle)] hover:border-[var(--accent-primary)] hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] font-bold text-xs rounded-[0.3rem] transition-colors cursor-pointer shadow-2xs"
                   >
-                    <Plus className="w-3.5 h-3.5 text-[#B9997F]" />
+                    <Plus className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                     <span>Add Custom Shade</span>
                   </button>
 
-                  <span className="text-[10px] text-[#86533A]/70 italic">
+                  <span className="text-[10px] text-[var(--text-muted)] italic">
                     Click any value to edit directly
                   </span>
                 </div>
@@ -915,12 +915,12 @@ const ProductForm: React.FC<{
             </div>
 
             {/* Bottom 2 Action Buttons (Save Changes & Discard) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-[#E6D9CB]">
-              {/* Button 1: Save Product (Luxury Gold to Brown Gradient) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-[var(--border-subtle)]">
+              {/* Button 1: Save Product */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-10 bg-gradient-to-r from-[#B9997F] to-[#86533A] hover:opacity-95 text-white text-xs font-bold rounded-[0.3rem] transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60"
+                className="w-full h-10 bg-gradient-to-r from-[var(--accent-secondary)] to-[var(--accent-primary)] hover:opacity-95 text-[var(--button-primary-text)] text-xs font-bold rounded-[0.3rem] transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60"
               >
                 {isSubmitting ? 'Saving...' : product ? 'Save Changes' : 'Create Product'}
               </button>
@@ -929,7 +929,7 @@ const ProductForm: React.FC<{
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full h-10 bg-white border border-[#E6D9CB] hover:border-rose-300 text-[#86533A] hover:text-rose-600 text-xs font-bold rounded-[0.3rem] transition-colors cursor-pointer flex items-center justify-center"
+                className="w-full h-10 bg-[var(--card-bg)] border border-[var(--border-subtle)] hover:border-rose-400 text-[var(--text-muted)] hover:text-rose-600 dark:hover:text-rose-400 text-xs font-bold rounded-[0.3rem] transition-colors cursor-pointer flex items-center justify-center"
               >
                 Discard
               </button>

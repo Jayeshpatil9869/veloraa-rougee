@@ -90,10 +90,10 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
   if (!data) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-28 bg-white/70 rounded-[0.3rem] border border-[#E2E8F0]" />
+        <div className="h-28 bg-[var(--card-bg)]/70 rounded-[0.3rem] border border-[var(--border-subtle)]" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 bg-white rounded-[0.3rem] border border-[#E2E8F0]" />
+            <div key={i} className="h-32 bg-[var(--card-bg)] rounded-[0.3rem] border border-[var(--border-subtle)]" />
           ))}
         </div>
       </div>
@@ -189,18 +189,18 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
       {/* ========================================================================= */}
       <div className="dashboard-anim-item grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Weekly Sales Distribution Visual Bar Chart */}
-        <section className="lg:col-span-8 bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs overflow-hidden">
-          <header className="px-6 py-4.5 border-b border-[#E6D9CB] bg-gradient-to-r from-[#F1E7DA]/60 to-white flex flex-wrap items-center justify-between gap-3">
+        <section className="lg:col-span-8 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs overflow-hidden">
+          <header className="px-6 py-4.5 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--bg-secondary)]/60 to-[var(--card-bg)] flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-bold text-[#080604] flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-[#B9997F]" />
+              <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-[var(--accent-primary)]" />
                 Weekly Sales Velocity & Volume
               </h2>
-              <p className="text-xs text-[#86533A] mt-0.5">
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Daily transaction volume distribution over the past 7 days.
               </p>
             </div>
-            <span className="text-xs font-bold text-[#411F11] bg-[#F1E7DA] px-2.5 py-1 rounded-[0.3rem] border border-[#E6D9CB]">
+            <span className="text-xs font-bold text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-2.5 py-1 rounded-[0.3rem] border border-[var(--border-subtle)]">
               Live Feed
             </span>
           </header>
@@ -212,31 +212,31 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
 
         {/* Quick Studio Health & Operations Insights */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white border border-[#E6D9CB] rounded-[0.3rem] p-5 sm:p-6 shadow-xs relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#B9997F] to-[#86533A]" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#411F11] flex items-center gap-2 mb-4">
-              <ShieldCheck className="w-4 h-4 text-[#B9997F]" />
+          <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-5 sm:p-6 shadow-xs relative overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[var(--accent-secondary)] to-[var(--accent-primary)]" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-2 mb-4">
+              <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
               Studio Operations Status
             </h3>
 
             <div className="space-y-3.5 text-xs">
-              <div className="flex items-center justify-between py-2 border-b border-[#E6D9CB]/50">
-                <span className="text-[#86533A]">Storefront Checkout</span>
-                <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-[0.3rem] border border-emerald-200">
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]/50">
+                <span className="text-[var(--text-muted)]">Storefront Checkout</span>
+                <span className="font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-[0.3rem] border border-emerald-500/20">
                   Active & Healthy
                 </span>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-[#E6D9CB]/50">
-                <span className="text-[#86533A]">Payment Gateway</span>
-                <span className="font-bold text-[#080604]">Razorpay / UPI</span>
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]/50">
+                <span className="text-[var(--text-muted)]">Payment Gateway</span>
+                <span className="font-bold text-[var(--text-primary)]">Razorpay / UPI</span>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-[#E6D9CB]/50">
-                <span className="text-[#86533A]">Database Sync</span>
-                <span className="font-bold text-emerald-700">Supabase Connected</span>
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]/50">
+                <span className="text-[var(--text-muted)]">Database Sync</span>
+                <span className="font-bold text-emerald-700 dark:text-emerald-400">Supabase Connected</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#86533A]">SSL / Encryption</span>
-                <span className="font-bold text-[#411F11]">256-bit TLS</span>
+                <span className="text-[var(--text-muted)]">SSL / Encryption</span>
+                <span className="font-bold text-[var(--text-secondary)]">256-bit TLS</span>
               </div>
             </div>
           </div>
@@ -246,18 +246,18 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
       {/* ========================================================================= */}
       {/* 4. Recent Orders Real-Time Audit Feed                                     */}
       {/* ========================================================================= */}
-      <section className="dashboard-anim-item bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs overflow-hidden">
-        <header className="px-6 py-4.5 border-b border-[#E6D9CB] bg-gradient-to-r from-[#F1E7DA]/70 via-[#F5EBE0]/40 to-white flex flex-wrap items-center justify-between gap-3">
+      <section className="dashboard-anim-item bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs overflow-hidden">
+        <header className="px-6 py-4.5 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--bg-secondary)]/70 via-[var(--bg-primary)]/40 to-[var(--card-bg)] flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-[#080604] flex items-center gap-2">
-              <Clock className="w-4 h-4 text-[#B9997F]" />
+            <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+              <Clock className="w-4 h-4 text-[var(--accent-primary)]" />
               Recent Customer Orders
             </h2>
-            <p className="text-xs text-[#86533A] mt-0.5">
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
               Latest transactions placed on the boutique storefront with invoice links.
             </p>
           </div>
-          <span className="text-xs font-bold text-[#411F11] bg-[#F1E7DA] px-2.5 py-1 rounded-[0.3rem] border border-[#E6D9CB]">
+          <span className="text-xs font-bold text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-2.5 py-1 rounded-[0.3rem] border border-[var(--border-subtle)]">
             {data.recentOrders.length} Recent Orders
           </span>
         </header>
@@ -277,17 +277,17 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
               {order.order_number}
             </span>,
             <div key="who" className="min-w-0">
-              <p className="font-bold text-xs text-[#080604] truncate">
+              <p className="font-bold text-xs text-[var(--text-primary)] truncate">
                 {order.customer_name || 'Boutique Client'}
               </p>
-              <p className="text-[11px] text-[#86533A] truncate">{order.email}</p>
+              <p className="text-[11px] text-[var(--text-muted)] truncate">{order.email}</p>
             </div>,
-            <span key="items" className="text-xs text-[#86533A] line-clamp-1 max-w-xs">
+            <span key="items" className="text-xs text-[var(--text-muted)] line-clamp-1 max-w-xs">
               {order.items
                 .map((item) => `${item.product_name} (${item.quantity})`)
                 .join(', ') || '—'}
             </span>,
-            <span key="tot" className="font-bold text-xs text-[#080604]">
+            <span key="tot" className="font-bold text-xs text-[var(--text-primary)]">
               {rupees(order.total_paise)}
             </span>,
             <StatusBadge key="status" value={order.status} />,
@@ -295,7 +295,7 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
             <button
               key="btn"
               onClick={() => onOpenOrder(order.id)}
-              className="inline-flex items-center gap-1 text-xs font-bold text-[#B9997F] hover:text-[#C57E5D] hover:underline transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 text-xs font-bold text-[var(--accent-primary)] hover:text-[var(--accent-secondary)] hover:underline transition-all cursor-pointer"
             >
               <span>Invoice</span>
               <ChevronRight className="w-3.5 h-3.5" />

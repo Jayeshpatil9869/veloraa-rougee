@@ -79,14 +79,14 @@ export const CustomersModule: React.FC = () => {
       </div>
 
       {/* Search Input */}
-      <div className="flex items-center justify-between p-3 bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs">
+      <div className="flex items-center justify-between p-3 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by customer name, email, or telephone..."
           className="w-full sm:w-96"
         />
-        <span className="text-xs font-bold text-[#86533A]/70 hidden sm:inline">
+        <span className="text-xs font-bold text-[var(--text-muted)] hidden sm:inline">
           Showing {filteredRows.length} of {rows.length} accounts
         </span>
       </div>

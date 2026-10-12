@@ -191,12 +191,12 @@ export const CouponsModule: React.FC = () => {
                             <label
                               key={product.databaseId || product.id}
                               className={`flex items-center gap-2 px-2 py-1.5 rounded-[0.3rem] text-xs transition-colors cursor-pointer ${
-                                isChecked ? 'bg-[#F1E7DA] text-[#86533A] font-semibold' : 'text-[#080604] hover:bg-white'
+                                isChecked ? 'bg-[var(--bg-secondary)] text-[var(--accent-primary)] font-semibold' : 'text-[var(--text-primary)] hover:bg-[var(--card-bg)]'
                               }`}
                             >
                               <input
                                 type="checkbox"
-                                className="accent-[#86533A] rounded-xs"
+                                className="accent-[var(--accent-primary)] rounded-xs"
                                 checked={isChecked}
                                 onChange={() =>
                                   product.databaseId && toggle(product.databaseId)
@@ -226,14 +226,14 @@ export const CouponsModule: React.FC = () => {
 
         {/* Right: Active Promotions Table */}
         <div className="lg:col-span-7">
-          <section className="bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs overflow-hidden">
-            <header className="px-6 py-4 border-b border-[#E6D9CB] bg-[#F1E7DA]/40 flex items-center justify-between">
+          <section className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs overflow-hidden">
+            <header className="px-6 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-[#080604] flex items-center gap-2">
-                  <Tag className="w-4 h-4 text-[#B9997F]" />
+                <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Tag className="w-4 h-4 text-[var(--accent-primary)]" />
                   Active Campaigns
                 </h2>
-                <p className="text-xs text-[#86533A]/70 mt-0.5">
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   {rows.length} discount rules applied on checkout
                 </p>
               </div>

@@ -94,7 +94,7 @@ export const PaymentsModule: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}

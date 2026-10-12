@@ -157,21 +157,21 @@ export const OrdersModule: React.FC<{
         <div className="grid lg:grid-cols-12 gap-6 items-start">
           {/* Main Line Items and Details */}
           <div className="lg:col-span-8 space-y-6">
-            <section className="bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs overflow-hidden">
-              <header className="px-6 py-4 border-b border-[#E6D9CB] bg-[#F1E7DA]/40 flex items-center justify-between">
+            <section className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs overflow-hidden">
+              <header className="px-6 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 flex items-center justify-between">
                 <div>
-                  <h2 className="text-base font-bold text-[#080604] font-mono">
+                  <h2 className="text-base font-bold text-[var(--text-primary)] font-mono">
                     Order #{detail.order.order_number}
                   </h2>
-                  <p className="text-xs text-[#86533A]/70 flex items-center gap-1.5 mt-0.5">
-                    <Calendar className="w-3 h-3 text-[#B9997F]" />
+                  <p className="text-xs text-[var(--text-muted)] flex items-center gap-1.5 mt-0.5">
+                    <Calendar className="w-3 h-3 text-[var(--accent-primary)]" />
                     Placed on {new Date(detail.order.created_at || Date.now()).toLocaleString('en-IN')}
                   </p>
                 </div>
               </header>
 
               {/* Line Items List */}
-              <div className="p-6 divide-y divide-[#F1E7DA]">
+              <div className="p-6 divide-y divide-[var(--border-subtle)]/60">
                 {detail.items.map((item, index) => (
                   <div key={index} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 min-w-0">
@@ -221,32 +221,32 @@ export const OrdersModule: React.FC<{
           {/* Right Column: Customer & Delivery Address */}
           <div className="lg:col-span-4 space-y-6">
             {/* Customer Details */}
-            <div className="bg-white border border-[#E6D9CB] rounded-[0.3rem] p-5 shadow-xs space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#86533A] flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-[#B9997F]" />
+            <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-5 shadow-xs space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                 Customer Contact
               </h3>
-              <p className="text-xs font-bold text-[#080604]">
+              <p className="text-xs font-bold text-[var(--text-primary)]">
                 {detail.address?.full_name || 'Boutique Client'}
               </p>
-              <p className="text-xs text-[#86533A]/70">{detail.order.email}</p>
+              <p className="text-xs text-[var(--text-muted)]">{detail.order.email}</p>
               {detail.address?.phone && (
-                <p className="text-xs text-[#86533A]/70 flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-[#B9997F]" />
+                <p className="text-xs text-[var(--text-muted)] flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-[var(--accent-primary)]" />
                   {detail.address.phone}
                 </p>
               )}
             </div>
 
             {/* Delivery Address */}
-            <div className="bg-white border border-[#E6D9CB] rounded-[0.3rem] p-5 shadow-xs space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#86533A] flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#B9997F]" />
+            <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-5 shadow-xs space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                 Delivery Address
               </h3>
               {detail.address ? (
-                <div className="text-xs text-[#080604]/80 space-y-0.5 leading-relaxed">
-                  <p className="font-semibold text-[#080604]">{detail.address.full_name}</p>
+                <div className="text-xs text-[var(--text-secondary)] space-y-0.5 leading-relaxed">
+                  <p className="font-semibold text-[var(--text-primary)]">{detail.address.full_name}</p>
                   <p>{detail.address.line1}</p>
                   {detail.address.line2 && <p>{detail.address.line2}</p>}
                   <p>
@@ -254,25 +254,25 @@ export const OrdersModule: React.FC<{
                       .filter(Boolean)
                       .join(', ')}
                   </p>
-                  <p className="font-semibold text-[#86533A]">{detail.address.country}</p>
+                  <p className="font-semibold text-[var(--accent-primary)]">{detail.address.country}</p>
                 </div>
               ) : (
-                <p className="text-xs text-[#86533A]/50">No shipping address recorded.</p>
+                <p className="text-xs text-[var(--text-muted)]">No shipping address recorded.</p>
               )}
             </div>
 
             {/* Payment Transactions */}
-            <div className="bg-white border border-[#E6D9CB] rounded-[0.3rem] p-5 shadow-xs space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#86533A] flex items-center gap-1.5">
-                <CreditCard className="w-3.5 h-3.5 text-[#B9997F]" />
+            <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-5 shadow-xs space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+                <CreditCard className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                 Payment Gateway
               </h3>
               {detail.payments.length > 0 ? (
                 detail.payments.map((p, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-xs pt-1 border-t border-[#F1E7DA] first:border-0 first:pt-0">
+                  <div key={idx} className="flex items-center justify-between text-xs pt-1 border-t border-[var(--border-subtle)]/60 first:border-0 first:pt-0">
                     <div>
-                      <p className="font-bold text-[#080604] capitalize">{p.gateway}</p>
-                      <p className="text-[10px] text-[#86533A]/60">
+                      <p className="font-bold text-[var(--text-primary)] capitalize">{p.gateway}</p>
+                      <p className="text-[10px] text-[var(--text-muted)]">
                         {new Date(p.created_at).toLocaleTimeString('en-IN')}
                       </p>
                     </div>
@@ -280,7 +280,7 @@ export const OrdersModule: React.FC<{
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-[#86533A]/50">Pending gateway settlement.</p>
+                <p className="text-xs text-[var(--text-muted)]">Pending gateway settlement.</p>
               )}
             </div>
           </div>
@@ -300,7 +300,7 @@ export const OrdersModule: React.FC<{
       />
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E6D9CB] rounded-[0.3rem] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}

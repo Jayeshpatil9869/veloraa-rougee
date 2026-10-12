@@ -275,7 +275,7 @@ export const StoriesModule: React.FC = () => {
       </div>
 
       {/* Filters and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -372,20 +372,20 @@ export const StoriesModule: React.FC = () => {
       {/* Editor Modal */}
       {isEditorOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 border border-[#DFBEDB] shadow-2xl relative my-8 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-[#E2E8F0] mb-5">
+          <div className="bg-[var(--card-bg)] rounded-2xl max-w-2xl w-full p-6 sm:p-8 border border-[var(--border-subtle)] shadow-2xl relative my-8 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)] mb-5">
               <div>
-                <h3 className="text-lg font-bold text-[#333333]">
+                <h3 className="text-lg font-bold text-[var(--text-primary)]">
                   {editingId ? 'Edit Article' : 'Publish Cosmetic Article'}
                 </h3>
-                <p className="text-xs text-[#666666] mt-0.5">
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   Optimize your content with rich beauty advice to rank on Google.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsEditorOpen(false)}
-                className="p-1.5 text-[#666666] hover:text-[#333333] hover:bg-slate-100 rounded-lg"
+                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -393,9 +393,9 @@ export const StoriesModule: React.FC = () => {
 
             {/* Template Selector for Fast Publishing */}
             {!editingId && (
-              <div className="mb-5 p-3.5 bg-[#FAF5F8] border border-[#F0DEF7] rounded-xl">
-                <p className="text-xs font-bold text-[#76416F] flex items-center gap-1.5 mb-2">
-                  <Sparkles className="w-3.5 h-3.5 text-[#A06A98]" />
+              <div className="mb-5 p-3.5 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded-xl">
+                <p className="text-xs font-bold text-[var(--accent-primary)] flex items-center gap-1.5 mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                   <span>Quick SEO Templates:</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -404,7 +404,7 @@ export const StoriesModule: React.FC = () => {
                       key={idx}
                       type="button"
                       onClick={() => applyTemplate(tmpl)}
-                      className="text-xs px-2.5 py-1 bg-white hover:bg-[#FDF2F8] border border-[#DFBEDB] text-[#333333] hover:text-[#A06A98] rounded-md transition-colors"
+                      className="text-xs px-2.5 py-1 bg-[var(--card-bg)] hover:bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:text-[var(--accent-primary)] rounded-md transition-colors"
                     >
                       {tmpl.category}
                     </button>
