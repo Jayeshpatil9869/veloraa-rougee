@@ -14,6 +14,12 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
   const menuContentRef = useRef<HTMLDivElement>(null);
 
   const handleNav = (path: string) => {
+    if (path.includes('/account') || path.includes('/login') || path.includes('/signup')) {
+      const current = window.location.pathname;
+      if (current && !current.startsWith('/en/login') && !current.startsWith('/en/signup') && !current.startsWith('/en/auth/callback')) {
+        sessionStorage.setItem('vr_return_to', current);
+      }
+    }
     onNavigate(path);
     onClose();
   };

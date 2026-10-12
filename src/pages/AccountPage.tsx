@@ -96,6 +96,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate }) => {
 
   const logout = async () => {
     await api('/auth/logout', { method: 'POST' });
+    window.dispatchEvent(new Event('auth_state_changed'));
     onNavigate('/en');
   };
 
@@ -297,8 +298,15 @@ export const AuthCallbackPage: React.FC<{ onNavigate: (path: string) => void }> 
           refreshToken: data.session.refresh_token,
         }),
       });
-      await api('/cart/merge', { method: 'POST' });
-      onNavigate('/en/account');
+      await api('/cart/merge', { method: 'POST' }).catch(() => undefined);
+      window.dispatchEvent(new Event('auth_state_changed'));
+      const returnTo = sessionStorage.getItem('vr_return_to');
+      sessionStorage.removeItem('vr_return_to');
+      if (returnTo && !returnTo.startsWith('/en/login') && !returnTo.startsWith('/en/signup') && !returnTo.startsWith('/en/auth/callback')) {
+        onNavigate(returnTo);
+      } else {
+        onNavigate('/en/account');
+      }
     };
     void finish().catch((error) => setMessage(error instanceof Error ? error.message : 'google_failed'));
   }, [onNavigate]);

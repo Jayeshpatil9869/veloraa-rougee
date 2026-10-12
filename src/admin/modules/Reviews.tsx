@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Star, Check, X, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Star, MessageSquare, ThumbsUp } from 'lucide-react';
 import { api } from '../../lib/api';
 import {
   DataTable,
   FilterTabs,
-  GhostButton,
   Notice,
   PageHeader,
   SearchInput,
@@ -23,7 +22,7 @@ interface ReviewRow {
 
 export const ReviewsModule: React.FC = () => {
   const [rows, setRows] = useState<ReviewRow[]>([]);
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'approved' | 'pending'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -42,18 +41,6 @@ export const ReviewsModule: React.FC = () => {
     load();
   }, []);
 
-  const moderate = async (id: string, status: 'approved' | 'rejected') => {
-    try {
-      await api(`/admin/reviews/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status }),
-      });
-      load();
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Failed to update review status.');
-    }
-  };
-
   const filteredRows = useMemo(() => {
     return rows.filter((r) => {
       const matchSearch =
@@ -67,13 +54,15 @@ export const ReviewsModule: React.FC = () => {
   }, [rows, searchQuery, statusFilter]);
 
   const approvedCount = rows.filter((r) => r.status === 'approved').length;
-  const pendingCount = rows.filter((r) => r.status === 'pending').length;
+  const avgRating = rows.length
+    ? (rows.reduce((sum, r) => sum + r.rating, 0) / rows.length).toFixed(1)
+    : '5.0';
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Client Reviews & Testimonials"
-        subtitle="Moderate product ratings, editorial beauty feedback, and customer testimonials."
+        subtitle="Live client testimonials & ratings across all boutique cosmetics."
       />
 
       {error && <Notice variant="error">{error}</Notice>}
@@ -94,9 +83,9 @@ export const ReviewsModule: React.FC = () => {
           icon={ThumbsUp}
         />
         <StatCard
-          label="Pending Moderation"
-          value={String(pendingCount)}
-          trendLabel="awaiting editorial review"
+          label="Average Boutique Rating"
+          value={`${avgRating} ★`}
+          trendLabel="verified customer score"
           icon={Star}
         />
       </div>
@@ -113,18 +102,16 @@ export const ReviewsModule: React.FC = () => {
         <FilterTabs
           tabs={[
             { id: 'all', label: 'All Reviews', count: rows.length },
-            { id: 'pending', label: 'Pending', count: pendingCount },
-            { id: 'approved', label: 'Approved', count: approvedCount },
-            { id: 'rejected', label: 'Rejected' },
+            { id: 'approved', label: 'Published Live', count: approvedCount },
           ]}
           activeTab={statusFilter}
-          onChange={(id) => setStatusFilter(id)}
+          onChange={(id) => setStatusFilter(id as 'all' | 'approved')}
         />
       </div>
 
       {/* Reviews Table */}
       <DataTable
-        columns={['Formula / Product', 'Customer Email', 'Star Rating', 'Client Review', 'Status', 'Moderation']}
+        columns={['Formula / Product', 'Customer Email', 'Star Rating', 'Client Review', 'Status']}
         rows={filteredRows.map((row) => [
           <span key="prod" className="font-bold text-xs text-[#333333]">
             {row.product_name}
@@ -149,30 +136,6 @@ export const ReviewsModule: React.FC = () => {
             "{row.body}"
           </p>,
           <StatusBadge key="stat" value={row.status} />,
-          <div key="actions" className="flex items-center justify-end gap-1.5">
-            {row.status !== 'approved' && (
-              <button
-                type="button"
-                onClick={() => void moderate(row.id, 'approved')}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[0.3rem] bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 text-xs font-bold transition-all cursor-pointer"
-                title="Approve Review"
-              >
-                <Check className="w-3 h-3" />
-                <span>Approve</span>
-              </button>
-            )}
-            {row.status !== 'rejected' && (
-              <button
-                type="button"
-                onClick={() => void moderate(row.id, 'rejected')}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[0.3rem] bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 text-xs font-bold transition-all cursor-pointer"
-                title="Reject Review"
-              >
-                <X className="w-3 h-3" />
-                <span>Reject</span>
-              </button>
-            )}
-          </div>,
         ])}
         emptyMessage={
           isLoading

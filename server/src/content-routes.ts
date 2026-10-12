@@ -85,10 +85,12 @@ export async function registerCatalogAdmin(app: FastifyInstance) {
     const params = z.object({ slug: z.string() }).parse(request.params);
     const product = await one<{ id: string }>(db().from('products').select('id').eq('slug', params.slug).maybeSingle());
     if (!product) return [];
-    const reviews = await rows<{ rating: number; title: string; body: string; created_at: string; customers: { full_name: string } | { full_name: string }[] | null }>(
-      db().from('reviews').select('rating, title, body, created_at, customers ( full_name )').eq('product_id', product.id).eq('status', 'approved').order('created_at', { ascending: false }),
+    const reviews = await rows<{ id: string; customer_id: string; rating: number; title: string; body: string; created_at: string; customers: { full_name: string } | { full_name: string }[] | null }>(
+      db().from('reviews').select('id, customer_id, rating, title, body, created_at, customers ( full_name )').eq('product_id', product.id).eq('status', 'approved').order('created_at', { ascending: false }),
     );
     return reviews.map((review) => ({
+      id: review.id,
+      customerId: review.customer_id,
       rating: review.rating,
       title: review.title,
       body: review.body,
@@ -592,10 +594,73 @@ export async function registerContent(app: FastifyInstance) {
       }
     }
     await audit({
-      actorType: 'admin', actorId: admin.id, actorLabel: admin.email, action: 'story.updated',
+      actorType: 'admin', actorId: admin.id, actorLabel: admin.email, action: 'story.created',
       entityType: 'story', entityId: created[0].id, summary: body.title, ip: clientIp(request),
     });
     return created[0];
+  });
+
+  app.put('/admin/stories/:id', async (request) => {
+    const admin = await requireAdmin(request, 'content.write');
+    const params = z.object({ id: z.string().uuid() }).parse(request.params);
+    const body = z.object({
+      title: z.string().min(1),
+      slug: z.string().min(1),
+      excerpt: z.string().default(''),
+      content: z.string().default(''),
+      coverImage: z.string().optional(),
+      author: z.string().default('Veloraa Rougee'),
+      category: z.string().default(''),
+      tags: z.array(z.string()).default([]),
+      kicker: z.string().default(''),
+      chips: z.array(z.string()).default([]),
+      status: z.enum(['draft', 'published']).default('draft'),
+      productSlugs: z.array(z.string()).default([]),
+    }).parse(request.body);
+
+    await ok(db().from('stories').update({
+      slug: slugify(body.slug),
+      title: body.title,
+      excerpt: body.excerpt,
+      content: body.content,
+      cover_image: body.coverImage ?? null,
+      author: body.author,
+      category: body.category,
+      tags: body.tags,
+      kicker: body.kicker,
+      chips: body.chips,
+      status: body.status,
+      published_at: body.status === 'published' ? new Date().toISOString() : null,
+      updated_at: new Date().toISOString(),
+    }).eq('id', params.id));
+
+    await ok(db().from('story_products').delete().eq('story_id', params.id));
+    if (body.productSlugs.length) {
+      const products = await rows<{ id: string; slug: string }>(db().from('products').select('id, slug').in('slug', body.productSlugs));
+      if (products.length) {
+        await ok(db().from('story_products').insert(
+          products.map((product) => ({ story_id: params.id, product_id: product.id })),
+        ));
+      }
+    }
+
+    await audit({
+      actorType: 'admin', actorId: admin.id, actorLabel: admin.email, action: 'story.updated',
+      entityType: 'story', entityId: params.id, summary: `Updated story ${body.title}`, ip: clientIp(request),
+    });
+    return { ok: true };
+  });
+
+  app.delete('/admin/stories/:id', async (request) => {
+    const admin = await requireAdmin(request, 'content.write');
+    const params = z.object({ id: z.string().uuid() }).parse(request.params);
+    await ok(db().from('story_products').delete().eq('story_id', params.id));
+    await ok(db().from('stories').delete().eq('id', params.id));
+    await audit({
+      actorType: 'admin', actorId: admin.id, actorLabel: admin.email, action: 'story.deleted',
+      entityType: 'story', entityId: params.id, summary: `Deleted story`, ip: clientIp(request),
+    });
+    return { ok: true };
   });
 
   app.get('/admin/homepage', async (request) => {

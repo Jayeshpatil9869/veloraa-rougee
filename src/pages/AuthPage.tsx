@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { Eye, EyeOff, Lock, Mail, User, Phone, Check } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, Phone, Check, KeyRound, ArrowLeft } from 'lucide-react';
 import { FlowerTallSvg, FlowerShortSvg } from '../components/brand/BrandIcons';
 import { VeloraaRougeeLogo } from '../components/brand/VeloraaRougeeLogo';
 import { api, hasApi } from '../lib/api';
@@ -22,6 +22,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [otpPending, setOtpPending] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Form states
@@ -34,6 +37,22 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     agreeTerms: true,
     subscribeNewsletter: true,
   });
+
+  const getReturnTo = () => {
+    const stored = sessionStorage.getItem('vr_return_to');
+    if (stored && !stored.startsWith('/en/login') && !stored.startsWith('/en/signup') && !stored.startsWith('/en/auth/callback')) {
+      return stored;
+    }
+    return '/en/account';
+  };
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   useEffect(() => {
     setMode(initialMode);
@@ -209,12 +228,18 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             phone: formData.phone,
           }),
         });
-        setAuthSuccess(result.needsVerification
-          ? 'Check your email to verify this account before signing in.'
-          : 'Your account is ready.');
-        if (!result.needsVerification) {
+        if (result.needsVerification) {
+          setOtpPending(true);
+          setResendCooldown(30);
+          setAuthSuccess(`Verification code sent to ${formData.email}. Please enter the code below to activate your account.`);
+        } else {
+          setAuthSuccess('Your account is ready.');
+          await api('/cart/merge', { method: 'POST' }).catch(() => undefined);
+          window.dispatchEvent(new Event('auth_state_changed'));
+          const dest = getReturnTo();
+          sessionStorage.removeItem('vr_return_to');
           if (onSuccess) onSuccess();
-          onNavigate('/en/account');
+          onNavigate(dest);
         }
       } else {
         await api('/auth/login', {
@@ -222,13 +247,57 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           body: JSON.stringify({ email: formData.email, password: formData.password }),
         });
         await api('/cart/merge', { method: 'POST' }).catch(() => undefined);
+        window.dispatchEvent(new Event('auth_state_changed'));
+        const dest = getReturnTo();
+        sessionStorage.removeItem('vr_return_to');
         if (onSuccess) onSuccess();
-        onNavigate('/en/account');
+        onNavigate(dest);
       }
     } catch (reason) {
       setAuthError(reason instanceof Error ? reason.message : 'auth_failed');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+    if (!otpCode || otpCode.trim().length < 4) {
+      setAuthError('Please enter the verification code.');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await api('/auth/verify-otp', {
+        method: 'POST',
+        body: JSON.stringify({ email: formData.email, token: otpCode.trim() }),
+      });
+      await api('/cart/merge', { method: 'POST' }).catch(() => undefined);
+      window.dispatchEvent(new Event('auth_state_changed'));
+      const dest = getReturnTo();
+      sessionStorage.removeItem('vr_return_to');
+      if (onSuccess) onSuccess();
+      onNavigate(dest);
+    } catch (reason) {
+      setAuthError(reason instanceof Error ? reason.message : 'Invalid or expired verification code');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0) return;
+    setAuthError(null);
+    try {
+      await api('/auth/resend-otp', {
+        method: 'POST',
+        body: JSON.stringify({ email: formData.email }),
+      });
+      setAuthSuccess('New verification code sent to your email.');
+      setResendCooldown(30);
+    } catch (reason) {
+      setAuthError(reason instanceof Error ? reason.message : 'Failed to resend code');
     }
   };
 
@@ -240,16 +309,27 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       setAuthError('Google sign-in is not configured.');
       return;
     }
+    // Remember return page before navigating away to Google OAuth
+    const dest = getReturnTo();
+    sessionStorage.setItem('vr_return_to', dest);
+
     setIsLoading(true);
     const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(url, key);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/en/auth/callback` },
+      options: {
+        redirectTo: `${window.location.origin}/en/auth/callback`,
+        scopes: 'email profile openid',
+      },
     });
     if (error) {
       setIsLoading(false);
-      setAuthError(error.message);
+      if (error.message?.toLowerCase().includes('provider is not enabled')) {
+        setAuthError('Google Sign-In is not enabled yet in your Supabase dashboard (Authentication → Providers → Google). Please add your Google Client ID and Secret.');
+      } else {
+        setAuthError(error.message);
+      }
     }
   };
 
@@ -330,12 +410,87 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           </div>
         )}
         {authError && (
-          <p className="mb-6 text-sm text-[#EF4444]" role="alert">{authError}</p>
-        )}
-        {authError && (
-          <p className="mb-6 text-sm text-[#EF4444]" role="alert">{authError}</p>
+          <p className="mb-6 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs sm:text-sm font-semibold text-rose-700 text-center animate-in fade-in duration-200" role="alert">
+            {authError}
+          </p>
         )}
 
+        {otpPending ? (
+          <div className="space-y-6">
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 mx-auto rounded-full bg-[#FDF2F8] border border-[#DFBEDB] flex items-center justify-center text-[#A06A98]">
+                <KeyRound className="w-6 h-6" />
+              </div>
+              <h2 className="text-lg font-bold text-[#333333]">Verify Your Account</h2>
+              <p className="text-xs sm:text-sm text-[#666666]">
+                We sent a 6-digit verification code to <span className="font-semibold text-[#A06A98]">{formData.email}</span>.
+                Enter the code below to sign in immediately.
+              </p>
+            </div>
+
+            <form onSubmit={handleVerifyOtp} className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-[#444444] uppercase tracking-wider block text-center">
+                  6-Digit OTP Code
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={8}
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="• • • • • •"
+                    required
+                    autoFocus
+                    className="w-full h-14 text-center text-2xl font-bold tracking-[0.35em] font-mono bg-[#FAF5F8] border border-[#DFBEDB] focus:border-[#A06A98] focus:bg-white rounded-xl outline-none transition-all placeholder:text-[#BBBBBB] text-[#333333]"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading || otpCode.trim().length < 4}
+                className="w-full h-12 bg-[#A06A98] hover:bg-[#774170] active:scale-[0.99] disabled:opacity-50 text-white rounded-xl font-bold text-xs sm:text-sm uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span>VERIFY &amp; SIGN IN</span>
+                )}
+              </button>
+            </form>
+
+            <div className="flex items-center justify-between text-xs pt-3 border-t border-[#F0DEF7]">
+              <button
+                type="button"
+                onClick={() => {
+                  setOtpPending(false);
+                  setOtpCode('');
+                  setAuthError(null);
+                  setAuthSuccess(null);
+                }}
+                className="inline-flex items-center gap-1.5 text-[#666666] hover:text-[#A06A98] font-semibold transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Change Email / Back</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={resendCooldown > 0}
+                className={`font-semibold transition-colors cursor-pointer ${
+                  resendCooldown > 0 ? 'text-[#999999] cursor-not-allowed' : 'text-[#A06A98] hover:text-[#774170] underline'
+                }`}
+              >
+                {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend Code'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
         {/* Tab Switcher (Sign In vs Sign Up) */}
         <div className="grid grid-cols-2 p-1 bg-[#FDF2F8] rounded-xl border border-[#F0DEF7] mb-6">
           <button
@@ -600,6 +755,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             .
           </p>
         </div>
+        </>
+      )}
       </div>
     </div>
   );

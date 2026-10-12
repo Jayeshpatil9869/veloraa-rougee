@@ -41,8 +41,8 @@ async function upsertCustomer(input: {
   }
   await ok(db().from('customers').update({
     auth_user_id: input.authUserId,
-    full_name: existing.full_name === '' ? (input.fullName ?? '') : existing.full_name,
-    phone: existing.phone ?? input.phone ?? null,
+    full_name: (!existing.full_name || existing.full_name.trim() === '') ? (input.fullName ?? '') : existing.full_name,
+    phone: (!existing.phone || existing.phone.trim() === '') ? (input.phone ?? null) : existing.phone,
     email_verified: existing.email_verified || input.verified,
     avatar_url: existing.avatar_url || input.avatarUrl || null,
     ...(input.provider === 'google' ? { auth_provider: 'google' } : {}),
@@ -97,6 +97,69 @@ export async function registerAuth(app: FastifyInstance) {
     return { needsVerification: !data.session, email: body.email.toLowerCase() };
   });
 
+  app.post('/auth/verify-otp', { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (request, reply) => {
+    const body = z.object({
+      email: z.string().email(),
+      token: z.string().min(4).max(10),
+    }).parse(request.body);
+    const client = supabaseAdmin();
+    if (!client) return reply.status(503).send({ error: 'auth_unconfigured' });
+
+    // Verify OTP code (type 'signup' first, fallback to 'email')
+    let result = await client.auth.verifyOtp({
+      email: body.email,
+      token: body.token.trim(),
+      type: 'signup',
+    });
+
+    if (result.error || !result.data.session) {
+      const fallback = await client.auth.verifyOtp({
+        email: body.email,
+        token: body.token.trim(),
+        type: 'email',
+      });
+      if (!fallback.error && fallback.data.session) {
+        result = fallback;
+      }
+    }
+
+    if (result.error || !result.data.user || !result.data.session) {
+      return reply.status(400).send({ error: result.error?.message || 'Invalid or expired OTP code' });
+    }
+
+    const verifiedUser = result.data.user;
+    await upsertCustomer({
+      authUserId: verifiedUser.id,
+      email: verifiedUser.email || body.email,
+      fullName: String(verifiedUser.user_metadata?.full_name ?? ''),
+      phone: String(verifiedUser.user_metadata?.phone ?? ''),
+      verified: true,
+      provider: 'email',
+    });
+
+    setSessionCookies(reply, result.data.session.access_token, result.data.session.refresh_token, result.data.session.expires_in ?? 3600);
+    return { ok: true, email: (verifiedUser.email || body.email).toLowerCase() };
+  });
+
+  app.post('/auth/resend-otp', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
+    const body = z.object({ email: z.string().email() }).parse(request.body);
+    const client = supabaseAdmin();
+    if (!client) return reply.status(503).send({ error: 'auth_unconfigured' });
+
+    const resendRes = await client.auth.resend({
+      type: 'signup',
+      email: body.email,
+    });
+    if (resendRes.error) {
+      const fallback = await client.auth.signInWithOtp({
+        email: body.email,
+        options: { shouldCreateUser: false },
+      });
+      if (fallback.error) return reply.status(400).send({ error: resendRes.error.message || fallback.error.message });
+    }
+    return { ok: true };
+  });
+
   app.post('/auth/login', { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (request, reply) => {
     const body = credentials.pick({ email: true, password: true }).parse(request.body);
     const client = supabaseAdmin();
@@ -111,6 +174,14 @@ export async function registerAuth(app: FastifyInstance) {
       provider: 'email',
     });
     setSessionCookies(reply, data.session.access_token, data.session.refresh_token, data.session.expires_in ?? 3600);
+    await notify({
+      type: 'customer.login',
+      title: 'Customer logged in',
+      body: data.user.email || body.email,
+      entityType: 'customer',
+      entityId: data.user.id,
+      href: '/admin/customers',
+    });
     return { ok: true, email: (data.user.email || body.email).toLowerCase() };
   });
 
@@ -137,13 +208,16 @@ export async function registerAuth(app: FastifyInstance) {
     if (!data.user.email_confirmed_at && !data.user.identities?.some((identity) => identity.provider === 'google')) {
       return reply.status(400).send({ error: 'email_unverified' });
     }
+    const userMeta = data.user.user_metadata ?? {};
+    const extractedPhone = (data.user.phone || userMeta.phone || userMeta.phone_number || '') as string;
     await upsertCustomer({
       authUserId: data.user.id,
       email: data.user.email,
-      fullName: String(data.user.user_metadata?.full_name ?? data.user.user_metadata?.name ?? ''),
+      fullName: String(userMeta.full_name ?? userMeta.name ?? ''),
+      phone: extractedPhone ? String(extractedPhone) : undefined,
       verified: true,
       provider: 'google',
-      avatarUrl: googleAvatar(data.user.user_metadata),
+      avatarUrl: googleAvatar(userMeta),
     });
     setSessionCookies(reply, data.session.access_token, data.session.refresh_token, data.session.expires_in ?? 3600);
     await notify({
@@ -291,13 +365,16 @@ export async function registerAuth(app: FastifyInstance) {
     if (user.error || !user.data.user?.email) return reply.status(401).send({ error: 'unauthorized' });
     const google = user.data.user.identities?.some((identity) => identity.provider === 'google');
     if (!user.data.user.email_confirmed_at && !google) return reply.status(400).send({ error: 'email_unverified' });
+    const userMeta = user.data.user.user_metadata ?? {};
+    const extractedPhone = (user.data.user.phone || userMeta.phone || userMeta.phone_number || '') as string;
     await upsertCustomer({
       authUserId: user.data.user.id,
       email: user.data.user.email,
-      fullName: String(user.data.user.user_metadata?.full_name ?? user.data.user.user_metadata?.name ?? ''),
+      fullName: String(userMeta.full_name ?? userMeta.name ?? ''),
+      phone: extractedPhone ? String(extractedPhone) : undefined,
       verified: Boolean(user.data.user.email_confirmed_at || google),
       provider: google ? 'google' : 'email',
-      avatarUrl: google ? googleAvatar(user.data.user.user_metadata) : null,
+      avatarUrl: google ? googleAvatar(userMeta) : null,
     });
     setSessionCookies(reply, body.accessToken, body.refreshToken, 3600);
     if (google) {
