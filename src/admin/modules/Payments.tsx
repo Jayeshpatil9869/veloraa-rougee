@@ -113,25 +113,25 @@ export const PaymentsModule: React.FC = () => {
       <DataTable
         columns={['Transaction Date', 'Order #', 'Customer Email', 'Gateway', 'Gross Amount', 'Payment Status']}
         rows={filteredRows.map((payment) => [
-          <span key="date" className="text-xs text-[#86533A]/70 font-mono">
+          <span key="date" className="text-xs text-[var(--text-muted)] font-mono">
             {new Date(payment.created_at).toLocaleString('en-IN', {
               dateStyle: 'medium',
               timeStyle: 'short',
             })}
           </span>,
-          <span key="ord" className="font-bold text-xs text-[#86533A] font-mono">
+          <span key="ord" className="font-bold text-xs text-[var(--accent-primary)] font-mono">
             {payment.order_number || '—'}
           </span>,
-          <span key="mail" className="text-xs text-[#080604] font-medium">
+          <span key="mail" className="text-xs text-[var(--text-primary)] font-medium">
             {payment.email || 'Boutique Guest'}
           </span>,
           <span
             key="gate"
-            className="text-xs font-bold uppercase text-[#86533A] bg-[#F1E7DA] px-2 py-0.5 rounded-[0.3rem] border border-[#E6D9CB]"
+            className="text-xs font-bold uppercase text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-2 py-0.5 rounded-[0.3rem] border border-[var(--border-subtle)]"
           >
             {payment.gateway}
           </span>,
-          <span key="amt" className="font-bold text-xs text-[#080604]">
+          <span key="amt" className="font-bold text-xs text-[var(--text-primary)]">
             {rupees(payment.amount_paise)}
           </span>,
           <StatusBadge key="stat" value={payment.status} />,

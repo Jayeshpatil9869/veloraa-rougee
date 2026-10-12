@@ -86,7 +86,7 @@ export const CategoriesModule: React.FC = () => {
           >
             <form className="space-y-4" onSubmit={(event) => void save(event)}>
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#86533A]">
+                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                   Category Title *
                 </label>
                 <input
@@ -97,14 +97,14 @@ export const CategoriesModule: React.FC = () => {
                   onChange={(event) => setName(event.target.value)}
                 />
                 {previewSlug && (
-                  <p className="text-[11px] text-[#86533A]/70 font-mono mt-1">
-                    Slug: <span className="text-[#B9997F]">/en/collection/{previewSlug}</span>
+                  <p className="text-[11px] text-[var(--text-muted)] font-mono mt-1">
+                    Slug: <span className="text-[var(--accent-primary)]">/en/collection/{previewSlug}</span>
                   </p>
                 )}
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#86533A]">
+                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                   Description
                 </label>
                 <textarea
@@ -145,16 +145,16 @@ export const CategoriesModule: React.FC = () => {
             <DataTable
               columns={['Category Name', 'Routing Slug', 'Description', 'Status']}
               rows={rows.map((row) => [
-                <div key="name" className="font-bold text-xs text-[#080604]">
+                <div key="name" className="font-bold text-xs text-[var(--text-primary)]">
                   {row.name}
                 </div>,
                 <span
                   key="slug"
-                  className="font-mono text-xs text-[#86533A] bg-[#F1E7DA] px-2 py-0.5 rounded-[0.3rem] border border-[#E6D9CB]"
+                  className="font-mono text-xs text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-2 py-0.5 rounded-[0.3rem] border border-[var(--border-subtle)]"
                 >
                   {row.slug}
                 </span>,
-                <span key="desc" className="text-xs text-[#86533A]/70 line-clamp-1 max-w-xs">
+                <span key="desc" className="text-xs text-[var(--text-muted)] line-clamp-1 max-w-xs">
                   {row.description || '—'}
                 </span>,
                 <StatusBadge key="act" value={row.active !== false ? 'active' : 'draft'} />,

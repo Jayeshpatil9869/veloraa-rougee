@@ -113,10 +113,10 @@ export const ReviewsModule: React.FC = () => {
       <DataTable
         columns={['Formula / Product', 'Customer Email', 'Star Rating', 'Client Review', 'Status']}
         rows={filteredRows.map((row) => [
-          <span key="prod" className="font-bold text-xs text-[#080604]">
+          <span key="prod" className="font-bold text-xs text-[var(--text-primary)]">
             {row.product_name}
           </span>,
-          <span key="mail" className="text-xs text-[#86533A]/70">
+          <span key="mail" className="text-xs text-[var(--text-muted)]">
             {row.customer_email}
           </span>,
           <div key="stars" className="flex items-center gap-1">
@@ -125,14 +125,14 @@ export const ReviewsModule: React.FC = () => {
                 <Star
                   key={i}
                   className={`w-3.5 h-3.5 ${
-                    i < row.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'
+                    i < row.rating ? 'fill-amber-400 text-amber-400' : 'text-[var(--border-subtle)]'
                   }`}
                 />
               ))}
             </div>
-            <span className="text-xs font-bold text-[#080604] ml-1">{row.rating}.0</span>
+            <span className="text-xs font-bold text-[var(--text-primary)] ml-1">{row.rating}.0</span>
           </div>,
-          <p key="body" className="text-xs text-[#080604]/80 italic line-clamp-2 max-w-sm">
+          <p key="body" className="text-xs text-[var(--text-secondary)] italic line-clamp-2 max-w-sm">
             "{row.body}"
           </p>,
           <StatusBadge key="stat" value={row.status} />,

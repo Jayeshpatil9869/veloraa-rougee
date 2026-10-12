@@ -148,7 +148,7 @@ export const ProductsModule: React.FC = () => {
         columns={['Item', 'Category', 'Base Price', 'Variants', 'Status', 'Actions']}
         rows={filteredProducts.map((product) => [
           <div key="item" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-[0.3rem] border border-[#E6D9CB] bg-[#F5EBE0] flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+            <div className="w-10 h-10 rounded-[0.3rem] border border-[var(--border-subtle)] bg-[var(--bg-secondary)] flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
               {product.images?.[0]?.src ? (
                 <img
                   src={product.images[0].src}
@@ -156,24 +156,24 @@ export const ProductsModule: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Package className="w-5 h-5 text-[#B9997F]" />
+                <Package className="w-5 h-5 text-[var(--accent-primary)]" />
               )}
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-xs text-[#080604] truncate">{product.name}</p>
-              <p className="text-[11px] text-[#86533A]/70 font-mono truncate">/{product.slug}</p>
+              <p className="font-bold text-xs text-[var(--text-primary)] truncate">{product.name}</p>
+              <p className="text-[11px] text-[var(--text-muted)] font-mono truncate">/{product.slug}</p>
             </div>
           </div>,
           <span
             key="cat"
-            className="text-xs font-bold text-[#86533A] bg-[#F1E7DA] px-2 py-0.5 rounded-[0.3rem] border border-[#E6D9CB] inline-block"
+            className="text-xs font-bold text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-2 py-0.5 rounded-[0.3rem] border border-[var(--border-subtle)] inline-block"
           >
             {product.categoryName || 'Lips'}
           </span>,
-          <span key="price" className="font-bold text-xs text-[#080604]">
+          <span key="price" className="font-bold text-xs text-[var(--text-primary)]">
             {product.variants[0] ? `₹${product.variants[0].price}` : '—'}
           </span>,
-          <span key="vars" className="text-xs text-[#86533A]/80">
+          <span key="vars" className="text-xs text-[var(--text-secondary)]">
             {product.variants.length} {product.variants.length === 1 ? 'shade' : 'shades'}
           </span>,
           <StatusBadge key="status" value={product.status} />,
@@ -183,14 +183,14 @@ export const ProductsModule: React.FC = () => {
                 setEditing(product);
                 setOpen(true);
               }}
-              className="p-1.5 text-[#86533A] hover:text-[#080604] hover:bg-[#F5EBE0] rounded-[0.3rem] transition-colors cursor-pointer"
+              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-[0.3rem] transition-colors cursor-pointer"
               title="Edit product"
             >
               <Edit2 className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => void remove(product)}
-              className="p-1.5 text-[#86533A] hover:text-[#773323] hover:bg-[#F1E7DA] rounded-[0.3rem] transition-colors cursor-pointer"
+              className="p-1.5 text-[var(--text-muted)] hover:text-rose-500 hover:bg-rose-500/10 rounded-[0.3rem] transition-colors cursor-pointer"
               title="Delete product"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -442,8 +442,8 @@ const ProductForm: React.FC<{
             
             {/* Product Name */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#080604] block">
-                Product / Formula Name <span className="text-[#B9997F]">*</span>
+              <label className="text-xs font-bold text-[var(--text-primary)] block">
+                Product / Formula Name <span className="text-[var(--accent-primary)]">*</span>
               </label>
               <input
                 className={`${inputClass} font-semibold`}
@@ -452,16 +452,16 @@ const ProductForm: React.FC<{
                 value={name}
                 onChange={(event) => setName(event.target.value)}
               />
-              <p className="text-[11px] text-[#86533A]/70 font-mono">
-                Store URL: <span className="text-[#86533A] font-semibold">/product/{computedSlug}</span>
+              <p className="text-[11px] text-[var(--text-muted)] font-mono">
+                Store URL: <span className="text-[var(--text-secondary)] font-semibold">/product/{computedSlug}</span>
               </p>
             </div>
 
             {/* Category & Finish (2 Columns) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#080604] block">
-                  Category <span className="text-[#B9997F]">*</span>
+                <label className="text-xs font-bold text-[var(--text-primary)] block">
+                  Category <span className="text-[var(--accent-primary)]">*</span>
                 </label>
                 <div className="relative">
                   <select
@@ -483,12 +483,12 @@ const ProductForm: React.FC<{
                         </option>
                       ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-[#86533A]/60 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-[var(--text-muted)] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#080604] block">
+                <label className="text-xs font-bold text-[var(--text-primary)] block">
                   Texture / Finish
                 </label>
                 <div className="relative">
@@ -503,14 +503,14 @@ const ProductForm: React.FC<{
                     <option value="Precision Liquid">Precision Liquid</option>
                     <option value="Creamy Kohl">Creamy Kohl</option>
                   </select>
-                  <ChevronDown className="w-4 h-4 text-[#86533A]/60 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-[var(--text-muted)] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
             </div>
 
             {/* Catalog Visibility Status */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#080604] block">
+              <label className="text-xs font-bold text-[var(--text-primary)] block">
                 Catalog Visibility
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -591,19 +591,19 @@ const ProductForm: React.FC<{
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-bold text-[#080604]">
+                  <label className="text-xs font-bold text-[var(--text-primary)]">
                     Product Images
                   </label>
-                  <span className="text-[11px] font-mono px-2 py-0.5 bg-[#F5EBE0] border border-[#E6D9CB] text-[#86533A] rounded font-bold">
+                  <span className="text-[11px] font-mono px-2 py-0.5 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[var(--text-secondary)] rounded font-bold">
                     {images.length} / {MAX_IMAGES} max
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setImageInputMode(imageInputMode === 'upload' ? 'url' : 'upload')}
-                  className="text-[11px] font-bold text-[#86533A] hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-[11px] font-bold text-[var(--accent-primary)] hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  <LinkIcon className="w-3 h-3 text-[#B9997F]" />
+                  <LinkIcon className="w-3 h-3 text-[var(--accent-primary)]" />
                   <span>{imageInputMode === 'upload' ? 'Add via URL' : 'Upload Files'}</span>
                 </button>
               </div>
@@ -627,7 +627,7 @@ const ProductForm: React.FC<{
                     type="button"
                     disabled={!urlInput.trim() || images.length >= MAX_IMAGES}
                     onClick={handleAddUrlImage}
-                    className="px-3 py-2 bg-[#86533A] hover:bg-[#B9997F] text-white text-xs font-bold rounded-[0.3rem] transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+                    className="px-3 py-2 bg-[var(--accent-primary)] hover:bg-[var(--accent-secondary)] text-[var(--button-primary-text)] text-xs font-bold rounded-[0.3rem] transition-colors disabled:opacity-50 cursor-pointer shrink-0"
                   >
                     Add Image
                   </button>
@@ -643,8 +643,8 @@ const ProductForm: React.FC<{
                   setIsDragging(false);
                   handleFiles(e.dataTransfer.files);
                 }}
-                className={`p-3 bg-[#F5EBE0] border rounded-[0.35rem] transition-all ${
-                  isDragging ? 'border-[#B9997F] bg-[#F1E7DA]' : 'border-[#E6D9CB]'
+                className={`p-3 bg-[var(--bg-secondary)] border rounded-[0.35rem] transition-all ${
+                  isDragging ? 'border-[var(--accent-primary)] bg-[var(--bg-subtle)]' : 'border-[var(--border-subtle)]'
                 }`}
               >
                 <div className="grid grid-cols-3 sm:grid-cols-3 gap-2.5">
@@ -737,7 +737,7 @@ const ProductForm: React.FC<{
                 />
               </div>
 
-              <p className="text-[11px] text-[#86533A]/70 leading-tight">
+              <p className="text-[11px] text-[var(--text-muted)] leading-tight">
                 Add 1 to {MAX_IMAGES} high-res images (1:1 square or 4:5 ratio). The 1st image is the primary cover. Hover any image to set as cover or delete.
               </p>
             </div>
@@ -745,18 +745,18 @@ const ProductForm: React.FC<{
             {/* ===================================================================== */}
             {/* SHADE VARIANTS & INVENTORY                                            */}
             {/* ===================================================================== */}
-            <div className="space-y-3 pt-3 border-t border-[#E6D9CB]">
+            <div className="space-y-3 pt-3 border-t border-[var(--border-subtle)]">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                 <div>
-                  <label className="text-xs font-bold text-[#080604] block">
+                  <label className="text-xs font-bold text-[var(--text-primary)] block">
                     Shade Variants & Inventory Matrix
                   </label>
-                  <p className="text-[11px] text-[#86533A]/70">
+                  <p className="text-[11px] text-[var(--text-muted)]">
                     Manage individual shades, custom prices, and live inventory levels.
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-mono font-bold text-[#86533A] bg-[#F1E7DA] px-2.5 py-1 rounded-[0.3rem] border border-[#E6D9CB] shadow-2xs">
+                  <span className="text-[11px] font-mono font-bold text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-2.5 py-1 rounded-[0.3rem] border border-[var(--border-subtle)] shadow-2xs">
                     {shades.length} {shades.length === 1 ? 'Shade' : 'Shades'} • {totalStock} Units Total
                   </span>
                 </div>
@@ -764,7 +764,7 @@ const ProductForm: React.FC<{
 
               {/* Quick Preset Shades Chips (1-Click Addition) */}
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[10px] uppercase font-bold text-[#86533A]/70 tracking-wider shrink-0">
+                <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-wider shrink-0">
                   Quick Add:
                 </span>
                 {[

@@ -141,7 +141,7 @@ export const OrdersModule: React.FC<{
           <button
             type="button"
             onClick={() => onOpen('')}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#86533A] hover:text-[#080604] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--accent-primary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to All Orders</span>
@@ -175,19 +175,19 @@ export const OrdersModule: React.FC<{
                 {detail.items.map((item, index) => (
                   <div key={index} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-[0.3rem] bg-[#F5EBE0] border border-[#E6D9CB] flex items-center justify-center shrink-0">
-                        <Package className="w-5 h-5 text-[#B9997F]" />
+                      <div className="w-10 h-10 rounded-[0.3rem] bg-[var(--bg-secondary)] border border-[var(--border-subtle)] flex items-center justify-center shrink-0">
+                        <Package className="w-5 h-5 text-[var(--accent-primary)]" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-xs text-[#080604] truncate">
+                        <p className="font-bold text-xs text-[var(--text-primary)] truncate">
                           {item.product_name}
                         </p>
-                        <p className="text-[11px] text-[#86533A]/70">
-                          Shade: <span className="font-semibold text-[#86533A]">{item.variant_name}</span> × {item.quantity}
+                        <p className="text-[11px] text-[var(--text-muted)]">
+                          Shade: <span className="font-semibold text-[var(--text-secondary)]">{item.variant_name}</span> × {item.quantity}
                         </p>
                       </div>
                     </div>
-                    <span className="font-bold text-xs text-[#080604] shrink-0">
+                    <span className="font-bold text-xs text-[var(--text-primary)] shrink-0">
                       {rupees(item.line_total_paise)}
                     </span>
                   </div>
@@ -195,24 +195,24 @@ export const OrdersModule: React.FC<{
               </div>
 
               {/* Financial Calculation */}
-              <div className="px-6 py-4 bg-[#F5EBE0]/50 border-t border-[#E6D9CB] space-y-2 text-xs">
-                <div className="flex justify-between text-[#86533A]/70">
+              <div className="px-6 py-4 bg-[var(--bg-secondary)]/50 border-t border-[var(--border-subtle)] space-y-2 text-xs">
+                <div className="flex justify-between text-[var(--text-muted)]">
                   <span>Subtotal</span>
-                  <span>{rupees(Number(detail.order.subtotal_paise))}</span>
+                  <span className="text-[var(--text-primary)]">{rupees(Number(detail.order.subtotal_paise))}</span>
                 </div>
                 {Number(detail.order.discount_paise) > 0 && (
-                  <div className="flex justify-between text-emerald-700 font-semibold">
+                  <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
                     <span>Discount</span>
                     <span>-{rupees(Number(detail.order.discount_paise))}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-[#86533A]/70">
+                <div className="flex justify-between text-[var(--text-muted)]">
                   <span>Shipping & Delivery</span>
-                  <span>{rupees(Number(detail.order.shipping_paise))}</span>
+                  <span className="text-[var(--text-primary)]">{rupees(Number(detail.order.shipping_paise))}</span>
                 </div>
-                <div className="pt-2 border-t border-[#E6D9CB] flex justify-between font-bold text-sm text-[#080604]">
+                <div className="pt-2 border-t border-[var(--border-subtle)] flex justify-between font-bold text-sm text-[var(--text-primary)]">
                   <span>Total Paid</span>
-                  <span className="text-[#86533A]">{rupees(Number(detail.order.total_paise))}</span>
+                  <span className="text-[var(--accent-primary)]">{rupees(Number(detail.order.total_paise))}</span>
                 </div>
               </div>
             </section>
@@ -324,19 +324,19 @@ export const OrdersModule: React.FC<{
       <DataTable
         columns={['Order #', 'Customer & Contact', 'Ordered Items', 'Total', 'Order Status', 'Payment', 'Action']}
         rows={filteredRows.map((order) => [
-          <span key="num" className="font-bold text-xs text-[#86533A] font-mono">
+          <span key="num" className="font-bold text-xs text-[var(--accent-primary)] font-mono">
             {order.order_number}
           </span>,
           <div key="who" className="min-w-0">
-            <p className="font-bold text-xs text-[#080604] truncate">
+            <p className="font-bold text-xs text-[var(--text-primary)] truncate">
               {order.customer_name || 'Boutique Guest'}
             </p>
-            <p className="text-[11px] text-[#86533A]/70 truncate">{order.email}</p>
+            <p className="text-[11px] text-[var(--text-muted)] truncate">{order.email}</p>
           </div>,
-          <span key="items" className="text-xs text-[#86533A]/80 line-clamp-1 max-w-xs">
+          <span key="items" className="text-xs text-[var(--text-secondary)] line-clamp-1 max-w-xs">
             {order.items.map((item) => `${item.product_name} (${item.variant_name}) × ${item.quantity}`).join(', ') || '—'}
           </span>,
-          <span key="tot" className="font-bold text-xs text-[#080604]">
+          <span key="tot" className="font-bold text-xs text-[var(--text-primary)]">
             {rupees(order.total_paise)}
           </span>,
           <StatusBadge key="status" value={order.status} />,
@@ -344,7 +344,7 @@ export const OrdersModule: React.FC<{
           <button
             key="btn"
             onClick={() => onOpen(order.id)}
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#86533A] hover:text-[#080604] hover:underline transition-all cursor-pointer"
+            className="inline-flex items-center gap-1 text-xs font-bold text-[var(--accent-primary)] hover:text-[var(--text-primary)] hover:underline transition-all cursor-pointer"
           >
             <span>Invoice</span>
             <ChevronRight className="w-3 h-3" />

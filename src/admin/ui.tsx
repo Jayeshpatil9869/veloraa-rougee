@@ -144,9 +144,9 @@ export function StatCard({
   icon?: LucideIcon;
 }) {
   return (
-    <article className="stat-card-anim bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-5 sm:p-6 relative overflow-hidden shadow-xs hover:border-[var(--accent-primary)] hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
+    <article className="stat-card-anim blackish-gold-card bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-5 sm:p-6 relative overflow-hidden shadow-xs hover:border-[var(--accent-primary)] hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
       {/* Signature Gold-to-Brown Gradient Top Accent Bar */}
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[var(--accent-primary)] via-[var(--border-subtle)] to-[var(--accent-secondary)] group-hover:h-1.5 transition-all" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#D1AF92] via-[#A9755A] to-[#9C6144] group-hover:h-1.5 transition-all shadow-[0_0_8px_rgba(209,175,146,0.3)]" />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
@@ -176,7 +176,7 @@ export function StatCard({
           )}
         </div>
         {Icon && (
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-[0.3rem] bg-[var(--bg-secondary)] text-[var(--text-primary)] flex items-center justify-center shrink-0 border border-[var(--border-subtle)] group-hover:scale-110 group-hover:bg-[var(--bg-subtle)] transition-all duration-300 shadow-2xs">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-[0.3rem] bg-[var(--bg-secondary)] text-[var(--text-primary)] flex items-center justify-center shrink-0 border border-[var(--border-subtle)] group-hover:scale-110 group-hover:bg-[var(--bg-subtle)] dark:group-hover:border-[#D1AF92]/40 transition-all duration-300 shadow-2xs">
             <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--accent-primary)]" />
           </div>
         )}
@@ -212,12 +212,12 @@ export function WeeklySalesBarChart({
                 ₹{(item.amount / 100).toLocaleString('en-IN')} ({item.orders} orders)
               </div>
 
-              {/* Bar Fill with Luxury Gold/Brown Gradient */}
+              {/* Bar Fill with Exact Extracted Blackish-Gold Gradient */}
               <div
-                className="w-full max-w-[42px] bg-gradient-to-t from-[var(--accent-secondary)] via-[var(--accent-primary)] to-[var(--border-subtle)] rounded-t-[0.3rem] transition-all duration-500 group-hover:brightness-110 group-hover:shadow-md cursor-pointer relative"
+                className="w-full max-w-[42px] bg-gradient-to-t from-[#30110A] via-[#A56347] to-[#D1AF92] rounded-t-[0.3rem] transition-all duration-500 group-hover:brightness-110 group-hover:shadow-[0_0_14px_rgba(209,175,146,0.35)] cursor-pointer relative shadow-xs"
                 style={{ height: `${heightPercent}%` }}
               >
-                <div className="absolute inset-x-0 top-0 h-1 bg-white/30 rounded-t-[0.3rem]" />
+                <div className="absolute inset-x-0 top-0 h-1 bg-white/50 rounded-t-[0.3rem] shadow-[0_0_4px_#FFF]" />
               </div>
 
               {/* Day Label */}

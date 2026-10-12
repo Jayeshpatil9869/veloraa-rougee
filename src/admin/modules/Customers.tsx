@@ -105,17 +105,17 @@ export const CustomersModule: React.FC = () => {
 
           return [
             <div key="who" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#B9997F] to-[#86533A] text-white text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] text-[var(--button-primary-text)] text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs">
                 {initials}
               </div>
-              <span className="font-bold text-xs text-[#080604]">
+              <span className="font-bold text-xs text-[var(--text-primary)]">
                 {row.full_name || 'Boutique Member'}
               </span>
             </div>,
-            <span key="mail" className="text-xs text-[#080604]/80">
+            <span key="mail" className="text-xs text-[var(--text-secondary)]">
               {row.email}
             </span>,
-            <span key="phone" className="text-xs text-[#86533A]/70 font-mono">
+            <span key="phone" className="text-xs text-[var(--text-muted)] font-mono">
               {row.phone || '—'}
             </span>,
             <StatusBadge
@@ -126,7 +126,7 @@ export const CustomersModule: React.FC = () => {
               key="ver"
               value={row.email_verified ? 'approved' : 'pending'}
             />,
-            <span key="since" className="text-xs text-[#86533A]/70 font-mono">
+            <span key="since" className="text-xs text-[var(--text-muted)] font-mono">
               {new Date(row.created_at).toLocaleDateString('en-IN', {
                 year: 'numeric',
                 month: 'short',

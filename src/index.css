@@ -41,6 +41,52 @@
   font-display: swap;
 }
 
+:root {
+  /* ========================================================================= */
+  /* Veloraa Rougee — Exact Colors Extracted from Reference Image              */
+  /* ========================================================================= */
+  /* Core Backgrounds */
+  --color-black: #000000;
+  --color-deep-black: #080704;
+  --color-dark-brown: #160E09;
+
+  /* Luxury Gold & Champagne */
+  --color-antique-gold: #D1AF92;
+  --color-champagne: #D1AF92;
+  --color-muted-gold: #A9755A;
+  --color-bronze: #9C6144;
+
+  /* Warm Browns */
+  --color-dark-chocolate: #30110A;
+  --color-deep-brown: #512418;
+  --color-warm-brown: #7F4932;
+  --color-copper-brown: #A56347;
+
+  /* Lipstick & Burgundy */
+  --color-burgundy: #591215;
+  --color-deep-burgundy: #44140F;
+  --color-rose-brown: #7E322B;
+  --color-lipstick-red: #87342E;
+  --color-terracotta: #974B3B;
+  --color-muted-rose: #9D4B3E;
+
+  /* Neutral Tones */
+  --color-warm-taupe: #7A614F;
+  --color-muted-taupe: #96745E;
+  --color-soft-brown: #6D5F53;
+  --color-warm-neutral: #534A41;
+
+  /* Product & Skin-Tone Accents */
+  --color-rose-gold: #AD6549;
+  --color-copper: #9C6144;
+  --color-nude-brown: #804E35;
+  --color-mocha: #522E1C;
+
+  /* Fonts */
+  --font-amithen: 'Amithen', 'Alex Brush', cursive;
+  --font-sofia-pro: 'Sofia Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 :root,
 [data-theme="light"] {
   color-scheme: light;
@@ -65,6 +111,11 @@
   --accent-nude: #DA9A78;         /* Soft Nude Tag */
   --accent-blush: #E1BEA6;        /* Subtle Blush */
 
+  /* Admin Semantic Aliases */
+  --accent-primary: #B9997F;
+  --accent-secondary: #C57E5D;
+  --card-bg-hover: #F8F2EC;
+
   /* Borders & Dividers */
   --border-subtle: #E6D9CB;       /* Champagne Divider */
   --border-strong: #B9997F;       /* Gold Focus / Highlight Border */
@@ -75,6 +126,7 @@
   --btn-primary-hover: #773323;   /* Burgundy Hover */
   --btn-secondary-bg: #F1E7DA;    /* Light Beige Button */
   --btn-secondary-text: #080604;  /* Near Black Text */
+  --button-primary-text: #F5EBE0;
 
   /* Header & Shell */
   --header-bg: rgba(255, 255, 255, 0.94);
@@ -89,61 +141,70 @@
   --input-text: #080604;
 
   --focus-ring: #B9997F;
-
-  --font-amithen: 'Amithen', 'Alex Brush', cursive;
-  --font-sofia-pro: 'Sofia Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --shadow-card: 0 4px 20px -2px rgba(65, 31, 17, 0.08);
 }
 
 [data-theme="dark"],
 .dark {
   color-scheme: dark;
 
-  /* Surfaces & Backgrounds */
-  --bg-primary: #080604;         /* Deep Obsidian Black */
-  --bg-secondary: #0A0A08;       /* Warm Charcoal Tone */
-  --bg-elevated: #16120E;        /* Dark Chocolate Card Surface */
-  --bg-subtle: #241A13;          /* Deep Brown Surface Pill */
-  --bg-surface: #1E1610;         /* Elevated Container Surface */
+  /* Surfaces & Backgrounds — Blackish-Golden Undertones */
+  --bg-primary: #080704;         /* Core Deep Obsidian Black */
+  --bg-secondary: #100B08;       /* Warm Dark Chocolate Tone */
+  --bg-elevated: #160E09;        /* Luxury Dark Brown Surface */
+  --bg-subtle: #1F140D;          /* Deep Brown Surface Pill */
+  --bg-surface: #140D09;         /* Elevated Container Surface */
 
-  /* Typography */
-  --text-primary: #F2DCC3;        /* Warm Cream Heading */
-  --text-secondary: #CFB19C;      /* Champagne Body Text */
-  --text-muted: #B97858;          /* Rose Gold Muted Label */
-  --text-inverse: #080604;        /* Deep Black on Gold CTAs */
+  /* Typography — Exact Antique Gold & Warm Champagne */
+  --text-primary: #D1AF92;        /* Antique Gold / Champagne Primary */
+  --text-secondary: #CFB19C;      /* Soft Champagne Body Text */
+  --text-muted: #A9755A;          /* Muted Gold Accent Label */
+  --text-inverse: #080704;        /* Deep Obsidian on Gold CTAs */
 
   /* Accents & Brand Tones */
-  --accent-gold: #D6B17A;         /* Antique Gold */
-  --accent-rose-gold: #B97858;    /* Warm Rose-Gold */
-  --accent-copper: #C88D6E;       /* Metallic Copper */
-  --accent-burgundy: #591716;     /* Midnight Burgundy */
-  --accent-terracotta: #97513C;   /* Warm Terracotta */
+  --accent-gold: #D1AF92;         /* Signature Antique Gold */
+  --accent-rose-gold: #AD6549;    /* Warm Rose-Gold */
+  --accent-copper: #9C6144;       /* Metallic Bronze & Copper */
+  --accent-burgundy: #591215;     /* Midnight Velvet Burgundy */
+  --accent-terracotta: #974B3B;   /* Warm Terracotta */
   --accent-nude: #CFB19C;
-  --accent-blush: #B97858;
+  --accent-blush: #A9755A;
 
-  /* Borders & Dividers */
-  --border-subtle: #342921;       /* Dark Brown Divider */
-  --border-strong: #7F4C34;       /* Copper-Brown Outline */
+  /* Admin Semantic Aliases */
+  --accent-primary: #D1AF92;      /* Antique Gold Primary */
+  --accent-secondary: #A9755A;    /* Muted Gold Secondary */
+  --card-bg-hover: #1A100A;       /* Subtle warm gold lift for table rows / panels */
 
-  /* Interactive Elements */
-  --btn-primary-bg: #D6B17A;      /* Antique Gold Primary CTA */
-  --btn-primary-text: #080604;    /* Deep Black Text */
-  --btn-primary-hover: #C88D6E;   /* Warm Copper Hover */
-  --btn-secondary-bg: #241A13;    /* Deep Brown Pill */
-  --btn-secondary-text: #F2DCC3;  /* Warm Cream Text */
+  /* Borders & Dividers — Subtle Hairline Gold & Dark Bronze */
+  --border-subtle: rgba(209, 175, 146, 0.18); /* Hairline Antique Gold Divider */
+  --border-strong: #A9755A;                  /* Antique Gold Outline */
+
+  /* Interactive Elements — Gold Jewel CTAs */
+  --btn-primary-bg: #D1AF92;      /* Antique Gold Primary CTA */
+  --btn-primary-text: #080704;    /* Deep Obsidian Text */
+  --btn-primary-hover: #A9755A;   /* Muted Gold Hover */
+  --btn-secondary-bg: #160E09;    /* Dark Luxury Brown Pill */
+  --btn-secondary-text: #D1AF92;  /* Antique Gold Text */
+  --button-primary-text: #080704;
 
   /* Header & Shell */
-  --header-bg: rgba(8, 6, 4, 0.94);
-  --header-border: #342921;
-  --announcement-bg: #16120E;
-  --announcement-text: #D6B17A;
-  --footer-bg: #040302;
+  --header-bg: rgba(8, 7, 4, 0.95);
+  --header-border: rgba(209, 175, 146, 0.18);
+  --announcement-bg: #160E09;
+  --announcement-text: #D1AF92;
+  --footer-bg: #000000;
   --footer-text: #CFB19C;
-  --card-bg: #16120E;
-  --input-bg: #16120E;
-  --input-border: #342921;
-  --input-text: #F2DCC3;
+  --card-bg: #110B08;            /* Obsidian Chocolate Card Base */
+  --input-bg: #100B08;
+  --input-border: rgba(209, 175, 146, 0.22);
+  --input-text: #F5EBE0;
 
-  --focus-ring: #D6B17A;
+  --focus-ring: #D1AF92;
+  --shadow-card: 0 4px 24px -2px rgba(0, 0, 0, 0.7);
+
+  /* Signature Blackish-Golden Glow Effects */
+  --gold-glow-subtle: 0 0 20px -4px rgba(209, 175, 146, 0.16);
+  --gold-glow-intense: 0 0 28px -2px rgba(209, 175, 146, 0.32);
 }
 
 @layer base {
@@ -163,6 +224,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  select,
+  select option {
+    background-color: var(--input-bg);
+    color: var(--input-text);
   }
 
   @media (max-width: 767px) {
@@ -318,6 +385,75 @@
 
 .rounded-brand {
   border-radius: 2.8px;
+}
+
+/* ========================================================================= */
+/* Veloraa Rougee — Blackish-Golden Effect Utilities                         */
+/* ========================================================================= */
+.bg-deep-black { background-color: var(--color-deep-black, #080704); }
+.bg-dark-brown { background-color: var(--color-dark-brown, #160E09); }
+.bg-antique-gold { background-color: var(--color-antique-gold, #D1AF92); }
+.bg-muted-gold { background-color: var(--color-muted-gold, #A9755A); }
+.bg-bronze { background-color: var(--color-bronze, #9C6144); }
+.bg-dark-chocolate { background-color: var(--color-dark-chocolate, #30110A); }
+
+.text-deep-black { color: var(--color-deep-black, #080704); }
+.text-antique-gold { color: var(--color-antique-gold, #D1AF92); }
+.text-muted-gold { color: var(--color-muted-gold, #A9755A); }
+.text-bronze { color: var(--color-bronze, #9C6144); }
+.text-champagne { color: var(--color-champagne, #D1AF92); }
+
+.border-antique-gold { border-color: var(--color-antique-gold, #D1AF92); }
+.border-muted-gold { border-color: var(--color-muted-gold, #A9755A); }
+.border-dark-chocolate { border-color: var(--color-dark-chocolate, #30110A); }
+
+/* Blackish-Golden Card Aesthetic */
+.blackish-gold-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dark .blackish-gold-card,
+[data-theme="dark"] .blackish-gold-card {
+  background-color: var(--card-bg);
+  border: 1px solid rgba(209, 175, 146, 0.22);
+  box-shadow: 0 4px 20px -2px rgba(8, 7, 4, 0.85), 0 0 16px -4px rgba(209, 175, 146, 0.12);
+}
+.dark .blackish-gold-card:hover,
+[data-theme="dark"] .blackish-gold-card:hover {
+  border-color: rgba(209, 175, 146, 0.45);
+  box-shadow: 0 8px 30px -4px rgba(8, 7, 4, 0.95), 0 0 22px -2px rgba(209, 175, 146, 0.24);
+}
+
+/* Blackish-Golden Ambient Radial Aura */
+.blackish-gold-aura {
+  position: relative;
+}
+.dark .blackish-gold-aura::after,
+[data-theme="dark"] .blackish-gold-aura::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 75% 20%, rgba(209, 175, 146, 0.14) 0%, transparent 65%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Gold Shimmer Hairline Border */
+.gold-shimmer-top {
+  position: relative;
+}
+.gold-shimmer-top::before {
+  content: '';
+  position: absolute;
+  inset-x: 0;
+  top: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #D1AF92, #A9755A, transparent);
+  pointer-events: none;
+}
+
+/* Luxury Lipstick Bullet Gold Bar Gradient */
+.gold-bar-gradient {
+  background: linear-gradient(to top, #30110A 0%, #7F4932 30%, #A9755A 65%, #D1AF92 100%);
 }
 
 @keyframes marquee {

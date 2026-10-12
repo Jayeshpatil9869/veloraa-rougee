@@ -143,6 +143,18 @@ export const AdminApp: React.FC<{
     }
   };
 
+  // Close notifications dropdown on click outside
+  useEffect(() => {
+    if (!isNotificationOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setIsNotificationOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isNotificationOpen]);
+
   // Live Time clock in header
   useEffect(() => {
     const updateTime = () => {
@@ -467,7 +479,7 @@ export const AdminApp: React.FC<{
       >
         {/* Top Floating Controls on Login Screen */}
         <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 flex items-center gap-2.5">
-          <ThemeToggle className="bg-[var(--card-bg)] border border-[var(--border-subtle)] shadow-xs" />
+          <ThemeToggle />
         </div>
 
         {/* Soft Ambient Dynamic Blurs & Light Sheens */}
@@ -664,8 +676,8 @@ export const AdminApp: React.FC<{
             onClick={() => onNavigate(`/admin/${item.id}`)}
             className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-[0.3rem] text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
               isActive
-                ? 'text-[var(--accent-primary)] bg-gradient-to-r from-[var(--bg-secondary)] to-[var(--bg-primary)] border-l-[3px] border-[var(--accent-primary)] font-bold shadow-2xs'
-                : 'text-[var(--text-secondary)] font-medium hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/60'
+                ? 'text-[var(--accent-primary)] bg-gradient-to-r from-[var(--bg-secondary)] to-[var(--bg-primary)] border-l-[3px] border-[var(--accent-primary)] font-bold shadow-2xs dark:bg-gradient-to-r dark:from-[#1A100A] dark:to-[#100B08] dark:border-[#D1AF92] dark:shadow-[0_0_12px_rgba(209,175,146,0.14)]'
+                : 'text-[var(--text-secondary)] font-medium hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/60 dark:hover:bg-[#160E09]/70'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -733,7 +745,7 @@ export const AdminApp: React.FC<{
             <div className="p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 space-y-3">
               <div className="flex items-center justify-between py-1 px-1">
                 <span className="text-xs font-semibold text-[var(--text-secondary)]">Appearance</span>
-                <ThemeToggle className="bg-[var(--card-bg)] border border-[var(--border-subtle)] shadow-xs" />
+                <ThemeToggle showLabel />
               </div>
               <button
                 onClick={() => onNavigate('/en')}
@@ -846,14 +858,12 @@ export const AdminApp: React.FC<{
             )}
 
             {/* Theme Toggle Button in Header */}
-            <ThemeToggle className="bg-[var(--bg-secondary)]/60 border border-[var(--border-subtle)] shadow-xs" />
+            <ThemeToggle />
 
             {/* Notifications Bell Dropdown */}
             <div
               className="relative py-1"
               ref={notifRef}
-              onMouseEnter={() => setIsNotificationOpen(true)}
-              onMouseLeave={() => setIsNotificationOpen(false)}
             >
               <button
                 type="button"
@@ -873,7 +883,11 @@ export const AdminApp: React.FC<{
               </button>
 
               {isNotificationOpen && (
-                <div className="absolute right-0 top-full pt-1.5 w-80 sm:w-96 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-150">
+                <div
+                  data-lenis-prevent
+                  onWheel={(e) => e.stopPropagation()}
+                  className="absolute right-0 top-full pt-1.5 w-80 sm:w-96 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-150"
+                >
                   <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-2xl shadow-[var(--shadow-card)] overflow-hidden">
                     {/* Header */}
                     <div className="px-4 py-3 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--bg-secondary)] to-[var(--card-bg)] flex items-center justify-between">
@@ -900,7 +914,11 @@ export const AdminApp: React.FC<{
                     </div>
 
                     {/* Notification list */}
-                    <div className="max-h-80 overflow-y-auto divide-y divide-[var(--border-subtle)]/60">
+                    <div
+                      data-lenis-prevent
+                      onWheel={(e) => e.stopPropagation()}
+                      className="max-h-80 overflow-y-auto divide-y divide-[var(--border-subtle)]/60 modal-luxury-scroll overscroll-contain"
+                    >
                       {notifications.length === 0 ? (
                         <div className="p-6 text-center text-xs text-[var(--text-muted)]">
                           No recent alerts or activity.

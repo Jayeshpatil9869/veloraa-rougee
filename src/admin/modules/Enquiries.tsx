@@ -142,7 +142,7 @@ export const EnquiriesModule: React.FC = () => {
       <DataTable
         columns={['Date Received', 'Client Name', 'Contact Details', 'Inquiry Message', 'Current Status', 'Action']}
         rows={filteredRows.map((row) => [
-          <span key="date" className="text-xs text-[#86533A]/70 font-mono">
+          <span key="date" className="text-xs text-[var(--text-muted)] font-mono">
             {new Date(row.created_at).toLocaleDateString('en-IN', {
               month: 'short',
               day: 'numeric',
@@ -150,28 +150,28 @@ export const EnquiriesModule: React.FC = () => {
               minute: '2-digit',
             })}
           </span>,
-          <span key="name" className="font-bold text-xs text-[#080604]">
+          <span key="name" className="font-bold text-xs text-[var(--text-primary)]">
             {row.first_name} {row.last_name}
           </span>,
           <div key="contact" className="min-w-0">
             <a
               href={`mailto:${row.email}`}
-              className="text-xs font-semibold text-[#86533A] hover:underline block truncate"
+              className="text-xs font-semibold text-[var(--accent-primary)] hover:underline block truncate"
             >
               {row.email}
             </a>
             {row.phone && (
-              <span className="text-[11px] text-[#86533A]/70 font-mono block">
+              <span className="text-[11px] text-[var(--text-muted)] font-mono block">
                 {row.phone}
               </span>
             )}
           </div>,
-          <p key="msg" className="text-xs text-[#080604]/80 line-clamp-2 max-w-sm">
+          <p key="msg" className="text-xs text-[var(--text-secondary)] line-clamp-2 max-w-sm">
             {row.message}
           </p>,
           <select
             key="status"
-            className="h-8 px-2.5 border border-[#E6D9CB] rounded-[0.3rem] bg-[#F5EBE0] text-xs font-bold text-[#86533A] focus:outline-none focus:border-[#B9997F] cursor-pointer"
+            className="h-8 px-2.5 border border-[var(--border-subtle)] rounded-[0.3rem] bg-[var(--bg-secondary)] text-xs font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] cursor-pointer"
             value={row.status}
             onChange={(event) => void update(row.id, event.target.value as EnquiryRow['status'])}
           >
@@ -183,7 +183,7 @@ export const EnquiriesModule: React.FC = () => {
             key="view"
             type="button"
             onClick={() => setViewing(row)}
-            className="p-1.5 text-[#86533A] hover:text-[#080604] hover:bg-[#F5EBE0] rounded-[0.3rem] transition-colors cursor-pointer"
+            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-[0.3rem] transition-colors cursor-pointer"
             title="View Full Message"
           >
             <Eye className="w-4 h-4" />
@@ -229,7 +229,7 @@ export const EnquiriesModule: React.FC = () => {
               </div>
               <a
                 href={`mailto:${viewing.email}?subject=Veloraa%20Rougee%20Concierge%20Support`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[0.3rem] bg-[#B9997F] hover:bg-[#86533A] text-white font-bold transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[0.3rem] bg-[var(--accent-primary)] hover:bg-[var(--accent-secondary)] text-[var(--button-primary-text)] font-bold transition-all"
               >
                 <Mail className="w-3.5 h-3.5" />
                 <span>Reply by Email</span>

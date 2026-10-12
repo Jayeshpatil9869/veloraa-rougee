@@ -8,12 +8,16 @@ import { ScrollReveal, StaggerContainer, StaggerItem } from '../motion/ScrollRev
 interface OurBlogSectionProps {
   onSelectArticle: (article: StoryArticle) => void;
   onNavigateToStories: () => void;
+  maxItems?: number;
 }
 
 export const OurBlogSection: React.FC<OurBlogSectionProps> = ({
   onSelectArticle,
   onNavigateToStories,
+  maxItems = 4,
 }) => {
+  const displayedArticles = getStoryArticles().slice(0, maxItems);
+
   return (
     <section className="px-4 py-8 lg:px-20 lg:py-12 space-y-8 bg-[var(--bg-secondary)] select-none">
       {/* Header Grid with Scroll Reveal */}
@@ -42,7 +46,7 @@ export const OurBlogSection: React.FC<OurBlogSectionProps> = ({
         staggerDelay={0.09}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
       >
-        {getStoryArticles().map((article) => (
+        {displayedArticles.map((article) => (
           <StaggerItem key={article.slug} className="h-full">
             <article
               onClick={() => onSelectArticle(article)}
