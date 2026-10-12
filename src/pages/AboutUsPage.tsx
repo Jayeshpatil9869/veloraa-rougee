@@ -85,21 +85,21 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full bg-white select-none">
+    <div ref={containerRef} className="w-full bg-[var(--bg-primary)] select-none transition-colors">
       {/* 1. Hero Banner with Looping Video and Gradient Overlay */}
       <section className="relative overflow-hidden">
-        <div className="flex justify-center bg-gradient-to-b from-transparent from-10% to-secondary to-70% p-8 text-center md:p-20 lg:min-h-[80vh]">
+        <div className="flex justify-center bg-gradient-to-b from-transparent from-10% to-[var(--bg-primary)] to-70% p-8 text-center md:p-20 lg:min-h-[80vh]">
           <div className="relative max-w-3xl space-y-4 self-end lg:space-y-6 pt-24 lg:pt-36">
             <div className="about-hero-text">
               <h1
-                className="font-serif text-6xl sm:text-7xl lg:text-9xl whitespace-pre text-[#333333] leading-none"
+                className="font-serif text-6xl sm:text-7xl lg:text-9xl whitespace-pre text-[var(--text-primary)] leading-none"
                 style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
               >
                 {'About\nVELORAA ROUGEE'}
               </h1>
             </div>
             <div className="about-hero-text">
-              <div className="font-sans text-sm text-light lg:text-base max-w-[75ch] mx-auto text-[#666666] leading-relaxed">
+              <div className="font-sans text-sm lg:text-base max-w-[75ch] mx-auto text-[var(--text-muted)] leading-relaxed">
                 <p>
                   We believe that makeup is more than just colors and products. It’s a tool to express yourself and boost self-confidence 💜
                 </p>
@@ -114,12 +114,12 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
             type="button"
             onClick={toggleVideo}
             aria-label={isPlaying ? 'Pause video' : 'Play video'}
-            className="absolute left-1/2 -translate-x-1/2 bottom-4 z-10 flex size-12 items-center justify-center rounded-full bg-secondary shadow-md lg:hidden"
+            className="absolute left-1/2 -translate-x-1/2 bottom-4 z-10 flex size-12 items-center justify-center rounded-full bg-[var(--bg-secondary)] shadow-md lg:hidden"
           >
             {isPlaying ? (
-              <Pause className="size-6 text-secondary-foreground" />
+              <Pause className="size-6 text-[var(--text-primary)]" />
             ) : (
-              <Play className="size-6 text-secondary-foreground ml-0.5" />
+              <Play className="size-6 text-[var(--text-primary)] ml-0.5" />
             )}
           </button>
           <video
@@ -144,8 +144,8 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
         <section className="image-and-text-container grid gap-8 lg:grid-cols-3 lg:gap-20 px-4 py-8 lg:p-20">
           <div className="col-span-1 flex items-end order-1 lg:order-2">
             <div className="sticky-text-block lg:sticky bottom-20 space-y-4">
-              <h2 className="font-sans text-2xl font-bold text-[#333333]">Our Aim</h2>
-              <div className="text-base text-[#333333] leading-[28px] max-w-[75ch] space-y-4 font-normal">
+              <h2 className="font-sans text-2xl font-bold text-[var(--text-primary)]">Our Aim</h2>
+              <div className="text-base text-[var(--text-secondary)] leading-[28px] max-w-[75ch] space-y-4 font-normal">
                 <p>
                   At VELORAA ROUGEE, we are convinced that feeling beautiful starts with taking care of yourself. That&apos;s why we have chosen to share a different vision of makeup: offering feel-good products to celebrate all kinds of beauty &amp; share positive energy.
                 </p>
@@ -172,8 +172,8 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
         <section className="image-and-text-container grid gap-8 lg:grid-cols-3 lg:gap-20 px-4 py-8 lg:p-20">
           <div className="col-span-1 flex items-end">
             <div className="sticky-text-block lg:sticky bottom-20 space-y-4">
-              <h2 className="font-sans text-2xl font-bold text-[#333333]">Our Inspiration</h2>
-              <div className="text-base text-[#333333] leading-[28px] max-w-[75ch] font-normal">
+              <h2 className="font-sans text-2xl font-bold text-[var(--text-primary)]">Our Inspiration</h2>
+              <div className="text-base text-[var(--text-secondary)] leading-[28px] max-w-[75ch] font-normal">
                 <p>
                   The brand uses inspiration and storytelling in crafting each product, inspired by ladies, nature, occasions, and most importantly by our audience.
                 </p>
@@ -197,8 +197,8 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
         <section className="image-and-text-container grid gap-8 lg:grid-cols-3 lg:gap-20 px-4 py-8 lg:p-20">
           <div className="col-span-1 flex items-end order-1 lg:order-2">
             <div className="sticky-text-block lg:sticky bottom-20 space-y-4">
-              <h2 className="font-sans text-2xl font-bold text-[#333333]">Our Promise</h2>
-              <div className="text-base text-[#333333] leading-[28px] max-w-[75ch] font-normal">
+              <h2 className="font-sans text-2xl font-bold text-[var(--text-primary)]">Our Promise</h2>
+              <div className="text-base text-[var(--text-secondary)] leading-[28px] max-w-[75ch] font-normal">
                 <p>
                   Find your own beauty with VELORAA ROUGEE products: easy to use, instant beauty solutions embracing all kinds of skin tones, skin types, and beauty looks.
                 </p>
@@ -222,8 +222,8 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigateToShop }) =>
         <section className="image-and-text-container grid gap-8 lg:grid-cols-3 lg:gap-20 px-4 py-8 lg:p-20">
           <div className="col-span-1 flex items-end">
             <div className="sticky-text-block lg:sticky bottom-20 space-y-4">
-              <h2 className="font-sans text-2xl font-bold text-[#333333]">About Our Founder</h2>
-              <div className="text-base text-[#333333] leading-[28px] max-w-[75ch] space-y-4 font-normal">
+              <h2 className="font-sans text-2xl font-bold text-[var(--text-primary)]">About Our Founder</h2>
+              <div className="text-base text-[var(--text-secondary)] leading-[28px] max-w-[75ch] space-y-4 font-normal">
                 <p>
                   Sali Maher Zein is the founder and CEO of VELORAA ROUGEE. Entrepreneur with a strong passion for business and makeup. Educated in Lebanon and Dubai, with a degree in Finance &amp; Accounting and a master’s in international business. Sali has always been personally active and heavily involved in running all facets of the business.
                 </p>

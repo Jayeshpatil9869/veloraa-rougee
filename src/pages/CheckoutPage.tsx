@@ -79,20 +79,20 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="max-w-[960px] mx-auto px-4 py-12">
-      <h1 className="font-serif text-5xl text-[#333333] mb-8" style={{ fontFamily: "'Amithen', cursive" }}>Checkout</h1>
+    <div className="max-w-[960px] mx-auto px-4 py-12 text-[var(--text-primary)]">
+      <h1 className="font-serif text-5xl text-[var(--text-primary)] mb-8" style={{ fontFamily: "'Amithen', cursive" }}>Checkout</h1>
       {items.length === 0 ? (
-        <p className="text-[#666666]">Your bag is empty.</p>
+        <p className="text-[var(--text-muted)]">Your bag is empty.</p>
       ) : (
-        <form onSubmit={submit} className="grid gap-4 bg-[#FDF4F9] p-6 rounded-[0.3rem] border border-[#E2E8F0]">
+        <form onSubmit={submit} className="grid gap-4 bg-[var(--bg-secondary)] p-6 rounded-brand border border-[var(--border-subtle)]">
           {(['email', 'fullName', 'phone', 'line1', 'city', 'region', 'postalCode', 'couponCode'] as const).map((field) => (
-            <label key={field} className="grid gap-1 text-sm text-[#333333]">
+            <label key={field} className="grid gap-1 text-sm text-[var(--text-primary)]">
               <span className="font-bold">{field}</span>
-              <input name={field} required={field !== 'couponCode' && field !== 'region'} value={form[field]} onChange={onChange} className="h-11 px-3 bg-[#FAF5F8] border border-[#F0DEF7] rounded-[0.3rem]" />
+              <input name={field} required={field !== 'couponCode' && field !== 'region'} value={form[field]} onChange={onChange} className="h-11 px-3 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-subtle)] rounded-brand focus:outline-none focus:ring-1 focus:ring-[var(--focus-ring)] transition-colors" />
             </label>
           ))}
           {error && <p className="text-[#EF4444] text-sm">{error}</p>}
-          <button disabled={pending} className="h-11 bg-[#A06A98] text-white font-bold rounded-[0.3rem]">{pending ? 'Placing order…' : 'Pay with PayU'}</button>
+          <button disabled={pending} className="h-11 btn-theme-primary font-bold rounded-brand transition-all">{pending ? 'Placing order…' : 'Pay with PayU'}</button>
         </form>
       )}
     </div>
@@ -114,13 +114,13 @@ export const CheckoutReturnPage: React.FC = () => {
   }, [order, token]);
 
   return (
-    <div className="max-w-[720px] mx-auto px-4 py-16">
-      <h1 className="font-serif text-5xl mb-4" style={{ fontFamily: "'Amithen', cursive" }}>Order {order}</h1>
+    <div className="max-w-[720px] mx-auto px-4 py-16 text-[var(--text-primary)]">
+      <h1 className="font-serif text-5xl mb-4 text-[var(--text-primary)]" style={{ fontFamily: "'Amithen', cursive" }}>Order {order}</h1>
       {error && <p className="text-[#EF4444]">{error}</p>}
       {state && (
-        <p className="text-[#333333]">Payment: {state.payment_status}. Order: {state.status}.</p>
+        <p className="text-[var(--text-primary)]">Payment: {state.payment_status}. Order: {state.status}.</p>
       )}
-      {!token && <p className="text-[#666666]">Open this page from the same browser that started checkout.</p>}
+      {!token && <p className="text-[var(--text-muted)]">Open this page from the same browser that started checkout.</p>}
     </div>
   );
 };

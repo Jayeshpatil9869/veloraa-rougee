@@ -166,7 +166,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      className={`relative w-full bg-[#DFBEDB] min-h-[460px] lg:min-h-[720px] overflow-hidden group select-none flex items-center ${
+      className={`relative w-full bg-[var(--bg-primary)] min-h-[460px] lg:min-h-[720px] overflow-hidden group select-none flex items-center transition-colors ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
     >
@@ -249,7 +249,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
                       e.stopPropagation();
                       if (onShopNow) onShopNow();
                     }}
-                    className="inline-block text-lg sm:text-xl lg:text-2xl font-bold text-white hover:text-[#DFBEDB] transition-colors drop-shadow-md cursor-pointer hover:scale-105 active:scale-95 duration-200"
+                    className="inline-block text-lg sm:text-xl lg:text-2xl font-bold text-white hover:text-[#B9997F] transition-colors drop-shadow-md cursor-pointer hover:scale-105 active:scale-95 duration-200"
                   >
                     {s.cta}
                   </button>

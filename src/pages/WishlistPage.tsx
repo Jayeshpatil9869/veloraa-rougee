@@ -74,31 +74,31 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
   };
 
   return (
-    <div className="w-full min-h-[calc(100vh-160px)] bg-white py-10 lg:py-16">
+    <div className="w-full min-h-[calc(100vh-160px)] bg-[var(--bg-primary)] text-[var(--text-primary)] py-10 lg:py-16 transition-colors">
       <div className="max-w-[1440px] mx-auto px-4 lg:px-20 space-y-8">
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#F0DEF7]/80 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[var(--border-subtle)] pb-6">
           <div>
             <h1
-              className="text-4xl sm:text-5xl lg:text-6xl text-[#333333] leading-none"
+              className="text-4xl sm:text-5xl lg:text-6xl text-[var(--text-primary)] leading-none"
               style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
             >
               Wishlist
             </h1>
-            <p className="text-xs sm:text-sm text-[#666666] mt-2 font-medium">
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-2 font-medium">
               Your saved beauty curation, favorite formulas, &amp; signature shades.
             </p>
           </div>
 
           {items.length > 0 && (
-            <span className="text-xs font-bold uppercase tracking-wider text-[#A06A98] bg-[#FDF2F8] px-3.5 py-1.5 rounded-full border border-[#DFBEDB]/60 w-fit">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent-primary)] bg-[var(--bg-secondary)] px-3.5 py-1.5 rounded-full border border-[var(--border-subtle)] w-fit">
               {items.length} {items.length === 1 ? 'item saved' : 'items saved'}
             </span>
           )}
         </div>
 
         {error && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold">
+          <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm font-semibold">
             {error}
           </div>
         )}
@@ -126,7 +126,7 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                 <div
                   key={`${item.slug}-${item.variantId}`}
                   onClick={() => onNavigate(`/en/product/${item.slug}/${item.variantId}`)}
-                  className="group cursor-pointer bg-white text-center flex flex-col justify-between p-3 sm:p-4 rounded-brand border border-[#E2E8F0]/60 transition-all duration-300 hover:shadow-md relative"
+                  className="group cursor-pointer bg-[var(--card-bg)] text-center flex flex-col justify-between p-3 sm:p-4 rounded-brand border border-[var(--border-subtle)] transition-all duration-300 hover:shadow-md relative"
                 >
                   {/* Top-Right Filled Heart for Wishlist */}
                   <button
@@ -134,12 +134,12 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                     onClick={(e) => void handleRemove(item.variantId, e)}
                     aria-label="Remove from wishlist"
                     title="Remove from wishlist"
-                    className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/95 text-[#A06A98] shadow-sm flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
+                    className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-[var(--card-bg)] text-[var(--accent-primary)] border border-[var(--border-subtle)] shadow-sm flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
                   >
-                    <Heart className="w-4 h-4 fill-[#A06A98] text-[#A06A98]" />
+                    <Heart className="w-4 h-4 fill-[var(--accent-primary)] text-[var(--accent-primary)]" />
                   </button>
 
-                  <div className="relative aspect-square w-full overflow-hidden bg-white mb-2 rounded-xs">
+                  <div className="relative aspect-square w-full overflow-hidden bg-[var(--bg-secondary)] mb-2 rounded-xs">
                     <BrandImage
                       src={item.imageUrl || ''}
                       alt={item.productName}
@@ -149,10 +149,10 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                   </div>
 
                   <div className="space-y-1 my-1">
-                    <h3 className="text-xs sm:text-base font-bold text-[#333333] group-hover:text-[#A06A98] transition-colors line-clamp-1">
+                    <h3 className="text-xs sm:text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors line-clamp-1">
                       {item.productName}
                     </h3>
-                    <p className="text-[11px] sm:text-xs text-[#A06A98] font-medium">
+                    <p className="text-[11px] sm:text-xs text-[var(--accent-primary)] font-medium">
                       {item.shade}
                     </p>
                   </div>
@@ -163,13 +163,13 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
         ) : !loading ? (
           /* Empty State */
           <div className="text-center py-16 sm:py-24 max-w-md mx-auto space-y-5">
-            <div className="w-16 h-16 mx-auto rounded-full bg-[#FDF2F8] border border-[#DFBEDB] flex items-center justify-center text-[#A06A98]">
-              <Heart className="w-8 h-8 text-[#A06A98]" />
+            <div className="w-16 h-16 mx-auto rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--accent-primary)]">
+              <Heart className="w-8 h-8 text-[var(--accent-primary)]" />
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-[#333333]">Your Wishlist is Empty</h2>
-              <p className="text-xs sm:text-sm text-[#666666] leading-relaxed">
+              <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Your Wishlist is Empty</h2>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                 Save your favorite shades, lip formulas, and velvety concealers to review or purchase anytime.
               </p>
             </div>
@@ -177,14 +177,14 @@ export const WishlistPage: React.FC<{ onNavigate: (path: string) => void }> = ({
             <button
               type="button"
               onClick={() => onNavigate('/en/collection')}
-              className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#A06A98] hover:bg-[#774170] text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3.5 btn-theme-primary rounded-xl text-xs font-bold uppercase tracking-widest transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer"
             >
               <span>Explore Collection</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         ) : (
-          <div className="py-20 text-center text-[#999999] text-sm">Loading wishlist…</div>
+          <div className="py-20 text-center text-[var(--text-muted)] text-sm">Loading wishlist…</div>
         )}
       </div>
     </div>

@@ -91,7 +91,7 @@ export const ReviewsModule: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -113,10 +113,10 @@ export const ReviewsModule: React.FC = () => {
       <DataTable
         columns={['Formula / Product', 'Customer Email', 'Star Rating', 'Client Review', 'Status']}
         rows={filteredRows.map((row) => [
-          <span key="prod" className="font-bold text-xs text-[#333333]">
+          <span key="prod" className="font-bold text-xs text-[#080604]">
             {row.product_name}
           </span>,
-          <span key="mail" className="text-xs text-[#666666]">
+          <span key="mail" className="text-xs text-[#86533A]/70">
             {row.customer_email}
           </span>,
           <div key="stars" className="flex items-center gap-1">
@@ -130,9 +130,9 @@ export const ReviewsModule: React.FC = () => {
                 />
               ))}
             </div>
-            <span className="text-xs font-bold text-[#333333] ml-1">{row.rating}.0</span>
+            <span className="text-xs font-bold text-[#080604] ml-1">{row.rating}.0</span>
           </div>,
-          <p key="body" className="text-xs text-[#555555] italic line-clamp-2 max-w-sm">
+          <p key="body" className="text-xs text-[#080604]/80 italic line-clamp-2 max-w-sm">
             "{row.body}"
           </p>,
           <StatusBadge key="stat" value={row.status} />,

@@ -170,7 +170,7 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
               aria-roledescription="slide"
               className="min-w-0 shrink-0 grow-0 basis-full p-0"
             >
-              <div className="grid grid-cols-12 bg-white p-0 lg:p-0">
+              <div className="grid grid-cols-12 bg-[var(--bg-secondary)] border-y border-[var(--border-subtle)] p-0 lg:p-0">
                 {/* Left Hero Banner */}
                 <div className="relative col-span-full flex h-[14rem] items-end overflow-hidden text-white md:col-span-9 md:h-full min-h-[300px] lg:min-h-[580px]">
                   <div className="relative z-[2] px-8 text-white lg:px-20 pb-8 lg:pb-16">
@@ -202,7 +202,7 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
                 {/* Right Product Card */}
                 <div className="col-span-full flex items-center justify-center md:col-span-3">
                   <div className="w-full p-4">
-                    <div className="relative flex flex-col gap-2 overflow-hidden rounded-md bg-white lg:gap-4 w-full flex-none space-y-4 text-center">
+                    <div className="relative flex flex-col gap-2 overflow-hidden rounded-md bg-[var(--bg-elevated)] border border-[var(--border-subtle)] lg:gap-4 w-full flex-none space-y-4 text-center">
                       <a
                         className="relative aspect-1 overflow-hidden aspect-[10/7] lg:aspect-square block cursor-pointer"
                         href={slides[0].product.href}
@@ -225,10 +225,10 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
                       </a>
                       <div className="grid flex-grow gap-2 p-2 pt-0 lg:p-4">
                         <div className="w-full place-self-start px-2 lg:px-4 text-left">
-                          <h3 className="lg:leading-1 text-base font-bold lg:text-lg lg:leading-tight">
+                          <h3 className="lg:leading-1 text-base font-bold lg:text-lg lg:leading-tight text-[var(--text-primary)]">
                             {slides[0].product.title}
                           </h3>
-                          <p className="line-clamp-1 text-xs text-light lg:text-sm">
+                          <p className="line-clamp-1 text-xs text-[var(--text-muted)] lg:text-sm">
                             {slides[0].product.subtitle}
                           </p>
                         </div>
@@ -281,7 +281,7 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
                                 )}
                               </button>
                             </div>
-                            <p className="line-clamp-1 overflow-ellipsis text-xs text-light mt-1">
+                            <p className="line-clamp-1 overflow-ellipsis text-xs text-[var(--text-muted)] mt-1">
                               {slide1Swatch === 'petite'
                                 ? 'Curling Champ for Petite Travel Size'
                                 : 'Curling Champ for Tall Travel Size'}
@@ -316,7 +316,7 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
               aria-roledescription="slide"
               className="min-w-0 shrink-0 grow-0 basis-full p-0"
             >
-              <div className="grid grid-cols-12 bg-white p-0 lg:p-0">
+              <div className="grid grid-cols-12 bg-[var(--bg-secondary)] border-y border-[var(--border-subtle)] p-0 lg:p-0">
                 {/* Left Hero Banner */}
                 <div className="relative col-span-full flex h-[14rem] items-end overflow-hidden text-white md:col-span-9 md:h-full min-h-[300px] lg:min-h-[580px]">
                   <div className="relative z-[2] px-8 text-white lg:px-20 pb-8 lg:pb-16">
@@ -347,7 +347,7 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
                 {/* Right Product Card */}
                 <div className="col-span-full flex items-center justify-center md:col-span-3">
                   <div className="w-full p-4">
-                    <div className="relative flex flex-col gap-2 overflow-hidden rounded-md bg-white lg:gap-4 w-full flex-none space-y-4 text-center">
+                    <div className="relative flex flex-col gap-2 overflow-hidden rounded-md bg-[var(--bg-elevated)] border border-[var(--border-subtle)] lg:gap-4 w-full flex-none space-y-4 text-center">
                       <a
                         className="relative aspect-1 overflow-hidden aspect-[10/7] lg:aspect-square block cursor-pointer"
                         href={slides[1].product.href}
@@ -369,10 +369,10 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
                       </a>
                       <div className="grid flex-grow gap-2 p-2 pt-0 lg:p-4">
                         <div className="w-full place-self-start px-2 lg:px-4 text-left">
-                          <h3 className="lg:leading-1 text-base font-bold lg:text-lg lg:leading-tight">
+                          <h3 className="lg:leading-1 text-base font-bold lg:text-lg lg:leading-tight text-[var(--text-primary)]">
                             {slides[1].product.title}
                           </h3>
-                          <p className="line-clamp-1 text-xs text-light lg:text-sm">
+                          <p className="line-clamp-1 text-xs text-[var(--text-muted)] lg:text-sm">
                             {slides[1].product.subtitle}
                           </p>
                         </div>
@@ -389,7 +389,7 @@ export const SpotlightPromo: React.FC<SpotlightPromoProps> = ({
                                 />
                               </span>
                             </div>
-                            <p className="line-clamp-1 overflow-ellipsis text-xs text-light mt-1">
+                            <p className="line-clamp-1 overflow-ellipsis text-xs text-[var(--text-muted)] mt-1">
                               Lip Balm
                             </p>
                           </div>

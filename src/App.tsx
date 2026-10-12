@@ -309,8 +309,8 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-[#333333]">
-      {/* 1. Announcement bar, 44px, blush #FDF2F8 */}
+    <div className="min-h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-200">
+      {/* 1. Announcement bar, 44px */}
       <AnnouncementBar />
 
       {/* 2. White sticky header, 72px */}

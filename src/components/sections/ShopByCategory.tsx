@@ -85,14 +85,14 @@ export const ShopByCategory: React.FC<ShopByCategoryProps> = ({
   ];
 
   return (
-    <div ref={sectionRef} className="px-4 py-8 lg:px-20 lg:py-12 flex flex-col gap-8 lg:gap-12 bg-tertiary">
+    <div ref={sectionRef} className="px-4 py-8 lg:px-20 lg:py-12 flex flex-col gap-8 lg:gap-12 bg-[var(--bg-secondary)]">
       <ScrollReveal direction="up" distance={20}>
         <div className="grid grid-cols-3 gap-2">
-          <h2 className="text font-sans text-3xl lg:text-5xl leading-9 font-bold tracking-tight col-span-2">
+          <h2 className="text font-sans text-3xl lg:text-5xl leading-9 font-bold tracking-tight col-span-2 text-[var(--text-primary)]">
             Shop by Category
           </h2>
           <a
-            className="text font-sans font-extrabold flex items-center gap-2 justify-self-end text-sm uppercase text-primary transition-colors duration-200 hover:text-[#774170] md:text-base cursor-pointer"
+            className="text font-sans font-extrabold flex items-center gap-2 justify-self-end text-sm uppercase text-[var(--accent-gold)] transition-colors duration-200 hover:text-[var(--accent-rose-gold)] md:text-base cursor-pointer"
             href="/en/collection"
             onClick={(e) => {
               e.preventDefault();
@@ -130,7 +130,7 @@ export const ShopByCategory: React.FC<ShopByCategoryProps> = ({
         {categories.map((category, index) => (
           <StaggerItem key={category.id} className="h-full">
             <div
-              className="group relative flex h-[29.5rem] w-full flex-none items-end overflow-hidden rounded-md bg-white p-2 lg:h-[30vw] lg:p-4"
+              className="group relative flex h-[29.5rem] w-full flex-none items-end overflow-hidden rounded-md bg-[var(--bg-elevated)] p-2 lg:h-[30vw] lg:p-4 border border-[var(--border-subtle)]"
             >
               <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
@@ -147,7 +147,7 @@ export const ShopByCategory: React.FC<ShopByCategoryProps> = ({
                 />
               </div>
               <a
-                className="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary bg-white hover:bg-primary hover:text-white uppercase px-8 py-3.5 z-[1] w-full font-bold cursor-pointer shadow-sm"
+                className="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-[var(--text-primary)] bg-[var(--bg-elevated)]/90 hover:bg-[var(--accent-gold)] hover:text-[var(--button-primary-text)] uppercase px-8 py-3.5 z-[1] w-full font-bold cursor-pointer shadow-sm border border-[var(--border-subtle)]"
                 href={category.href}
                 onClick={(e) => {
                   e.preventDefault();

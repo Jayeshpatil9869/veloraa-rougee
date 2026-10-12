@@ -94,7 +94,7 @@ export const PaymentsModule: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs">
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -113,25 +113,25 @@ export const PaymentsModule: React.FC = () => {
       <DataTable
         columns={['Transaction Date', 'Order #', 'Customer Email', 'Gateway', 'Gross Amount', 'Payment Status']}
         rows={filteredRows.map((payment) => [
-          <span key="date" className="text-xs text-[#666666] font-mono">
+          <span key="date" className="text-xs text-[#86533A]/70 font-mono">
             {new Date(payment.created_at).toLocaleString('en-IN', {
               dateStyle: 'medium',
               timeStyle: 'short',
             })}
           </span>,
-          <span key="ord" className="font-bold text-xs text-[#A06A98] font-mono">
+          <span key="ord" className="font-bold text-xs text-[#86533A] font-mono">
             {payment.order_number || '—'}
           </span>,
-          <span key="mail" className="text-xs text-[#333333] font-medium">
+          <span key="mail" className="text-xs text-[#080604] font-medium">
             {payment.email || 'Boutique Guest'}
           </span>,
           <span
             key="gate"
-            className="text-xs font-bold uppercase text-[#76416F] bg-[#FDF2F8] px-2 py-0.5 rounded-[0.3rem] border border-[#DFBEDB]/50"
+            className="text-xs font-bold uppercase text-[#86533A] bg-[#F1E7DA] px-2 py-0.5 rounded-[0.3rem] border border-[#E6D9CB]"
           >
             {payment.gateway}
           </span>,
-          <span key="amt" className="font-bold text-xs text-[#333333]">
+          <span key="amt" className="font-bold text-xs text-[#080604]">
             {rupees(payment.amount_paise)}
           </span>,
           <StatusBadge key="stat" value={payment.status} />,

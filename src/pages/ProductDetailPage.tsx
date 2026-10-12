@@ -174,35 +174,35 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const suggestedProducts = productService.getSuggestedProducts(product.id, 4);
 
   return (
-    <div className="w-full bg-white select-none">
+    <div className="w-full bg-[var(--bg-primary)] select-none transition-colors">
       <div className="max-w-[1440px] mx-auto px-4 lg:px-20 py-6 lg:py-10">
         {/* Breadcrumbs */}
         <nav
           aria-label="Breadcrumb"
-          className="flex items-center gap-2 text-xs font-semibold text-[#888888] mb-6 uppercase tracking-wider"
+          className="flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)] mb-6 uppercase tracking-wider"
         >
-          <button onClick={() => onNavigate('/en')} className="hover:text-[#A06A98]">
+          <button onClick={() => onNavigate('/en')} className="hover:text-[var(--accent-gold)] transition-colors">
             Home
           </button>
           <ChevronRight className="w-3.5 h-3.5" />
-          <button onClick={() => onNavigate('/en/collection')} className="hover:text-[#A06A98]">
+          <button onClick={() => onNavigate('/en/collection')} className="hover:text-[var(--accent-gold)] transition-colors">
             Shop
           </button>
           <ChevronRight className="w-3.5 h-3.5" />
           <button
             onClick={() => onNavigate(`/en/collection/${product.categoryId}`)}
-            className="hover:text-[#A06A98]"
+            className="hover:text-[var(--accent-gold)] transition-colors"
           >
             {product.categoryName}
           </button>
           <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-[#333333] font-bold truncate max-w-[200px]">
+          <span className="text-[var(--text-primary)] font-bold truncate max-w-[200px]">
             {product.name}
           </span>
         </nav>
 
         {/* Two-Column Purchase Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 pb-16 border-b border-[#E2E8F0]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 pb-16 border-b border-[var(--border-subtle)]">
           {/* Left Column: Gallery with Amazon-style Zoom Lens (Cols 1-7) */}
           <div className="lg:col-span-7">
             <ProductImageZoom
@@ -216,16 +216,16 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           {/* Right Column: Buy Box & Product Info (Cols 8-12) */}
           <div className="lg:col-span-5 flex flex-col justify-start space-y-6">
             <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#76416F] bg-[#FDF2F8] px-2.5 py-1 rounded-brand inline-block">
+              <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] bg-[var(--bg-secondary)] border border-[var(--border-subtle)] px-2.5 py-1 rounded-brand inline-block">
                 {product.categoryName}
               </span>
-              <h1 className="text-3xl lg:text-4xl font-medium leading-tight text-[#A06A98] max-w-[22ch]">
+              <h1 className="text-3xl lg:text-4xl font-medium leading-tight text-[var(--text-primary)] max-w-[22ch]">
                 {product.name}
               </h1>
-              <div className="text-2xl font-bold text-[#A06A98] tabular-nums pt-1">
+              <div className="text-2xl font-bold text-[var(--accent-gold)] tabular-nums pt-1">
                 ₹{selectedVariant.price.toFixed(2)}
               </div>
-              <p className="text-sm text-[#666666] leading-relaxed pt-2">
+              <p className="text-sm text-[var(--text-muted)] leading-relaxed pt-2">
                 {product.shortDescription || product.description}
               </p>
             </div>
@@ -233,9 +233,9 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             {/* Variant / Shade Selector */}
             {product.variants.length > 0 && (
               <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#333333]">
+                <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                   <span>{product.optionName || 'Shade'}:</span>
-                  <span className="text-[#A06A98] font-semibold text-sm capitalize">
+                  <span className="text-[var(--accent-gold)] font-semibold text-sm capitalize">
                     {selectedVariant.name}
                   </span>
                 </div>
@@ -255,11 +255,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                         aria-label={`Select shade ${v.name}`}
                         className={`w-7 h-7 rounded-full transition-transform duration-200 hover:scale-110 flex items-center justify-center ${
                           isSelected
-                            ? 'ring-2 ring-[#A06A98] ring-offset-2 scale-110'
-                            : 'border border-slate-300'
+                            ? 'ring-2 ring-[var(--accent-gold)] ring-offset-2 scale-110'
+                            : 'border border-[var(--border-subtle)]'
                         }`}
                         style={{
-                          backgroundColor: v.hexColor || '#A06A98',
+                          backgroundColor: v.hexColor || 'var(--accent-gold)',
                         }}
                       />
                     );
@@ -271,22 +271,22 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             {/* Quantity Selector & Add to Bag */}
             <div className="pt-2 space-y-4">
               <div className="flex items-center gap-4">
-                <div className="flex items-center border border-[#E2E8F0] rounded-brand h-12 bg-slate-50 px-2">
+                <div className="flex items-center border border-[var(--border-subtle)] rounded-brand h-12 bg-[var(--bg-secondary)] px-2">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="p-1 text-[#666666] hover:text-[#A06A98]"
+                    className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
                     aria-label="Decrease quantity"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="w-10 text-center text-sm font-bold tabular-nums text-[#333333]">
+                  <span className="w-10 text-center text-sm font-bold tabular-nums text-[var(--text-primary)]">
                     {quantity}
                   </span>
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => q + 1)}
-                    className="p-1 text-[#666666] hover:text-[#A06A98]"
+                    className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
                     aria-label="Increase quantity"
                   >
                     <Plus className="w-4 h-4" />
@@ -297,14 +297,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   type="button"
                   onClick={() => void toggleWishlist()}
                   aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'}
-                  className={`h-12 w-12 border rounded-brand flex items-center justify-center transition-colors ${saved ? 'border-[#A06A98] text-[#A06A98] bg-[#FDF2F8]' : 'border-[#E2E8F0] text-[#666666] hover:text-[#A06A98]'}`}
+                  className={`h-12 w-12 border rounded-brand flex items-center justify-center transition-colors ${saved ? 'border-[var(--accent-gold)] text-[var(--accent-gold)] bg-[var(--bg-secondary)]' : 'border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--accent-gold)]'}`}
                 >
-                  <Heart className={`w-5 h-5 ${saved ? 'fill-[#A06A98]' : ''}`} />
+                  <Heart className={`w-5 h-5 ${saved ? 'fill-[var(--accent-gold)]' : ''}`} />
                 </button>
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="flex-1 h-12 bg-[#A06A98] hover:bg-[#774170] text-[#F8FAFC] text-sm uppercase tracking-tight font-medium rounded-brand transition-colors flex items-center justify-center gap-2 shadow-xs"
+                  className="flex-1 h-12 btn-theme-primary text-sm uppercase tracking-tight font-bold rounded-brand transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
                 >
                   {added ? (
                     <span className="flex items-center gap-2 font-bold">
@@ -318,25 +318,25 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 </button>
               </div>
 
-              <div className="text-xs text-[#76416F] bg-[#FDF2F8] p-3 rounded-brand border border-[#F0DEF7] flex items-center justify-center">
+              <div className="text-xs text-[var(--text-secondary)] bg-[var(--bg-secondary)] p-3 rounded-brand border border-[var(--border-subtle)] flex items-center justify-center font-medium">
                 ✨ Free Shipping on orders over ₹999.00
               </div>
             </div>
 
             {/* Accordions */}
-            <div className="divide-y divide-[#E2E8F0] border-t border-b border-[#E2E8F0] pt-2">
+            <div className="divide-y divide-[var(--border-subtle)] border-t border-b border-[var(--border-subtle)] pt-2">
               {/* Story */}
               <div className="py-3">
                 <button
                   type="button"
                   onClick={() => setOpenStory(!openStory)}
-                  className="w-full flex items-center justify-between text-left text-sm font-medium text-[#A06A98] hover:underline"
+                  className="w-full flex items-center justify-between text-left text-sm font-medium text-[var(--text-primary)] hover:text-[var(--accent-gold)] transition-colors"
                 >
                   <span className="font-bold">Story</span>
-                  {openStory ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {openStory ? <ChevronUp className="w-4 h-4 text-[var(--accent-gold)]" /> : <ChevronDown className="w-4 h-4 text-[var(--accent-gold)]" />}
                 </button>
                 {openStory && (
-                  <div className="pt-2 text-xs sm:text-sm text-[#555555] leading-relaxed">
+                  <div className="pt-2 text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                     <p>{product.story || product.description}</p>
                   </div>
                 )}
@@ -347,13 +347,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <button
                   type="button"
                   onClick={() => setOpenHowTo(!openHowTo)}
-                  className="w-full flex items-center justify-between text-left text-sm font-medium text-[#A06A98] hover:underline"
+                  className="w-full flex items-center justify-between text-left text-sm font-medium text-[var(--text-primary)] hover:text-[var(--accent-gold)] transition-colors"
                 >
                   <span className="font-bold">How to use</span>
-                  {openHowTo ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {openHowTo ? <ChevronUp className="w-4 h-4 text-[var(--accent-gold)]" /> : <ChevronDown className="w-4 h-4 text-[var(--accent-gold)]" />}
                 </button>
                 {openHowTo && (
-                  <div className="pt-2 text-xs sm:text-sm text-[#555555] leading-relaxed">
+                  <div className="pt-2 text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                     <p>{product.howToUse || 'Apply as desired to enhance your natural features.'}</p>
                   </div>
                 )}
@@ -364,13 +364,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <button
                   type="button"
                   onClick={() => setOpenIngredients(!openIngredients)}
-                  className="w-full flex items-center justify-between text-left text-sm font-medium text-[#A06A98] hover:underline"
+                  className="w-full flex items-center justify-between text-left text-sm font-medium text-[var(--text-primary)] hover:text-[var(--accent-gold)] transition-colors"
                 >
                   <span className="font-bold">Ingredients</span>
-                  {openIngredients ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {openIngredients ? <ChevronUp className="w-4 h-4 text-[var(--accent-gold)]" /> : <ChevronDown className="w-4 h-4 text-[var(--accent-gold)]" />}
                 </button>
                 {openIngredients && (
-                  <div className="pt-2 text-xs sm:text-sm text-[#555555] leading-relaxed">
+                  <div className="pt-2 text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                     {product.ingredients && product.ingredients.length > 0 ? (
                       <p>{product.ingredients.join(', ')}</p>
                     ) : (
@@ -383,8 +383,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           </div>
         </div>
 
-        <section className="py-12 border-b border-[#E2E8F0] grid gap-6">
-          <h2 className="text-2xl font-bold text-[#333333]">Reviews</h2>
+        <section className="py-12 border-b border-[var(--border-subtle)] grid gap-6">
+          <h2 className="text-2xl font-bold text-[var(--text-primary)]">Reviews</h2>
           <ul className="grid gap-4">
             {reviews.map((review, index) => {
               const isMyReview = Boolean(currentCustomerId && review.customerId === currentCustomerId);
@@ -392,9 +392,9 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
               if (isEditing && review.id) {
                 return (
-                  <li key={review.id} className="p-4 rounded-xl bg-[#FAF6F9] border-2 border-[#A06A98] text-sm space-y-3">
+                  <li key={review.id} className="p-4 rounded-xl bg-[var(--card-bg)] border-2 border-[var(--accent-primary)] text-sm space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-xs uppercase text-[#76416F] tracking-wider">Editing Your Review</span>
+                      <span className="font-bold text-xs uppercase text-[var(--accent-primary)] tracking-wider">Editing Your Review</span>
                       <div className="flex items-center gap-1">
                         {[1, 2, 3, 4, 5].map((val) => (
                           <button
@@ -404,7 +404,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                             className="p-0.5 hover:scale-110 transition-transform"
                           >
                             <Star
-                              className={`w-5 h-5 ${val <= editingStars ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
+                              className={`w-5 h-5 ${val <= editingStars ? 'text-amber-400 fill-amber-400' : 'text-gray-400'}`}
                             />
                           </button>
                         ))}
@@ -414,21 +414,21 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                       value={editingComment}
                       onChange={(e) => setEditingComment(e.target.value)}
                       rows={3}
-                      className="w-full p-2.5 bg-white border border-[#F0DEF7] rounded-lg text-sm text-[#333333] focus:outline-[#A06A98]"
+                      className="w-full p-2.5 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-lg text-sm focus:border-[var(--focus-ring)] focus:outline-none"
                       placeholder="Update your review..."
                     />
                     <div className="flex items-center justify-end gap-2">
                       <button
                         type="button"
                         onClick={cancelEditReview}
-                        className="px-3 py-1.5 rounded-lg border border-[#CCCCCC] text-xs font-semibold text-[#666666] hover:bg-white"
+                        className="px-3 py-1.5 rounded-lg border border-[var(--border-subtle)] text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-secondary)]"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={() => saveEditReview(review.id!)}
-                        className="px-4 py-1.5 rounded-lg bg-[#A06A98] hover:bg-[#8B5683] text-white text-xs font-bold shadow-xs"
+                        className="px-4 py-1.5 rounded-lg btn-theme-primary text-xs font-bold shadow-xs"
                       >
                         Save Changes
                       </button>
@@ -438,20 +438,20 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               }
 
               return (
-                <li key={review.id || `${review.author}-${index}`} className="p-4 rounded-xl bg-[#FAF6F9] border border-[#F0DEF7] text-sm relative group">
+                <li key={review.id || `${review.author}-${index}`} className="p-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-subtle)] text-sm relative group">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-0.5">
                         {[1, 2, 3, 4, 5].map((val) => (
                           <Star
                             key={val}
-                            className={`w-4 h-4 ${val <= review.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
+                            className={`w-4 h-4 ${val <= review.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-400'}`}
                           />
                         ))}
                       </div>
-                      <span className="font-semibold text-[#333333]">· {review.author}</span>
+                      <span className="font-semibold text-[var(--text-primary)]">· {review.author}</span>
                       {isMyReview && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#FDF2F8] text-[#A06A98] border border-[#DFBEDB]">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] text-[var(--accent-primary)] border border-[var(--border-subtle)]">
                           You
                         </span>
                       )}
@@ -461,7 +461,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                         <button
                           type="button"
                           onClick={() => startEditReview(review)}
-                          className="p-1 text-[#666666] hover:text-[#A06A98] hover:bg-white rounded transition-colors"
+                          className="p-1 text-[var(--text-muted)] hover:text-[var(--accent-primary)] hover:bg-[var(--bg-secondary)] rounded transition-colors"
                           title="Edit review"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -469,7 +469,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                         <button
                           type="button"
                           onClick={() => deleteReview(review.id!)}
-                          className="p-1 text-[#666666] hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                          className="p-1 text-[var(--text-muted)] hover:text-rose-500 hover:bg-rose-500/10 rounded transition-colors"
                           title="Delete review"
                         >
                           <Trash2 className="w-3.5 h-3.5 text-rose-500" />
@@ -477,11 +477,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                       </div>
                     )}
                   </div>
-                  <p className="text-[#555555] mt-1 leading-relaxed">{review.body}</p>
+                  <p className="text-[var(--text-secondary)] mt-1 leading-relaxed">{review.body}</p>
                 </li>
               );
             })}
-            {reviews.length === 0 && <li className="text-sm text-[#666666]">No reviews yet. Be the first to share your thoughts!</li>}
+            {reviews.length === 0 && <li className="text-sm text-[var(--text-muted)]">No reviews yet. Be the first to share your thoughts!</li>}
           </ul>
           <form className="grid gap-3 max-w-xl" onSubmit={(event) => void submitReview(event)}>
             <div className="flex items-center gap-3">
@@ -504,27 +504,27 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                         className={`w-7 h-7 transition-colors ${
                           isFilled
                             ? 'text-amber-400 fill-amber-400'
-                            : 'text-gray-300 hover:text-amber-300'
+                            : 'text-gray-400 hover:text-amber-300'
                         }`}
                       />
                     </button>
                   );
                 })}
               </div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#76416F]">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent-primary)]">
                 {hoverStars || stars} / 5 Stars
               </span>
             </div>
-            <textarea required minLength={4} value={comment} onChange={(event) => setComment(event.target.value)} placeholder={signedIn ? 'Share how this shade wore' : 'Sign in to write a review'} className="min-h-24 px-3 py-2 border border-[#F0DEF7] rounded-[0.3rem] text-sm" />
-            <button className="h-11 w-fit px-5 bg-[#A06A98] text-white rounded-[0.3rem] text-sm font-medium hover:bg-[#8B5683] transition-colors">{signedIn ? 'Submit review' : 'Sign in to review'}</button>
-            {reviewNote && <p className="text-sm text-[#76416F]">{reviewNote}</p>}
+            <textarea required minLength={4} value={comment} onChange={(event) => setComment(event.target.value)} placeholder={signedIn ? 'Share how this shade wore' : 'Sign in to write a review'} className="min-h-24 px-3 py-2 border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--input-text)] rounded-[0.3rem] text-sm focus:border-[var(--focus-ring)] focus:outline-none transition-colors" />
+            <button className="h-11 w-fit px-5 btn-theme-primary rounded-[0.3rem] text-sm font-medium transition-colors">{signedIn ? 'Submit review' : 'Sign in to review'}</button>
+            {reviewNote && <p className="text-sm text-[var(--accent-primary)]">{reviewNote}</p>}
           </form>
         </section>
 
         {/* Suggested Products Section */}
         <div className="py-12 lg:py-16 space-y-8">
           <ScrollReveal direction="up" distance={20}>
-            <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold tracking-tight text-[#333333]">
+            <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)]">
               Suggested Products
             </h2>
           </ScrollReveal>

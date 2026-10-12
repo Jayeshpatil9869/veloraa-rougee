@@ -90,10 +90,10 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
   if (!data) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-28 bg-white/70 rounded-[0.3rem] border border-[#E2E8F0]" />
+        <div className="h-28 bg-[var(--card-bg)]/70 rounded-[0.3rem] border border-[var(--border-subtle)]" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 bg-white rounded-[0.3rem] border border-[#E2E8F0]" />
+            <div key={i} className="h-32 bg-[var(--card-bg)] rounded-[0.3rem] border border-[var(--border-subtle)]" />
           ))}
         </div>
       </div>
@@ -108,25 +108,25 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
       {/* ========================================================================= */}
       {/* 1. Editorial Greeting Hero Banner with Gradient Glow                      */}
       {/* ========================================================================= */}
-      <div className="dashboard-anim-item relative overflow-hidden bg-gradient-to-r from-white via-[#FAF5F8] to-[#FDF2F8] border border-[#F0DEF7] rounded-[0.3rem] p-6 sm:p-8 shadow-xs">
+      <div className="dashboard-anim-item relative overflow-hidden bg-gradient-to-r from-white via-[#F5EBE0] to-[#F1E7DA] border border-[#E6D9CB] rounded-[0.3rem] p-6 sm:p-8 shadow-xs">
         {/* Soft Ambient Radial Blur Background */}
-        <div className="absolute right-0 top-0 w-80 h-80 bg-[#DFBEDB]/30 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute right-0 top-0 w-80 h-80 bg-[#B9997F]/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[#76416F]">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#411F11]">
                 Veloraa Rougee • Live Studio
               </span>
             </div>
             <h1
-              className="text-3xl sm:text-4xl lg:text-5xl text-[#333333] leading-none mb-2"
+              className="text-3xl sm:text-4xl lg:text-5xl text-[#080604] leading-none mb-2"
               style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
             >
               Welcome to Studio Overview
             </h1>
-            <p className="text-xs sm:text-sm text-[#666666] font-medium max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#86533A] font-medium max-w-xl leading-relaxed">
               Real-time sales velocity, customer clientele acquisition, and luxury formula performance across the boutique.
             </p>
           </div>
@@ -189,18 +189,18 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
       {/* ========================================================================= */}
       <div className="dashboard-anim-item grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Weekly Sales Distribution Visual Bar Chart */}
-        <section className="lg:col-span-8 bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs overflow-hidden">
-          <header className="px-6 py-4.5 border-b border-[#E2E8F0] bg-gradient-to-r from-[#FDF2F8]/60 to-white flex flex-wrap items-center justify-between gap-3">
+        <section className="lg:col-span-8 bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs overflow-hidden">
+          <header className="px-6 py-4.5 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--bg-secondary)]/60 to-[var(--card-bg)] flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-bold text-[#333333] flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-[#A06A98]" />
+              <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-[var(--accent-primary)]" />
                 Weekly Sales Velocity & Volume
               </h2>
-              <p className="text-xs text-[#666666] mt-0.5">
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Daily transaction volume distribution over the past 7 days.
               </p>
             </div>
-            <span className="text-xs font-bold text-[#76416F] bg-[#FDF2F8] px-2.5 py-1 rounded-[0.3rem] border border-[#DFBEDB]/50">
+            <span className="text-xs font-bold text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-2.5 py-1 rounded-[0.3rem] border border-[var(--border-subtle)]">
               Live Feed
             </span>
           </header>
@@ -212,31 +212,31 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
 
         {/* Quick Studio Health & Operations Insights */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white border border-[#E2E8F0] rounded-[0.3rem] p-5 sm:p-6 shadow-xs relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#A06A98] to-[#76416F]" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#76416F] flex items-center gap-2 mb-4">
-              <ShieldCheck className="w-4 h-4 text-[#A06A98]" />
+          <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-5 sm:p-6 shadow-xs relative overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[var(--accent-secondary)] to-[var(--accent-primary)]" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-2 mb-4">
+              <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)]" />
               Studio Operations Status
             </h3>
 
             <div className="space-y-3.5 text-xs">
-              <div className="flex items-center justify-between py-2 border-b border-[#F1F5F9]">
-                <span className="text-[#666666]">Storefront Checkout</span>
-                <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-[0.3rem] border border-emerald-200">
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]/50">
+                <span className="text-[var(--text-muted)]">Storefront Checkout</span>
+                <span className="font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-[0.3rem] border border-emerald-500/20">
                   Active & Healthy
                 </span>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-[#F1F5F9]">
-                <span className="text-[#666666]">Payment Gateway</span>
-                <span className="font-bold text-[#333333]">Razorpay / UPI</span>
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]/50">
+                <span className="text-[var(--text-muted)]">Payment Gateway</span>
+                <span className="font-bold text-[var(--text-primary)]">Razorpay / UPI</span>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-[#F1F5F9]">
-                <span className="text-[#666666]">Database Sync</span>
-                <span className="font-bold text-emerald-700">Supabase Connected</span>
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]/50">
+                <span className="text-[var(--text-muted)]">Database Sync</span>
+                <span className="font-bold text-emerald-700 dark:text-emerald-400">Supabase Connected</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#666666]">SSL / Encryption</span>
-                <span className="font-bold text-[#76416F]">256-bit TLS</span>
+                <span className="text-[var(--text-muted)]">SSL / Encryption</span>
+                <span className="font-bold text-[var(--text-secondary)]">256-bit TLS</span>
               </div>
             </div>
           </div>
@@ -246,18 +246,18 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
       {/* ========================================================================= */}
       {/* 4. Recent Orders Real-Time Audit Feed                                     */}
       {/* ========================================================================= */}
-      <section className="dashboard-anim-item bg-white border border-[#E2E8F0] rounded-[0.3rem] shadow-xs overflow-hidden">
-        <header className="px-6 py-4.5 border-b border-[#E2E8F0] bg-gradient-to-r from-[#FDF2F8]/70 via-[#FAF5F8]/40 to-white flex flex-wrap items-center justify-between gap-3">
+      <section className="dashboard-anim-item bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs overflow-hidden">
+        <header className="px-6 py-4.5 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--bg-secondary)]/70 via-[var(--bg-primary)]/40 to-[var(--card-bg)] flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-[#333333] flex items-center gap-2">
-              <Clock className="w-4 h-4 text-[#A06A98]" />
+            <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+              <Clock className="w-4 h-4 text-[var(--accent-primary)]" />
               Recent Customer Orders
             </h2>
-            <p className="text-xs text-[#666666] mt-0.5">
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
               Latest transactions placed on the boutique storefront with invoice links.
             </p>
           </div>
-          <span className="text-xs font-bold text-[#76416F] bg-[#FDF2F8] px-2.5 py-1 rounded-[0.3rem] border border-[#DFBEDB]/50">
+          <span className="text-xs font-bold text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-2.5 py-1 rounded-[0.3rem] border border-[var(--border-subtle)]">
             {data.recentOrders.length} Recent Orders
           </span>
         </header>
@@ -273,21 +273,21 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
             'Invoice',
           ]}
           rows={data.recentOrders.map((order) => [
-            <span key="num" className="font-bold text-xs text-[#A06A98] font-mono">
+            <span key="num" className="font-bold text-xs text-[#B9997F] font-mono">
               {order.order_number}
             </span>,
             <div key="who" className="min-w-0">
-              <p className="font-bold text-xs text-[#333333] truncate">
+              <p className="font-bold text-xs text-[var(--text-primary)] truncate">
                 {order.customer_name || 'Boutique Client'}
               </p>
-              <p className="text-[11px] text-[#888888] truncate">{order.email}</p>
+              <p className="text-[11px] text-[var(--text-muted)] truncate">{order.email}</p>
             </div>,
-            <span key="items" className="text-xs text-[#666666] line-clamp-1 max-w-xs">
+            <span key="items" className="text-xs text-[var(--text-muted)] line-clamp-1 max-w-xs">
               {order.items
                 .map((item) => `${item.product_name} (${item.quantity})`)
                 .join(', ') || '—'}
             </span>,
-            <span key="tot" className="font-bold text-xs text-[#333333]">
+            <span key="tot" className="font-bold text-xs text-[var(--text-primary)]">
               {rupees(order.total_paise)}
             </span>,
             <StatusBadge key="status" value={order.status} />,
@@ -295,7 +295,7 @@ export const Dashboard: React.FC<{ onOpenOrder: (id: string) => void }> = ({
             <button
               key="btn"
               onClick={() => onOpenOrder(order.id)}
-              className="inline-flex items-center gap-1 text-xs font-bold text-[#A06A98] hover:text-[#774170] hover:underline transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 text-xs font-bold text-[var(--accent-primary)] hover:text-[var(--accent-secondary)] hover:underline transition-all cursor-pointer"
             >
               <span>Invoice</span>
               <ChevronRight className="w-3.5 h-3.5" />

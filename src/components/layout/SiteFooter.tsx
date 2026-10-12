@@ -206,10 +206,10 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
   return (
     <footer
       ref={footerRef}
-      className="relative overflow-hidden bg-secondary"
+      className="relative overflow-hidden bg-[var(--bg-secondary)] border-t border-[var(--border-subtle)] text-[var(--text-primary)]"
     >
       {/* GSAP Wheel-Driven Interactive Marquee */}
-      <div className="overflow-hidden bg-white border-y border-[#F3E8EE] py-6 select-none">
+      <div className="overflow-hidden bg-[var(--bg-elevated)] border-y border-[var(--border-subtle)] py-6 select-none">
         <div ref={marqueeTrackRef} className="flex flex-nowrap w-max overflow-hidden">
           {[0, 1, 2, 3, 4, 5].map((groupIndex) => (
             <div
@@ -218,11 +218,11 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
             >
               {claimsList.map((claim, idx) => (
                 <React.Fragment key={idx}>
-                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-[#774170] font-medium tracking-wide whitespace-nowrap">
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-[var(--text-secondary)] font-medium tracking-wide whitespace-nowrap">
                     {claim}
                   </h2>
                   <svg
-                    className="marque-arrow w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-[#A06A98] flex-none inline-block origin-center transition-transform"
+                    className="marque-arrow w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-[var(--accent-gold)] flex-none inline-block origin-center transition-transform"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -251,10 +251,10 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
               className="lg:mb-18 mb-8"
             />
             <div>
-              <h3 className="text-lg font-bold leading-loose">
+              <h3 className="text-lg font-bold leading-loose text-[var(--text-primary)]">
                 Sign up for exclusive offers and updates.
               </h3>
-              <div className="text-base font-medium leading-normal text-muted-foreground">
+              <div className="text-base font-medium leading-normal text-[var(--text-muted)]">
                 Get the latest news and updates from our team.
               </div>
               <form onSubmit={handleSubmit} className="relative mt-4">
@@ -264,12 +264,12 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-12"
+                    className="flex h-10 w-full rounded-md border border-[var(--border-subtle)] bg-[var(--input-bg)] text-[var(--input-text)] px-3 py-2 text-sm placeholder:text-[var(--text-muted)]/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-50 pr-12 transition-colors"
                     placeholder="Enter Email Address"
                     name="email"
                   />
                   <button
-                    className="inline-flex uppercase items-center justify-center whitespace-nowrap rounded-md text-sm font-normal ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:text-accent-foreground h-10 w-10 absolute-center-y right-2 text-primary hover:bg-transparent cursor-pointer"
+                    className="inline-flex uppercase items-center justify-center whitespace-nowrap rounded-md text-sm font-normal transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:pointer-events-none disabled:opacity-50 h-10 w-10 absolute-center-y right-2 text-[var(--accent-gold)] hover:text-[var(--text-primary)] hover:bg-transparent cursor-pointer"
                     type="submit"
                     aria-label="Submit email"
                   >
@@ -293,7 +293,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                 </div>
               </form>
               {submitted && (
-                <span className="text-xs text-[#76416F] font-medium block mt-2">
+                <span className="text-xs text-[var(--accent-gold)] font-medium block mt-2">
                   Thank you for subscribing!
                 </span>
               )}
@@ -310,40 +310,40 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
           <div className="col-span-2 grid grid-cols-2 gap-y-8 lg:grid-cols-4 lg:gap-y-0">
             {/* About */}
             <div>
-              <h3 className="text font-sans font-extrabold mb-4 text-primary lg:mb-8">
+              <h3 className="text font-sans font-extrabold mb-4 text-[var(--text-primary)] lg:mb-8">
                 About
               </h3>
               <ul className="leading-loose space-y-1">
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/about-us')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>About us</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/legal/terms-and-conditions')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Terms And Conditions</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/legal/privacy-policy')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Privacy Policy</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
@@ -352,51 +352,51 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
 
             {/* Shop */}
             <div>
-              <h3 className="text font-sans font-extrabold mb-4 text-primary lg:mb-8">
+              <h3 className="text font-sans font-extrabold mb-4 text-[var(--text-primary)] lg:mb-8">
                 Shop
               </h3>
               <ul className="leading-loose space-y-1">
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/collection/best-sellers')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Best Sellers</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/collection')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Collections</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/locations')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Locations</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/collection/bundles')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Special Offers</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
@@ -405,40 +405,40 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
 
             {/* Help & Advice */}
             <div>
-              <h3 className="text font-sans font-extrabold mb-4 text-primary lg:mb-8">
+              <h3 className="text font-sans font-extrabold mb-4 text-[var(--text-primary)] lg:mb-8">
                 Help &amp; Advice
               </h3>
               <ul className="leading-loose space-y-1">
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/legal/return-policy')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Return Policy</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/legal/shipping')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Shipping</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors cursor-pointer inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors cursor-pointer inline-flex items-start"
                     onClick={() => onNavigate('/en/contact-us')}
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Contact Us</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
@@ -447,59 +447,59 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
 
             {/* Social */}
             <div>
-              <h4 className="text font-sans font-extrabold mb-4 text-primary lg:mb-8">
+              <h4 className="text font-sans font-extrabold mb-4 text-[var(--text-primary)] lg:mb-8">
                 Social
               </h4>
               <ul className="leading-loose space-y-1">
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors inline-flex items-start"
                     href="https://www.instagram.com/veloraa_rougee"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Instagram</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors inline-flex items-start"
                     href="https://www.facebook.com/veloraarougee"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Facebook</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors inline-flex items-start"
                     href="https://www.youtube.com/@veloraarougee"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>Youtube</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
                 <li>
                   <a
-                    className="group relative text-sm font-medium hover:text-primary transition-colors inline-flex items-start"
+                    className="group relative text-sm font-medium hover:text-[var(--accent-gold)] transition-colors inline-flex items-start"
                     href="https://www.tiktok.com/@veloraarougee"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <span className="relative inline-flex flex-col">
                       <TextRoll>TikTok</TextRoll>
-                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[#A06A98] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[1.5px] bg-[var(--accent-gold)] rounded-full transition-transform duration-300 ease-out origin-left scale-x-0 group-hover:scale-x-100" />
                     </span>
                   </a>
                 </li>
@@ -508,7 +508,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
           </div>
 
           {/* Bottom Row */}
-          <div className="col-span-full pt-8 mt-4 border-t border-[#DFBEDB]/40 flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-[#666666] font-medium text-center md:text-left">
+          <div className="col-span-full pt-8 mt-4 border-t border-[var(--border-subtle)] flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-[var(--text-muted)] font-medium text-center md:text-left">
             <p>
               © 2026 VELORAA ROUGEE. All Rights Reserved.
             </p>
@@ -518,7 +518,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                 href="https://divinescode.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold text-[#A06A98] hover:text-[#774170] transition-colors underline underline-offset-2"
+                className="font-bold text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] transition-colors underline underline-offset-2"
               >
                 Divines Code
               </a>
@@ -528,7 +528,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                 href="https://jayeshbpatil.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold text-[#A06A98] hover:text-[#774170] transition-colors underline underline-offset-2"
+                className="font-bold text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] transition-colors underline underline-offset-2"
               >
                 Jayesh Patil
               </a>
@@ -538,7 +538,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                 href="https://mahendranagpure.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold text-[#A06A98] hover:text-[#774170] transition-colors underline underline-offset-2"
+                className="font-bold text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] transition-colors underline underline-offset-2"
               >
                 Mahendra Nagpure
               </a>
@@ -547,7 +547,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
                 href="https://apurvahire.divinescode.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold text-[#A06A98] hover:text-[#774170] transition-colors underline underline-offset-2"
+                className="font-bold text-[var(--accent-gold)] hover:text-[var(--accent-rose-gold)] transition-colors underline underline-offset-2"
               >
                 Apurv Ahire
               </a>
@@ -564,7 +564,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
             className="will-change-transform transition-transform duration-75 ease-out"
             style={{ transform: `translate3d(0, ${parallaxOffset.left}px, 0)` }}
           >
-            <FlowerTallSvg className="h-auto w-[10.5rem] -scale-x-100 transform text-[#D39DC7]" />
+            <FlowerTallSvg className="h-auto w-[10.5rem] -scale-x-100 transform text-[var(--accent-gold)]/40" />
           </div>
         </div>
 
@@ -574,7 +574,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
             className="will-change-transform transition-transform duration-75 ease-out"
             style={{ transform: `translate3d(0, ${parallaxOffset.center}px, 0)` }}
           >
-            <FlowerShortSvg className="h-auto w-[6.25rem] -scale-x-100 transform text-[#D39DC7]" />
+            <FlowerShortSvg className="h-auto w-[6.25rem] -scale-x-100 transform text-[var(--accent-gold)]/40" />
           </div>
         </div>
 
@@ -584,7 +584,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
             className="will-change-transform transition-transform duration-75 ease-out"
             style={{ transform: `translate3d(0, ${parallaxOffset.right}px, 0)` }}
           >
-            <FlowerTallSvg className="h-auto w-[16rem] text-[#9F6998]" />
+            <FlowerTallSvg className="h-auto w-[16rem] text-[var(--accent-gold)]/30" />
           </div>
         </div>
       </div>
