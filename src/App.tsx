@@ -304,7 +304,9 @@ export default function App() {
     );
   };
 
-  if (currentPath.startsWith('/admin')) {
+  const isAdminDomain = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
+
+  if (isAdminDomain || currentPath.startsWith('/admin')) {
     return <AdminApp path={currentPath} onNavigate={navigate} />;
   }
 

@@ -15,14 +15,46 @@ import { registerOps, registerSeo } from './seo-routes';
 
 export async function buildApp() {
   const app = Fastify({ logger: true, trustProxy: true });
+  const ALLOWED_ORIGINS = new Set([
+    'https://veloraarougee.com',
+    'https://www.veloraarougee.com',
+    'https://admin.veloraarougee.com',
+    'https://api.veloraarougee.com',
+  ]);
+
+  if (env.APP_ORIGIN) {
+    ALLOWED_ORIGINS.add(env.APP_ORIGIN.replace(/\/$/, ''));
+  }
+
   await app.register(cors, {
-    origin: (origin, cb) => cb(null, true),
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      if (env.NODE_ENV !== 'production') {
+        if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+          return cb(null, true);
+        }
+      }
+      if (ALLOWED_ORIGINS.has(origin) || origin.endsWith('.vercel.app')) {
+        return cb(null, true);
+      }
+      return cb(new Error('CORS not allowed for this origin'), false);
+    },
     credentials: true,
   });
   await app.register(cookie);
   await app.register(formbody);
   await app.register(multipart, { limits: { fileSize: 8 * 1024 * 1024 } });
   await app.register(rateLimit, { global: false });
+
+  app.addHook('onSend', async (_request, reply) => {
+    reply.header('X-Content-Type-Options', 'nosniff');
+    reply.header('X-Frame-Options', 'SAMEORIGIN');
+    reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+    reply.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    if (env.NODE_ENV === 'production') {
+      reply.header('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+    }
+  });
 
   app.setErrorHandler((error, request, reply) => {
     if (error instanceof ZodError) {

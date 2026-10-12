@@ -24,6 +24,18 @@ function seoBlock(seo) {
 
 export default async function middleware(request) {
   const url = new URL(request.url);
+  const host = (request.headers.get('host') || '').toLowerCase();
+
+  // If request is directed to api subdomain or /api path, pass through cleanly to serverless function
+  if (host.startsWith('api.') || url.pathname.startsWith('/api')) {
+    return;
+  }
+
+  // If request is directed to admin subdomain or /admin path, pass through to SPA without SEO hydration
+  if (host.startsWith('admin.') || url.pathname.startsWith('/admin')) {
+    return;
+  }
+
   if (url.pathname === '/robots.txt' || url.pathname === '/sitemap.xml') {
     if (!API) return;
     return fetch(`${API}${url.pathname}`);
@@ -31,8 +43,8 @@ export default async function middleware(request) {
   const accept = request.headers.get('accept') || '';
   if (!accept.includes('text/html') || !API) return;
   if (url.pathname.startsWith('/assets') || url.pathname.startsWith('/fonts')) return;
-  const seoResponse = await fetch(`${API}/seo/resolve?path=${encodeURIComponent(url.pathname)}`);
-  if (!seoResponse.ok) return;
+  const seoResponse = await fetch(`${API}/seo/resolve?path=${encodeURIComponent(url.pathname)}`).catch(() => null);
+  if (!seoResponse || !seoResponse.ok) return;
   const seo = await seoResponse.json();
   const htmlResponse = await fetch(new URL('/index.html', url.origin));
   if (!htmlResponse.ok) return;

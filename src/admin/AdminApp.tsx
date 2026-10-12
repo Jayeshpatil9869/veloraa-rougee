@@ -57,7 +57,8 @@ const NAV = [
 type ModuleId = (typeof NAV)[number]['id'];
 
 function moduleFromPath(path: string): ModuleId {
-  const requested = path.split('/')[2] || 'dashboard';
+  const clean = path.replace(/^\/admin\/?/, '');
+  const requested = clean.split('/')[0] || 'dashboard';
   const match = NAV.find((item) => item.id === requested);
   return match ? match.id : 'dashboard';
 }
@@ -107,6 +108,7 @@ export const AdminApp: React.FC<{
   }[]>([]);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const notifLeaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -122,6 +124,32 @@ export const AdminApp: React.FC<{
     const interval = setInterval(loadNotifications, 12000);
     return () => clearInterval(interval);
   }, [admin]);
+
+  // Click outside listener so dropdown stays open during scroll and closes when clicking elsewhere
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setIsNotificationOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleNotifMouseEnter = () => {
+    if (notifLeaveTimerRef.current) {
+      clearTimeout(notifLeaveTimerRef.current);
+      notifLeaveTimerRef.current = null;
+    }
+    setIsNotificationOpen(true);
+  };
+
+  const handleNotifMouseLeave = () => {
+    if (notifLeaveTimerRef.current) clearTimeout(notifLeaveTimerRef.current);
+    notifLeaveTimerRef.current = setTimeout(() => {
+      setIsNotificationOpen(false);
+    }, 450);
+  };
 
   const handleMarkAllRead = async () => {
     try {
@@ -864,6 +892,8 @@ export const AdminApp: React.FC<{
             <div
               className="relative py-1"
               ref={notifRef}
+              onMouseEnter={handleNotifMouseEnter}
+              onMouseLeave={handleNotifMouseLeave}
             >
               <button
                 type="button"
@@ -887,10 +917,12 @@ export const AdminApp: React.FC<{
                   data-lenis-prevent
                   onWheel={(e) => e.stopPropagation()}
                   className="absolute right-0 top-full pt-1.5 w-80 sm:w-96 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-150"
+                  onMouseEnter={handleNotifMouseEnter}
+                  onMouseLeave={handleNotifMouseLeave}
                 >
-                  <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-2xl shadow-[var(--shadow-card)] overflow-hidden">
+                  <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-2xl shadow-[var(--shadow-card)] overflow-hidden flex flex-col max-h-[460px]">
                     {/* Header */}
-                    <div className="px-4 py-3 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--bg-secondary)] to-[var(--card-bg)] flex items-center justify-between">
+                    <div className="px-4 py-3 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--bg-secondary)] to-[var(--card-bg)] flex items-center justify-between shrink-0">
                       <div className="flex items-center gap-2">
                         <Bell className="w-4 h-4 text-[var(--accent-primary)]" />
                         <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
@@ -913,23 +945,31 @@ export const AdminApp: React.FC<{
                       )}
                     </div>
 
-                    {/* Notification list */}
+                    {/* Notification list - fully scrollable */}
                     <div
                       data-lenis-prevent
                       onWheel={(e) => e.stopPropagation()}
-                      className="max-h-80 overflow-y-auto divide-y divide-[var(--border-subtle)]/60 modal-luxury-scroll overscroll-contain"
+                      className="flex-1 min-h-0 max-h-[350px] overflow-y-auto overscroll-contain divide-y divide-[var(--border-subtle)]/60 touch-pan-y modal-luxury-scroll"
+                      tabIndex={0}
+                      style={{
+                        scrollbarWidth: 'thin',
+                        scrollbarColor: 'var(--accent-primary) var(--bg-secondary)',
+                      }}
                     >
                       {notifications.length === 0 ? (
                         <div className="p-6 text-center text-xs text-[var(--text-muted)]">
                           No recent alerts or activity.
                         </div>
                       ) : (
-                        notifications.slice(0, 15).map((n) => {
+                        notifications.slice(0, 40).map((n) => {
                           const isUnread = !n.read_at;
                           return (
                             <div
                               key={n.id}
-                              onClick={() => void handleNotificationClick(n)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                void handleNotificationClick(n);
+                              }}
                               className={`p-3 sm:p-3.5 transition-colors cursor-pointer flex items-start gap-3 ${
                                 isUnread ? 'bg-[var(--bg-secondary)]/50 hover:bg-[var(--bg-secondary)]' : 'hover:bg-[var(--bg-secondary)]/30'
                               }`}

@@ -15,24 +15,35 @@
     "dev:api": "npm run dev --prefix server"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.0.1",
+    "@fastify/formbody": "^8.0.2",
+    "@fastify/multipart": "^9.0.3",
+    "@fastify/rate-limit": "^10.3.0",
+    "@supabase/supabase-js": "^2.76.1",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.1.1",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.1",
     "gsap": "^3.15.0",
+    "hash-wasm": "^4.12.0",
     "lenis": "^1.3.26",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
+    "postgres": "^3.4.7",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
-    "@supabase/supabase-js": "^2.76.1",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@vercel/node": "^5.1.8",
     "autoprefixer": "^10.4.21",
     "tailwindcss": "^4.3.3",
-    "typescript": "^7.0.2",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }
 }
