@@ -246,9 +246,10 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate }) => {
           {/* Column 1: Brand & Newsletter */}
           <div className="col-span-1 font-medium">
             <VeloraaRougeeLogo
-              size="lg"
+              width={200}
+              height={96}
               onClick={() => onNavigate('/en')}
-              className="lg:mb-18 mb-8"
+              className="lg:mb-10 mb-8 block"
             />
             <div>
               <h3 className="text-lg font-bold leading-loose text-[var(--text-primary)]">
