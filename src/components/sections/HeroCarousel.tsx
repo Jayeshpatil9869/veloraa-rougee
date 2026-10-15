@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BrandImage } from '../ui/BrandImage';
+import { useTheme } from '../../context/ThemeContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -10,57 +11,205 @@ interface HeroCarouselProps {
   onShopNow?: () => void;
 }
 
+interface HeroSlide {
+  id: string;
+  kicker: string;
+  titleLines: string[];
+  scriptAccent?: string;
+  subtitle: string;
+  cta: string;
+  image: string;
+  alt: string;
+  imagePositionClass?: string;
+}
+
+const darkSlides: HeroSlide[] = [
+  {
+    id: 'dark-1',
+    kicker: 'LUXURY LIPSTICK COLLECTION',
+    titleLines: ['India doesn’t have', 'one shade of beauty —', 'it has'],
+    scriptAccent: 'millions.',
+    subtitle: 'RICH COLOUR  •  LONG WEAR  •  ALL SKIN TONES',
+    cta: 'EXPLORE SHADES →',
+    image: '/images/hero/hero-dark-1.jpg',
+    alt: 'Veloraa Rougee Luxury Lipstick Collection — Indian Beauty',
+  },
+  {
+    id: 'dark-2',
+    kicker: 'THE SHADES • SIGNATURE NOIR',
+    titleLines: ['More than just a lipstick.', 'It’s a'],
+    scriptAccent: 'feeling.',
+    subtitle: 'BOLD MATTE & CREAM VELVET  •  WEIGHTLESS WEAR',
+    cta: 'SHOP COLLECTION →',
+    image: '/images/hero/hero-dark-2.jpg',
+    alt: 'Veloraa Rougee Three Signature Shades on Nero Marquina Marble',
+  },
+];
+
+const lightSlides: HeroSlide[] = [
+  {
+    id: 'light-1',
+    kicker: 'LUXURY LIPSTICK FOR INDIAN SKIN TONES',
+    titleLines: ['Every Shade Deserves', 'Its Own'],
+    scriptAccent: 'Moment.',
+    subtitle: 'Rich colours. Effortless elegance. Made for every you.',
+    cta: 'EXPLORE THE SHADES →',
+    image: '/images/hero/hero-light-1.jpg',
+    alt: 'Veloraa Rougee Every Shade Deserves Its Own Moment — Three Skin Tones',
+    imagePositionClass: 'object-[center_top] translate-y-6 sm:translate-y-8 lg:translate-y-9',
+  },
+  {
+    id: 'light-2',
+    kicker: 'VELORAA ROUGEE • RADIANT BEAUTY',
+    titleLines: ['Luxury in', 'Every'],
+    scriptAccent: 'Swipe.',
+    subtitle: 'Nourishing botanical oils with pure intense pigment payoff.',
+    cta: 'SHOP NOW →',
+    image: '/images/hero/hero-light-2.jpg',
+    alt: 'Veloraa Rougee Luxury in Every Swipe — Creamy Lipstick Application',
+  },
+];
+
 export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
+  const { isDark: themeIsDark } = useTheme();
+
+  // Dual synchronization: track ThemeContext AND live DOM data-theme / classList
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      return root.getAttribute('data-theme') === 'dark' || root.classList.contains('dark');
+    }
+    return themeIsDark;
+  });
+
+  useEffect(() => {
+    setIsDark(themeIsDark);
+  }, [themeIsDark]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const checkDark = () => {
+      const root = document.documentElement;
+      const active = root.getAttribute('data-theme') === 'dark' || root.classList.contains('dark');
+      setIsDark(active);
+    };
+    checkDark();
+
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'class'],
+    });
+
+    window.addEventListener('storage', checkDark);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('storage', checkDark);
+    };
+  }, []);
+
+  const slides = isDark ? darkSlides : lightSlides;
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+
+  const containerRef = useRef<HTMLElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const isTransitioningRef = useRef<boolean>(false);
 
   // Gesture drag/swipe state
   const [dragStartX, setDragStartX] = useState<number | null>(null);
   const [dragCurrentX, setDragCurrentX] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const containerRef = useRef<HTMLElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
 
-  const slides = [
-    {
-      id: 1,
-      title: 'The Glam Eyes\nPalette💕',
-      cta: 'Shop Now!🩷',
-      image: '/images/eyeshadow-swatches.jpg',
-      alt: 'The Glam Eyes Palette💕',
-      align: 'center' as const,
-      desktopTitleSize: 'lg:text-8xl xl:text-9xl 2xl:text-[7rem]',
+  // Animate text IN on mount or slide change
+  const animateTextIn = useCallback(() => {
+    if (!textContainerRef.current) return;
+    gsap.killTweensOf(textContainerRef.current);
+    const elements = textContainerRef.current.children;
+    gsap.killTweensOf(elements);
+
+    gsap.fromTo(
+      elements,
+      {
+        opacity: 0,
+        y: 20,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        stagger: 0.08,
+        ease: 'power3.out',
+        clearProps: 'transform,opacity',
+        onComplete: () => {
+          isTransitioningRef.current = false;
+        },
+      }
+    );
+  }, []);
+
+  // Smooth, non-overlapping transition function
+  const changeSlide = useCallback(
+    (targetIndex: number) => {
+      if (isTransitioningRef.current || targetIndex === currentSlide) return;
+
+      isTransitioningRef.current = true;
+
+      // Animate current text OUT cleanly before swapping to prevent ANY overlap
+      if (textContainerRef.current) {
+        gsap.to(textContainerRef.current, {
+          opacity: 0,
+          y: -14,
+          duration: 0.22,
+          ease: 'power2.in',
+          onComplete: () => {
+            setCurrentSlide(targetIndex);
+            // After React renders the new activeSlide text in the DOM, animate it in
+            requestAnimationFrame(() => {
+              animateTextIn();
+            });
+          },
+        });
+      } else {
+        setCurrentSlide(targetIndex);
+        isTransitioningRef.current = false;
+      }
     },
-    {
-      id: 2,
-      title: 'The Glam Eyes\nis Here🩷',
-      cta: 'Shop Now!🩷',
-      image: 'https://cdn.sanity.io/images/03h1hklz/production/cf21fa5b3c44368ddc77fd6c50b6e23555e86bbb-1400x800.png',
-      alt: 'The Glam Eyes is Here🩷',
-      align: 'left' as const,
-    },
-    {
-      id: 3,
-      title: 'Explore All\nBeauty Essentials💕',
-      cta: 'Shop Collection →',
-      image: 'https://cdn.sanity.io/images/03h1hklz/production/11c677ea9da701bf1bf07bc467a4e970ae37295b-1400x800.jpg',
-      alt: 'Explore All Beauty Essentials💕',
-      align: 'left' as const,
-    },
-  ];
+    [currentSlide, animateTextIn]
+  );
 
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  }, [slides.length]);
+    const next = (currentSlide + 1) % slides.length;
+    changeSlide(next);
+  }, [currentSlide, slides.length, changeSlide]);
 
   const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  }, [slides.length]);
+    const prev = (currentSlide - 1 + slides.length) % slides.length;
+    changeSlide(prev);
+  }, [currentSlide, slides.length, changeSlide]);
+
+  // Initial text entrance animation
+  useEffect(() => {
+    animateTextIn();
+  }, [animateTextIn]);
+
+  // Reset slide index when theme changes
+  useEffect(() => {
+    setCurrentSlide(0);
+    requestAnimationFrame(() => {
+      animateTextIn();
+    });
+  }, [isDark, animateTextIn]);
 
   // Automatic slideshow timer
   useEffect(() => {
     if (isPaused || isDragging) return;
-    const timer = setInterval(nextSlide, 6500);
+    const timer = setInterval(() => {
+      if (!isTransitioningRef.current) {
+        nextSlide();
+      }
+    }, 7000);
     return () => clearInterval(timer);
   }, [nextSlide, isPaused, isDragging]);
 
@@ -132,9 +281,9 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         bgRef.current,
-        { yPercent: -8 },
+        { yPercent: 0 },
         {
-          yPercent: 12,
+          yPercent: 8,
           ease: 'none',
           scrollTrigger: {
             trigger: containerRef.current,
@@ -153,6 +302,8 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
     ? dragCurrentX - dragStartX
     : 0;
 
+  const activeSlide = slides[currentSlide] || slides[0];
+
   return (
     <section
       ref={containerRef}
@@ -166,14 +317,14 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      className={`relative w-full bg-[var(--bg-primary)] min-h-[460px] lg:min-h-[720px] overflow-hidden group select-none flex items-center transition-colors ${
+      className={`relative w-full bg-[var(--bg-primary)] min-h-[540px] sm:min-h-[600px] lg:min-h-[720px] 2xl:min-h-[780px] overflow-hidden group select-none flex items-center transition-colors duration-500 ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
     >
       {/* Stacked Background Images with Smooth Crossfade, Gesture Parallax & Scroll Parallax */}
       <div
         ref={bgRef}
-        className="absolute -top-[12%] -bottom-[12%] inset-x-0 z-0 will-change-transform pointer-events-none"
+        className="absolute -top-[10%] -bottom-[10%] inset-x-0 z-0 will-change-transform pointer-events-none"
         style={{
           transform: dragOffset ? `translateX(${dragOffset * 0.25}px)` : undefined,
         }}
@@ -197,17 +348,20 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
                   src={s.image}
                   alt={s.alt}
                   containerClassName="w-full h-full"
-                  className="w-full h-full object-cover object-center"
+                  className={`w-full h-full object-cover ${s.imagePositionClass || 'object-[center_right] lg:object-center'}`}
                 />
               </div>
 
-              {/* Dynamic Contrast Gradient Overlays */}
-              {s.align === 'center' ? (
-                <div className="absolute inset-0 bg-stone-900/35 transition-opacity duration-700" />
+              {/* Dynamic Contrast Gradient Overlays Tailored to Active Theme */}
+              {isDark ? (
+                <>
+                  <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-black/92 via-black/50 to-transparent transition-opacity duration-700" />
+                  <div className="lg:hidden absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40 transition-opacity duration-700" />
+                </>
               ) : (
                 <>
-                  <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-stone-900/70 via-stone-900/35 to-transparent transition-opacity duration-700" />
-                  <div className="lg:hidden absolute inset-0 bg-stone-900/45 transition-opacity duration-700" />
+                  <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#F5EBE0]/95 via-[#F5EBE0]/60 to-transparent transition-opacity duration-700" />
+                  <div className="lg:hidden absolute inset-0 bg-gradient-to-t from-[#F5EBE0]/96 via-[#F5EBE0]/75 to-[#F5EBE0]/30 transition-opacity duration-700" />
                 </>
               )}
             </div>
@@ -215,49 +369,78 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
         })}
       </div>
 
-      {/* HTML Text Overlay with Smooth Fade and Slide Transitions */}
-      <div className="relative z-[2] max-w-[1440px] w-full mx-auto px-6 py-12 lg:px-20 pointer-events-none">
-        {slides.map((s, index) => {
-          const isActive = currentSlide === index;
-          const isCentered = s.align === 'center';
-
-          return (
-            <div
-              key={s.id}
-              className={`transition-all duration-700 ease-out flex flex-col justify-center ${
-                isActive
-                  ? 'opacity-100 translate-y-0 relative pointer-events-auto'
-                  : 'opacity-0 translate-y-4 absolute inset-0 pointer-events-none'
-              } ${
-                isCentered
-                  ? 'items-center text-center'
-                  : 'items-center lg:items-start text-center lg:text-left'
+      {/* Single Active HTML Text Container with Sequential Exit-then-Entrance to prevent overlapping glitches */}
+      <div className="relative z-[2] max-w-[1440px] 2xl:max-w-[1600px] w-full mx-auto px-6 py-12 lg:px-16 2xl:px-20 pointer-events-none">
+        <div
+          ref={textContainerRef}
+          key={`${activeSlide.id}-${isDark}`}
+          className="max-w-[42ch] sm:max-w-[48ch] lg:max-w-[56ch] space-y-4 sm:space-y-6 flex flex-col justify-center items-start text-left pointer-events-auto"
+        >
+          {/* 1. Kicker badge */}
+          <div className="flex items-center gap-2.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-[var(--accent-gold)]' : 'bg-[#773323]'}`} />
+            <p
+              className={`text-[11px] sm:text-xs font-bold uppercase tracking-[0.25em] ${
+                isDark ? 'text-[var(--accent-gold)]' : 'text-[#86533A]'
               }`}
             >
-              <div className={`max-w-[45ch] lg:max-w-[55ch] space-y-4 lg:space-y-6 ${isCentered ? 'text-center mx-auto' : ''}`}>
-                <h1
-                  className={`font-serif text-4xl sm:text-6xl ${s.desktopTitleSize || 'lg:text-7xl'} leading-tight lg:leading-none text-white whitespace-pre-line drop-shadow-md transition-transform duration-700 ease-out`}
-                  style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
-                >
-                  {s.title}
-                </h1>
+              {activeSlide.kicker}
+            </p>
+          </div>
 
-                <div className={isCentered ? 'flex justify-center' : ''}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (onShopNow) onShopNow();
-                    }}
-                    className="inline-block text-lg sm:text-xl lg:text-2xl font-bold text-white hover:text-[#B9997F] transition-colors drop-shadow-md cursor-pointer hover:scale-105 active:scale-95 duration-200"
+          {/* 2. Heading with Sofia Pro bold sans-serif and Amithen cursive script matching Image 2 */}
+          <h1
+            className={`font-sans font-bold text-3xl sm:text-5xl lg:text-6xl 2xl:text-7xl leading-[1.12] tracking-tight ${
+              isDark ? 'text-white' : 'text-[#080604]'
+            }`}
+            style={{
+              fontFamily: "'Sofia Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            }}
+          >
+            {activeSlide.titleLines.map((line, i) => (
+              <span key={i} className="block">
+                {line}
+                {i === activeSlide.titleLines.length - 1 && activeSlide.scriptAccent && (
+                  <span
+                    className={`font-serif font-normal ml-2 sm:ml-3 text-4xl sm:text-6xl lg:text-7xl 2xl:text-8xl inline-block ${
+                      isDark ? 'text-[var(--accent-gold)]' : 'text-[#773323]'
+                    }`}
+                    style={{ fontFamily: "'Amithen', 'Alex Brush', cursive" }}
                   >
-                    {s.cta}
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+                    {activeSlide.scriptAccent}
+                  </span>
+                )}
+              </span>
+            ))}
+          </h1>
+
+          {/* 3. Subtitle / Spec line */}
+          <p
+            className={`text-xs sm:text-sm uppercase tracking-[0.18em] font-medium ${
+              isDark ? 'text-white/80' : 'text-[#411F11]/90'
+            }`}
+          >
+            {activeSlide.subtitle}
+          </p>
+
+          {/* 4. Luxury CTA Button */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onShopNow) onShopNow();
+              }}
+              className={`inline-flex items-center justify-center gap-3 px-8 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-[0.22em] transition-all duration-300 cursor-pointer shadow-md active:scale-95 border rounded-xs ${
+                isDark
+                  ? 'bg-black/60 hover:bg-[var(--accent-gold)] text-white hover:text-black border-[var(--border-strong)] hover:border-[var(--accent-gold)]'
+                  : 'bg-[#080604] hover:bg-[#773323] text-[#F5EBE0] border-[#080604]'
+              }`}
+            >
+              {activeSlide.cta}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Controls: Left & Right Chevrons */}
@@ -268,7 +451,11 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
           prevSlide();
         }}
         aria-label="Previous slide"
-        className="absolute left-3 lg:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/25 hover:bg-black/50 backdrop-blur-xs rounded-full transition-all duration-300 opacity-75 hover:opacity-100 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer shadow-md"
+        className={`absolute left-3 lg:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full transition-all duration-300 opacity-75 hover:opacity-100 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer shadow-md ${
+          isDark
+            ? 'text-white bg-black/40 hover:bg-black/70 border border-white/10'
+            : 'text-[#080604] bg-white/60 hover:bg-white/90 border border-[#080604]/10'
+        }`}
       >
         <ChevronLeft className="w-6 h-6 lg:w-8 lg:h-8" />
       </button>
@@ -280,25 +467,37 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
           nextSlide();
         }}
         aria-label="Next slide"
-        className="absolute right-3 lg:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-white bg-black/25 hover:bg-black/50 backdrop-blur-xs rounded-full transition-all duration-300 opacity-75 hover:opacity-100 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer shadow-md"
+        className={`absolute right-3 lg:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full transition-all duration-300 opacity-75 hover:opacity-100 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer shadow-md ${
+          isDark
+            ? 'text-white bg-black/40 hover:bg-black/70 border border-white/10'
+            : 'text-[#080604] bg-white/60 hover:bg-white/90 border border-[#080604]/10'
+        }`}
       >
         <ChevronRight className="w-6 h-6 lg:w-8 lg:h-8" />
       </button>
 
       {/* Slide Indicators with smooth expansion animation */}
-      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-black/20 backdrop-blur-xs">
+      <div
+        className={`absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2.5 px-3 py-1.5 rounded-full backdrop-blur-xs ${
+          isDark ? 'bg-black/40 border border-white/10' : 'bg-black/10 border border-black/5'
+        }`}
+      >
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={(e) => {
               e.stopPropagation();
-              setCurrentSlide(i);
+              changeSlide(i);
             }}
             aria-label={`Go to slide ${i + 1}`}
             className={`h-2 rounded-full transition-all duration-500 cursor-pointer ${
               currentSlide === i
-                ? 'w-7 bg-white shadow-xs'
-                : 'w-2 bg-white/50 hover:bg-white/80'
+                ? isDark
+                  ? 'w-7 bg-[var(--accent-gold)] shadow-xs'
+                  : 'w-7 bg-[#080604] shadow-xs'
+                : isDark
+                ? 'w-2 bg-white/40 hover:bg-white/70'
+                : 'w-2 bg-[#080604]/30 hover:bg-[#080604]/60'
             }`}
           />
         ))}
@@ -306,4 +505,3 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
     </section>
   );
 };
-

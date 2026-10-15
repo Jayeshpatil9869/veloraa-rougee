@@ -37,10 +37,10 @@ export const BestSellersSection: React.FC<BestSellersSectionProps> = ({
         </div>
       </ScrollReveal>
 
-      {/* Clean 2-column on mobile, responsive up to 4 columns on large monitors */}
+      {/* 3 flagship products balanced across 3 columns on desktop */}
       <StaggerContainer
         staggerDelay={0.09}
-        className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-[1280px] mx-auto"
       >
         {bestSellers.map((product) => (
           <StaggerItem key={product.id} className="w-full h-full">

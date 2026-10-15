@@ -55,6 +55,7 @@ export interface Product {
   featured?: boolean;
   bestseller?: boolean;
   newArrival?: boolean;
+  badge?: string;
   status?: string;
   rating?: number;
   reviewCount?: number;

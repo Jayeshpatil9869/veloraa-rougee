@@ -485,8 +485,8 @@ export const AdminApp: React.FC<{
         </div>
 
         <div className="relative z-10 flex flex-col items-center justify-center p-8 sm:p-10 rounded-3xl bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--border-subtle)] shadow-[var(--shadow-card)] max-w-sm w-full text-center">
-          <div className="text-[var(--text-primary)] mb-6">
-            <VeloraaRougeeLogo size="md" color="currentColor" />
+          <div className="text-[var(--text-primary)] dark:text-[var(--accent-gold)] mb-6">
+            <VeloraaRougeeLogo size="md" />
           </div>
 
           {/* Luxury Animated Loader */}
@@ -574,10 +574,9 @@ export const AdminApp: React.FC<{
 
               {/* Brand Logo Header */}
               <div className="login-anim-item flex flex-col items-center justify-center mb-7 pt-1">
-                <div className="text-[var(--text-primary)]">
+                <div className="text-[var(--text-primary)] dark:text-[var(--accent-gold)]">
                   <VeloraaRougeeLogo
                     size="md"
-                    color="currentColor"
                     onClick={() => onNavigate('/en')}
                     className="cursor-pointer hover:opacity-80 transition-opacity"
                   />
@@ -754,10 +753,9 @@ export const AdminApp: React.FC<{
             <div>
               {/* Mobile Drawer Header */}
               <div className="p-5 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-secondary)]/80">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2.5 text-[var(--text-primary)] dark:text-[var(--accent-gold)]">
                   <VeloraaRougeeLogo
                     size="sm"
-                    color="currentColor"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       adminNav('/admin/dashboard');
@@ -810,10 +808,9 @@ export const AdminApp: React.FC<{
         <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
           {/* Brand Header */}
           <div className="py-6 px-4 border-b border-[var(--border-subtle)] bg-gradient-to-b from-[var(--bg-secondary)]/60 to-[var(--card-bg)] shrink-0 flex items-center justify-center">
-            <div className="w-full flex items-center justify-center text-[var(--text-primary)]">
+            <div className="w-full flex items-center justify-center text-[var(--text-primary)] dark:text-[var(--accent-gold)]">
               <VeloraaRougeeLogo
                 size="md"
-                color="currentColor"
                 onClick={() => adminNav('/admin/dashboard')}
                 className="cursor-pointer mx-auto transition-transform hover:scale-105"
               />

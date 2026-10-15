@@ -337,7 +337,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
         </div>
 
         {/* Center Column: Authoritative Brand Mark (Dead-center on mobile, col-span-1 on desktop) */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 lg:static lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0 lg:col-span-1 flex items-center justify-center text-[var(--text-primary)] shrink-0 z-10 pointer-events-auto">
+        <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 lg:static lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0 lg:col-span-1 flex items-center justify-center text-[var(--text-primary)] dark:text-[var(--accent-gold)] shrink-0 z-10 pointer-events-auto">
           <VeloraaRougeeLogo
             size="md"
             onClick={() => onNavigate('/en')}

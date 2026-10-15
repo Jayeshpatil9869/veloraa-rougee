@@ -81,7 +81,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
           className="w-full h-full flex flex-col min-w-[280px] sm:min-w-[340px] p-6 min-h-0 overflow-hidden"
         >
           {/* Header */}
-          <div className="flex items-center justify-between pb-6 border-b border-[var(--border-subtle)] shrink-0 text-[var(--text-primary)]">
+          <div className="flex items-center justify-between pb-6 border-b border-[var(--border-subtle)] shrink-0 text-[var(--text-primary)] dark:text-[var(--accent-gold)]">
             <VeloraaRougeeLogo size="sm" onClick={() => handleNav('/en')} />
             <button
               type="button"

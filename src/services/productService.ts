@@ -20,7 +20,20 @@ export const productService = {
   getProductBySlug: (slug: string): Product | undefined => products.find((product) => product.slug === slug),
   getProductById: (id: string): Product | undefined => products.find((product) => product.id === id),
   getFeaturedProducts: (): Product[] => products.filter((product) => product.featured),
-  getBestSellers: (): Product[] => products.filter((product) => product.bestseller).slice(0, 8),
+  getBestSellers: (): Product[] => {
+    const priority = ['prod-crimson-vela', 'prod-orchid-rush', 'prod-mocha-ember'];
+    return [...products]
+      .filter((product) => product.bestseller)
+      .sort((a, b) => {
+        const idxA = priority.indexOf(a.id);
+        const idxB = priority.indexOf(b.id);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return 0;
+      })
+      .slice(0, 8);
+  },
   getProductsByCategory: (categoryId: CategoryId | 'all'): Product[] => {
     if (categoryId === 'all') return [...products];
     if (categoryId === 'best-sellers') return products.filter((product) => product.bestseller);
