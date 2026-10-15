@@ -22,7 +22,7 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'name-asc'>('featured');
-  const [maxPrice, setMaxPrice] = useState<number>(250);
+  const [maxPrice, setMaxPrice] = useState<number>(1000);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
@@ -194,27 +194,27 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
               <div className="space-y-2">
                 <input
                   type="range"
-                  min="60"
-                  max="220"
-                  step="5"
+                  min="100"
+                  max="1000"
+                  step="50"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
                   className="w-full accent-[var(--accent-gold)]"
                 />
                 <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
-                  <span>From ₹60</span>
+                  <span>From ₹100</span>
                   <span className="font-bold text-[var(--accent-gold)]">Up to ₹{maxPrice}</span>
                 </div>
               </div>
             </div>
 
             {/* Quick Reset */}
-            {(searchQuery || maxPrice < 250 || sortBy !== 'featured' || currentCategory !== 'all') && (
+            {(searchQuery || maxPrice < 1000 || sortBy !== 'featured' || currentCategory !== 'all') && (
               <button
                 type="button"
                 onClick={() => {
                   setSearchQuery('');
-                  setMaxPrice(250);
+                  setMaxPrice(1000);
                   setSortBy('featured');
                   onSelectCategory('all');
                 }}
@@ -352,7 +352,7 @@ export const ShopCollectionPage: React.FC<ShopCollectionPageProps> = ({
                   type="button"
                   onClick={() => {
                     setSearchQuery('');
-                    setMaxPrice(250);
+                    setMaxPrice(1000);
                     onSelectCategory('all');
                   }}
                   className="mt-3 px-5 py-2 btn-theme-primary text-xs font-bold uppercase tracking-wider rounded-brand"

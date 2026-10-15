@@ -633,3 +633,28 @@ select:focus {
   border-color: var(--focus-ring) !important;
 }
 
+/* ========================================================================= */
+/* Hero Carousel Image Centering on Mobile vs Desktop                        */
+/* ========================================================================= */
+.hero-img-dark-1 {
+  object-position: 74% 28% !important;
+}
+.hero-img-dark-2 {
+  object-position: 72% 38% !important;
+}
+.hero-img-light-1 {
+  object-position: 68% 18% !important;
+}
+.hero-img-light-2 {
+  object-position: 72% 32% !important;
+}
+
+@media (min-width: 1024px) {
+  .hero-img-dark-1,
+  .hero-img-dark-2,
+  .hero-img-light-1,
+  .hero-img-light-2 {
+    object-position: center center !important;
+  }
+}
+

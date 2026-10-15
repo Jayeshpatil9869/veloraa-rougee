@@ -27,22 +27,24 @@ const darkSlides: HeroSlide[] = [
   {
     id: 'dark-1',
     kicker: 'LUXURY LIPSTICK COLLECTION',
-    titleLines: ['India doesn’t have', 'one shade of beauty —', 'it has'],
-    scriptAccent: 'millions.',
+    titleLines: ['Beauty in Every'],
+    scriptAccent: 'Shade.',
     subtitle: 'RICH COLOUR  •  LONG WEAR  •  ALL SKIN TONES',
     cta: 'EXPLORE SHADES →',
     image: '/images/hero/hero-dark-1.jpg',
     alt: 'Veloraa Rougee Luxury Lipstick Collection — Indian Beauty',
+    imagePositionClass: 'hero-img-dark-1',
   },
   {
     id: 'dark-2',
     kicker: 'THE SHADES • SIGNATURE NOIR',
-    titleLines: ['More than just a lipstick.', 'It’s a'],
-    scriptAccent: 'feeling.',
-    subtitle: 'BOLD MATTE & CREAM VELVET  •  WEIGHTLESS WEAR',
+    titleLines: ['Bold Colour.', 'Pure'],
+    scriptAccent: 'Velvet.',
+    subtitle: 'FEATHER-LIGHT MATTE  •  16-HOUR WEAR',
     cta: 'SHOP COLLECTION →',
     image: '/images/hero/hero-dark-2.jpg',
     alt: 'Veloraa Rougee Three Signature Shades on Nero Marquina Marble',
+    imagePositionClass: 'hero-img-dark-2',
   },
 ];
 
@@ -50,23 +52,24 @@ const lightSlides: HeroSlide[] = [
   {
     id: 'light-1',
     kicker: 'LUXURY LIPSTICK FOR INDIAN SKIN TONES',
-    titleLines: ['Every Shade Deserves', 'Its Own'],
+    titleLines: ['Own Your'],
     scriptAccent: 'Moment.',
     subtitle: 'Rich colours. Effortless elegance. Made for every you.',
     cta: 'EXPLORE THE SHADES →',
     image: '/images/hero/hero-light-1.jpg',
     alt: 'Veloraa Rougee Every Shade Deserves Its Own Moment — Three Skin Tones',
-    imagePositionClass: 'object-[center_top] translate-y-6 sm:translate-y-8 lg:translate-y-9',
+    imagePositionClass: 'hero-img-light-1',
   },
   {
     id: 'light-2',
     kicker: 'VELORAA ROUGEE • RADIANT BEAUTY',
-    titleLines: ['Luxury in', 'Every'],
-    scriptAccent: 'Swipe.',
+    titleLines: ['One Swipe.', 'Pure'],
+    scriptAccent: 'Luxury.',
     subtitle: 'Nourishing botanical oils with pure intense pigment payoff.',
     cta: 'SHOP NOW →',
     image: '/images/hero/hero-light-2.jpg',
     alt: 'Veloraa Rougee Luxury in Every Swipe — Creamy Lipstick Application',
+    imagePositionClass: 'hero-img-light-2',
   },
 ];
 
@@ -348,7 +351,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ onShopNow }) => {
                   src={s.image}
                   alt={s.alt}
                   containerClassName="w-full h-full"
-                  className={`w-full h-full object-cover ${s.imagePositionClass || 'object-[center_right] lg:object-center'}`}
+                  className={`w-full h-full object-cover ${s.imagePositionClass || 'object-center'}`}
                 />
               </div>
 
