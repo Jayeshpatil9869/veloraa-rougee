@@ -25,6 +25,7 @@ import { cartService } from '../services/cartService';
 import { CartItem } from '../types';
 import { BrandImage } from '../components/ui/BrandImage';
 import { confetti } from '../registry/magicui/confetti';
+import { TrackingTimeline, type TrackingView } from '../components/shipping/TrackingTimeline';
 
 function submitPayuForm(fields: Record<string, string>) {
   const payuForm = document.createElement('form');
@@ -822,6 +823,7 @@ export const CheckoutReturnPage: React.FC = () => {
     total_paise?: number;
     email?: string;
   } | null>(null);
+  const [tracking, setTracking] = useState<TrackingView | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [retrying, setRetrying] = useState(false);
@@ -834,14 +836,19 @@ export const CheckoutReturnPage: React.FC = () => {
       return;
     }
     try {
-      const result = await api<{ order: { order_number: string; payment_status: string; status: string; total_paise: number; email: string } }>(
+      const result = await api<{
+        order: { order_number: string; payment_status: string; status: string; total_paise: number; email: string };
+        tracking?: TrackingView | null;
+      }>(
         `/orders/lookup?order=${encodeURIComponent(order)}&token=${encodeURIComponent(token)}`,
       );
       setState(result.order);
+      setTracking(result.tracking ?? null);
       setError('');
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'lookup_failed');
       setState(null);
+      setTracking(null);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -869,8 +876,8 @@ export const CheckoutReturnPage: React.FC = () => {
     frame();
     const timer = window.setTimeout(() => {
       const target = order
-        ? `/en/account?tab=orders&order=${encodeURIComponent(order)}`
-        : '/en/account?tab=orders';
+        ? `/en/orders/${encodeURIComponent(order)}`
+        : '/en/orders';
       window.location.href = target;
     }, 3200);
     return () => window.clearTimeout(timer);
@@ -984,6 +991,15 @@ export const CheckoutReturnPage: React.FC = () => {
                 No charge was captured for this attempt. You can retry online payment securely below.
               </p>
             )}
+          </div>
+        )}
+
+        {isPaid && (
+          <div className="mt-8 text-left max-w-lg mx-auto">
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2">
+              Delivery tracking
+            </p>
+            <TrackingTimeline tracking={tracking} />
           </div>
         )}
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import {
-  ShoppingBag,
   ArrowLeft,
   MapPin,
   Mail,
@@ -8,10 +7,12 @@ import {
   CreditCard,
   Package,
   Calendar,
-  DollarSign,
   ChevronRight,
+  Truck,
+  RefreshCw,
 } from 'lucide-react';
 import { api } from '../../lib/api';
+import { TrackingTimeline, type TrackingView } from '../../components/shipping/TrackingTimeline';
 import {
   DataTable,
   FilterTabs,
@@ -48,7 +49,7 @@ interface OrderRow {
 }
 
 interface OrderDetail {
-  order: Record<string, unknown> & {
+  order: {
     id: string;
     order_number: string;
     email: string;
@@ -81,6 +82,18 @@ interface OrderDetail {
     gateway: string;
     created_at: string;
   }[];
+  shipment?: {
+    id: string;
+    status: string;
+    awb: string | null;
+    courier_name: string | null;
+  } | null;
+  tracking?: TrackingView | null;
+}
+
+interface RateQuoteResult {
+  couriers: Array<{ courierId: number; courierName: string; ratePaise: number; etdDays: number | null }>;
+  quotedAt: string;
 }
 
 export const OrdersModule: React.FC<{
@@ -93,7 +106,10 @@ export const OrdersModule: React.FC<{
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'delivered' | 'cancelled'>('all');
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [busy, setBusy] = useState('');
+  const [rates, setRates] = useState<RateQuoteResult | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -129,7 +145,27 @@ export const OrdersModule: React.FC<{
     });
   }, [rows, searchQuery, statusFilter]);
 
-  if (error) return <Notice variant="error">{error}</Notice>;
+  const reloadDetail = async () => {
+    if (!orderId) return;
+    const next = await api<OrderDetail>(`/admin/orders/${orderId}`);
+    setDetail(next);
+  };
+
+  const runShipping = async (key: string, fn: () => Promise<void>) => {
+    setBusy(key);
+    setError('');
+    setNotice('');
+    try {
+      await fn();
+      await reloadDetail();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Shipping action failed');
+    } finally {
+      setBusy('');
+    }
+  };
+
+  if (error && !detail && !rows.length) return <Notice variant="error">{error}</Notice>;
 
   // ---------------------------------------------------------------------------
   // 1. Detailed Order Receipt / Invoice View
@@ -153,6 +189,8 @@ export const OrdersModule: React.FC<{
             )}
           </div>
         </div>
+        {error && <Notice variant="error">{error}</Notice>}
+        {notice && <Notice variant="success">{notice}</Notice>}
 
         <div className="grid lg:grid-cols-12 gap-6 items-start">
           {/* Main Line Items and Details */}
@@ -281,6 +319,114 @@ export const OrdersModule: React.FC<{
                 ))
               ) : (
                 <p className="text-xs text-[var(--text-muted)]">Pending gateway settlement.</p>
+              )}
+            </div>
+
+            {/* Live Shipping */}
+            <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] p-5 shadow-xs space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+                <Truck className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
+                Shipping & Tracking
+              </h3>
+              <TrackingTimeline tracking={detail.tracking} compact />
+              <div className="flex flex-col gap-2">
+                <SoftButton
+                  disabled={Boolean(busy)}
+                  onClick={() =>
+                    runShipping('rates', async () => {
+                      const result = await api<RateQuoteResult>(`/admin/orders/${detail.order.id}/shipping/rates`, {
+                        method: 'POST',
+                        body: '{}',
+                      });
+                      setRates(result);
+                      setNotice(`Loaded ${result.couriers.length} courier option(s).`);
+                    })
+                  }
+                >
+                  Compare courier rates
+                </SoftButton>
+                <SoftButton
+                  disabled={Boolean(busy)}
+                  onClick={() =>
+                    runShipping('create', async () => {
+                      const courierId = rates?.couriers[0]?.courierId;
+                      await api(`/admin/orders/${detail.order.id}/shipping/create`, {
+                        method: 'POST',
+                        body: JSON.stringify(courierId ? { courierId } : {}),
+                      });
+                      setNotice('Shipment created.');
+                    })
+                  }
+                >
+                  Create shipment
+                </SoftButton>
+                {detail.shipment?.id && (
+                  <>
+                    <SoftButton
+                      icon={RefreshCw}
+                      disabled={Boolean(busy)}
+                      onClick={() =>
+                        runShipping('sync', async () => {
+                          await api(`/admin/shipments/${detail.shipment!.id}/sync`, { method: 'POST', body: '{}' });
+                          setNotice('Tracking refreshed.');
+                        })
+                      }
+                    >
+                      Refresh tracking
+                    </SoftButton>
+                    <SoftButton
+                      disabled={Boolean(busy)}
+                      onClick={() =>
+                        runShipping('awb', async () => {
+                          await api(`/admin/shipments/${detail.shipment!.id}/assign-awb`, {
+                            method: 'POST',
+                            body: JSON.stringify({
+                              courierId: rates?.couriers[0]?.courierId,
+                            }),
+                          });
+                          setNotice('AWB assignment requested.');
+                        })
+                      }
+                    >
+                      Assign AWB
+                    </SoftButton>
+                    <SoftButton
+                      disabled={Boolean(busy)}
+                      onClick={() =>
+                        runShipping('pickup', async () => {
+                          await api(`/admin/shipments/${detail.shipment!.id}/pickup`, { method: 'POST', body: '{}' });
+                          setNotice('Pickup scheduled.');
+                        })
+                      }
+                    >
+                      Schedule pickup
+                    </SoftButton>
+                    <SoftButton
+                      disabled={Boolean(busy)}
+                      onClick={() =>
+                        runShipping('label', async () => {
+                          await api(`/admin/shipments/${detail.shipment!.id}/label`, { method: 'POST', body: '{}' });
+                          setNotice('Label requested.');
+                        })
+                      }
+                    >
+                      Retrieve label
+                    </SoftButton>
+                  </>
+                )}
+              </div>
+              {rates && rates.couriers.length > 0 && (
+                <ul className="space-y-1 text-[11px] text-[var(--text-secondary)] border-t border-[var(--border-subtle)] pt-2">
+                  {rates.couriers.slice(0, 8).map((courier) => (
+                    <li key={courier.courierId} className="flex justify-between gap-2">
+                      <span>{courier.courierName}</span>
+                      <span>
+                        {rupees(courier.ratePaise)}
+                        {courier.etdDays != null ? ` · ${courier.etdDays}d` : ''}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
           </div>

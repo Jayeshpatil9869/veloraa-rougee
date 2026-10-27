@@ -12,6 +12,10 @@ export interface StoreVariant {
   sku?: string;
   image?: string;
   hexColor?: string;
+  weightGrams?: number;
+  lengthMm?: number;
+  widthMm?: number;
+  heightMm?: number;
   images: { id: string; src: string; alt: string }[];
 }
 
@@ -58,6 +62,10 @@ interface VariantEmbed {
   stock_on_hand: number;
   stock_reserved: number;
   hex_color: string | null;
+  weight_grams: number | null;
+  length_mm: number | null;
+  width_mm: number | null;
+  height_mm: number | null;
   active: boolean;
   is_default: boolean;
   sort_order: number;
@@ -106,7 +114,7 @@ export async function loadProducts(options: {
       ingredients, benefits, option_name, featured, bestseller, new_arrival, status,
       brand, product_type, updated_at,
       categories ( id, slug, name, legacy_id ),
-      product_variants ( id, product_id, legacy_variant_id, name, sku, price_paise, compare_at_paise, stock_on_hand, stock_reserved, hex_color, active, is_default, sort_order, product_variant_images ( id, url, alt, sort_order ) ),
+      product_variants ( id, product_id, legacy_variant_id, name, sku, price_paise, compare_at_paise, stock_on_hand, stock_reserved, hex_color, weight_grams, length_mm, width_mm, height_mm, active, is_default, sort_order, product_variant_images ( id, url, alt, sort_order ) ),
       product_images ( id, url, alt, width, height, sort_order ),
       product_tags ( tag ),
       reviews ( rating, status )
@@ -158,6 +166,10 @@ export async function loadProducts(options: {
         sku: variant.sku ?? undefined,
         image: gallery[0]?.src,
         hexColor: variant.hex_color ?? undefined,
+        weightGrams: variant.weight_grams ?? undefined,
+        lengthMm: variant.length_mm ?? undefined,
+        widthMm: variant.width_mm ?? undefined,
+        heightMm: variant.height_mm ?? undefined,
         images: gallery,
       };
     });

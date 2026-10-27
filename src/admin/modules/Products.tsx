@@ -42,7 +42,18 @@ interface Shade {
   name: string;
   price: string;
   stock: string;
+  weightGrams: string;
+  lengthMm: string;
+  widthMm: string;
+  heightMm: string;
 }
+
+const DEFAULT_SHADE_PACKAGE = {
+  weightGrams: '250',
+  lengthMm: '150',
+  widthMm: '100',
+  heightMm: '50',
+} as const;
 
 const MAX_IMAGES = 6;
 
@@ -280,12 +291,16 @@ const ProductForm: React.FC<{
           name: variant.name,
           price: String(variant.price),
           stock: String(variant.stock ?? 25),
+          weightGrams: String(variant.weightGrams ?? 250),
+          lengthMm: String(variant.lengthMm ?? 150),
+          widthMm: String(variant.widthMm ?? 100),
+          heightMm: String(variant.heightMm ?? 50),
         }))
       : [
-          { name: 'Cashmere Rose', price: '80', stock: '25' },
-          { name: 'Cinnamon', price: '80', stock: '25' },
-          { name: 'Hazelnut', price: '80', stock: '25' },
-          { name: 'Pink Nude', price: '80', stock: '25' },
+          { name: 'Cashmere Rose', price: '80', stock: '25', ...DEFAULT_SHADE_PACKAGE },
+          { name: 'Cinnamon', price: '80', stock: '25', ...DEFAULT_SHADE_PACKAGE },
+          { name: 'Hazelnut', price: '80', stock: '25', ...DEFAULT_SHADE_PACKAGE },
+          { name: 'Pink Nude', price: '80', stock: '25', ...DEFAULT_SHADE_PACKAGE },
         ]
   );
 
@@ -377,6 +392,7 @@ const ProductForm: React.FC<{
         name: newShadeName.trim(),
         price: newShadePrice || '80',
         stock: newShadeStock || '25',
+        ...DEFAULT_SHADE_PACKAGE,
       },
     ]);
     setNewShadeName('');
@@ -412,11 +428,19 @@ const ProductForm: React.FC<{
       variants: shades.map((shade, index) => {
         const parsedPrice = Number(shade.price);
         const parsedStock = Number(shade.stock);
+        const parsedWeight = Number(shade.weightGrams);
+        const parsedLength = Number(shade.lengthMm);
+        const parsedWidth = Number(shade.widthMm);
+        const parsedHeight = Number(shade.heightMm);
         return {
           id: shade.databaseId || undefined,
           name: (shade.name || 'Default Shade').trim() || 'Default Shade',
           price: Number.isFinite(parsedPrice) && parsedPrice >= 0 ? parsedPrice : 0,
           stock: Number.isFinite(parsedStock) && parsedStock >= 0 ? Math.floor(parsedStock) : 0,
+          weightGrams: Number.isFinite(parsedWeight) && parsedWeight > 0 ? Math.floor(parsedWeight) : 250,
+          lengthMm: Number.isFinite(parsedLength) && parsedLength > 0 ? Math.floor(parsedLength) : 150,
+          widthMm: Number.isFinite(parsedWidth) && parsedWidth > 0 ? Math.floor(parsedWidth) : 100,
+          heightMm: Number.isFinite(parsedHeight) && parsedHeight > 0 ? Math.floor(parsedHeight) : 50,
           active: true,
           isDefault: index === 0,
           sortOrder: index,
@@ -804,7 +828,7 @@ const ProductForm: React.FC<{
                       if (shades.some((s) => s.name === preset.name)) return;
                       setShades((prev) => [
                         ...prev,
-                        { name: preset.name, price: '80', stock: '25' },
+                        { name: preset.name, price: '80', stock: '25', ...DEFAULT_SHADE_PACKAGE },
                       ]);
                     }}
                     className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--card-bg)] hover:bg-[var(--bg-secondary)] border border-[var(--border-subtle)] hover:border-[var(--accent-primary)] text-[var(--text-secondary)] text-[11px] font-semibold rounded-[0.25rem] transition-colors cursor-pointer shadow-2xs"
@@ -817,41 +841,41 @@ const ProductForm: React.FC<{
 
               {/* In-Place Editable Shades Table */}
               <div className="border border-[var(--border-subtle)] rounded-[0.35rem] bg-[var(--card-bg)] overflow-hidden shadow-2xs">
-                {/* Table Header */}
                 <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-[var(--bg-secondary)] border-b border-[var(--border-subtle)] text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                  <div className="col-span-5 sm:col-span-5">Shade Title</div>
-                  <div className="col-span-3 sm:col-span-3">Price (₹)</div>
-                  <div className="col-span-3 sm:col-span-3">Stock Qty</div>
-                  <div className="col-span-1 sm:col-span-1 text-right">Action</div>
+                  <div className="col-span-3">Shade</div>
+                  <div className="col-span-2">Price</div>
+                  <div className="col-span-1">Stock</div>
+                  <div className="col-span-1">Wt g</div>
+                  <div className="col-span-4">L × W × H mm</div>
+                  <div className="col-span-1 text-right">Del</div>
                 </div>
 
-                {/* Table Rows */}
-                <div className="divide-y divide-[var(--border-subtle)]/60 max-h-[170px] overflow-y-auto modal-luxury-scroll">
+                <div className="divide-y divide-[var(--border-subtle)]/60 max-h-[220px] overflow-y-auto modal-luxury-scroll">
                   {shades.map((shade, index) => {
                     const stockNum = Number(shade.stock) || 0;
+                    const updateShade = (patch: Partial<Shade>) => {
+                      setShades((prev) => prev.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+                    };
+                    const intField = (key: keyof Shade, min = 1) => (raw: string) => {
+                      const val = raw === '' ? '' : String(Math.max(min, Math.floor(Number(raw) || min)));
+                      updateShade({ [key]: raw === '' ? '' : val } as Partial<Shade>);
+                    };
                     return (
                       <div
                         key={index}
                         className="grid grid-cols-12 gap-2 px-3 py-2 items-center hover:bg-[var(--bg-secondary)]/50 transition-colors"
                       >
-                        {/* 1. Shade Title & Swatch */}
-                        <div className="col-span-5 sm:col-span-5 flex items-center gap-2 min-w-0">
+                        <div className="col-span-3 flex items-center gap-2 min-w-0">
                           <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-[var(--accent-secondary)] to-[var(--accent-primary)] shrink-0 shadow-2xs border border-[var(--border-subtle)]" />
                           <input
                             className="w-full bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1.5 py-1 text-xs font-bold text-[var(--text-primary)] focus:outline-none transition-all truncate"
                             value={shade.name}
                             placeholder="Shade Name"
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setShades((prev) =>
-                                prev.map((item, i) => (i === index ? { ...item, name: val } : item))
-                              );
-                            }}
+                            onChange={(e) => updateShade({ name: e.target.value })}
                           />
                         </div>
 
-                        {/* 2. Price Input */}
-                        <div className="col-span-3 sm:col-span-3 flex items-center">
+                        <div className="col-span-2 flex items-center">
                           <span className="text-xs text-[var(--text-muted)] font-bold mr-1">₹</span>
                           <input
                             type="number"
@@ -863,45 +887,70 @@ const ProductForm: React.FC<{
                             onChange={(e) => {
                               const raw = e.target.value;
                               const val = raw === '' ? '' : String(Math.max(0, Number(raw) || 0));
-                              setShades((prev) =>
-                                prev.map((item, i) => (i === index ? { ...item, price: raw === '' ? '' : val } : item))
-                              );
+                              updateShade({ price: raw === '' ? '' : val });
                             }}
                           />
                         </div>
 
-                        {/* 3. Stock Qty Input + Status indicator */}
-                        <div className="col-span-3 sm:col-span-3 flex items-center gap-1.5">
+                        <div className="col-span-1 flex items-center gap-1">
                           <input
                             type="number"
                             min={0}
                             step={1}
-                            className="w-14 bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1.5 py-1 text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none transition-all"
+                            className="w-full bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1.5 py-1 text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none transition-all"
                             value={shade.stock}
                             placeholder="25"
-                            onChange={(e) => {
-                              const raw = e.target.value;
-                              const val = raw === '' ? '' : String(Math.max(0, Math.floor(Number(raw) || 0)));
-                              setShades((prev) =>
-                                prev.map((item, i) => (i === index ? { ...item, stock: raw === '' ? '' : val } : item))
-                              );
-                            }}
+                            onChange={(e) => intField('stock', 0)(e.target.value)}
+                            title={stockNum > 10 ? 'In stock' : stockNum > 0 ? 'Low stock' : 'Out of stock'}
                           />
-                          <span
-                            className={`hidden sm:inline-block text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                              stockNum > 10
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                                : stockNum > 0
-                                  ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                                  : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
-                            }`}
-                          >
-                            {stockNum > 10 ? 'In Stock' : stockNum > 0 ? 'Low' : 'Out'}
-                          </span>
                         </div>
 
-                        {/* 4. Delete Action */}
-                        <div className="col-span-1 sm:col-span-1 text-right">
+                        <div className="col-span-1">
+                          <input
+                            type="number"
+                            min={1}
+                            step={1}
+                            title="Weight (grams)"
+                            className="w-full bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1.5 py-1 text-[10px] font-mono font-bold text-[var(--text-primary)] focus:outline-none transition-all"
+                            value={shade.weightGrams}
+                            placeholder="g"
+                            onChange={(e) => intField('weightGrams')(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="col-span-4 flex items-center gap-1">
+                          <input
+                            type="number"
+                            min={1}
+                            title="Length mm"
+                            className="w-full bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1 py-1 text-[10px] font-mono font-bold text-[var(--text-primary)] focus:outline-none"
+                            value={shade.lengthMm}
+                            placeholder="L"
+                            onChange={(e) => intField('lengthMm')(e.target.value)}
+                          />
+                          <span className="text-[var(--text-muted)] text-[10px]">×</span>
+                          <input
+                            type="number"
+                            min={1}
+                            title="Width mm"
+                            className="w-full bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1 py-1 text-[10px] font-mono font-bold text-[var(--text-primary)] focus:outline-none"
+                            value={shade.widthMm}
+                            placeholder="W"
+                            onChange={(e) => intField('widthMm')(e.target.value)}
+                          />
+                          <span className="text-[var(--text-muted)] text-[10px]">×</span>
+                          <input
+                            type="number"
+                            min={1}
+                            title="Height mm"
+                            className="w-full bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1 py-1 text-[10px] font-mono font-bold text-[var(--text-primary)] focus:outline-none"
+                            value={shade.heightMm}
+                            placeholder="H"
+                            onChange={(e) => intField('heightMm')(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="col-span-1 text-right">
                           {shades.length > 1 && (
                             <button
                               type="button"
@@ -920,7 +969,6 @@ const ProductForm: React.FC<{
                   })}
                 </div>
 
-                {/* Add New Custom Shade Inline Footer */}
                 <div className="p-2 bg-[var(--bg-secondary)] border-t border-[var(--border-subtle)] flex items-center justify-between gap-2">
                   <button
                     type="button"
@@ -928,7 +976,7 @@ const ProductForm: React.FC<{
                       const nextNum = shades.length + 1;
                       setShades((prev) => [
                         ...prev,
-                        { name: `Shade 0${nextNum}`, price: '80', stock: '25' },
+                        { name: `Shade 0${nextNum}`, price: '80', stock: '25', ...DEFAULT_SHADE_PACKAGE },
                       ]);
                     }}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--card-bg)] border border-[var(--border-subtle)] hover:border-[var(--accent-primary)] hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] font-bold text-xs rounded-[0.3rem] transition-colors cursor-pointer shadow-2xs"
@@ -938,7 +986,7 @@ const ProductForm: React.FC<{
                   </button>
 
                   <span className="text-[10px] text-[var(--text-muted)] italic">
-                    Click any value to edit directly
+                    Weight & dims used for Shiprocket rates
                   </span>
                 </div>
               </div>

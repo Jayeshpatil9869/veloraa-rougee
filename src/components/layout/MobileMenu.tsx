@@ -145,6 +145,14 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
               </button>
 
               <button
+                onClick={() => handleNav('/en/orders')}
+                className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[var(--text-primary)] hover:text-[var(--accent-gold)] flex items-center justify-between cursor-pointer"
+              >
+                <span>Orders</span>
+                <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
+              </button>
+
+              <button
                 onClick={() => handleNav('/en/wishlist')}
                 className="mobile-menu-item w-full text-left py-2 text-base font-bold uppercase tracking-wider text-[var(--text-primary)] hover:text-[var(--accent-gold)] flex items-center justify-between cursor-pointer"
               >
@@ -156,7 +164,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavig
                 onClick={() => handleNav('/en/account')}
                 className="mobile-menu-item w-full text-left py-2.5 px-3 mt-2 bg-[var(--bg-secondary)] rounded-xl text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] hover:opacity-90 flex items-center justify-between border border-[var(--border-subtle)] cursor-pointer"
               >
-                <span>Sign In / Register</span>
+                <span>My Account</span>
                 <ChevronRight className="w-4 h-4 text-[var(--accent-gold)]" />
               </button>
             </div>

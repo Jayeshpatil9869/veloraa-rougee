@@ -54,36 +54,6 @@ interface OrderRow {
   created_at: string;
 }
 
-interface OrderDetail {
-  order: {
-    order_number: string;
-    status: string;
-    subtotal_paise: number;
-    discount_paise: number;
-    shipping_paise: number;
-    total_paise: number;
-  };
-  items: {
-    product_name: string;
-    variant_name: string;
-    quantity: number;
-    unit_price_paise: number;
-  }[];
-  address: {
-    full_name: string;
-    phone: string;
-    line1: string;
-    city: string;
-    postal_code: string;
-  } | null;
-  payments: {
-    status: string;
-    amount_paise: number;
-    gateway: string;
-    created_at: string;
-  }[];
-}
-
 interface PaymentRow {
   id: string;
   order_number: string;
@@ -112,7 +82,6 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate }) => {
   const [addresses, setAddresses] = useState<AddressRow[]>([]);
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [payments, setPayments] = useState<PaymentRow[]>([]);
-  const [detail, setDetail] = useState<OrderDetail | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
   const [isAddingAddress, setIsAddingAddress] = useState(false);
@@ -159,14 +128,9 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate }) => {
       setActiveTab(tab);
     }
     void load()
-      .then(async () => {
+      .then(() => {
         if (orderNumber) {
-          setActiveTab('orders');
-          try {
-            setDetail(await api<OrderDetail>(`/account/orders/${orderNumber}`));
-          } catch {
-            // order detail is optional if lookup fails
-          }
+          onNavigate(`/en/orders/${encodeURIComponent(orderNumber)}`);
         }
       })
       .catch((reason) =>
@@ -221,12 +185,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate }) => {
     }
   };
 
-  const openOrder = async (orderNumber: string) => {
-    try {
-      setDetail(await api<OrderDetail>(`/account/orders/${orderNumber}`));
-    } catch {
-      setError('Could not fetch order invoice details.');
-    }
+  const openOrder = (orderNumber: string) => {
+    onNavigate(`/en/orders/${encodeURIComponent(orderNumber)}`);
   };
 
   const userInitial = (customer?.fullName || customer?.email || 'V')
@@ -536,7 +496,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate }) => {
             {/* --------------------------------------------------------------- */}
             {activeTab === 'orders' && (
               <section className="blackish-gold-card bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-[0.3rem] shadow-xs overflow-hidden">
-                <header className="px-6 py-4.5 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--bg-secondary)]/70 to-[var(--card-bg)] flex items-center justify-between">
+                <header className="px-6 py-4.5 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--bg-secondary)]/70 to-[var(--card-bg)] flex items-center justify-between gap-3">
                   <div>
                     <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
                       <Package className="w-4 h-4 text-[var(--accent-primary)]" />
@@ -546,9 +506,13 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate }) => {
                       Track fulfillment, review itemized receipts, and download order invoices.
                     </p>
                   </div>
-                  <span className="text-xs font-bold text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-2.5 py-1 rounded-[0.3rem] border border-[var(--border-subtle)]">
-                    {orders.length} {orders.length === 1 ? 'Order' : 'Orders'}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('/en/orders')}
+                    className="text-xs font-bold uppercase tracking-wider text-[var(--accent-primary)] hover:underline cursor-pointer shrink-0"
+                  >
+                    Full history →
+                  </button>
                 </header>
 
                 <div className="p-6">
@@ -577,7 +541,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate }) => {
                         <div
                           key={order.order_number}
                           className="border border-[var(--border-subtle)] rounded-[0.3rem] p-4 bg-[var(--bg-secondary)]/40 hover:bg-[var(--bg-secondary)]/80 hover:border-[var(--accent-primary)] transition-all cursor-pointer"
-                          onClick={() => void openOrder(order.order_number)}
+                          onClick={() => openOrder(order.order_number)}
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
@@ -599,79 +563,13 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate }) => {
                                 {money(order.total_paise)}
                               </span>
                               <span className="text-xs font-bold text-[var(--accent-primary)] hover:underline inline-flex items-center gap-1">
-                                <span>View Receipt</span>
+                                <span>View Details</span>
                                 <ChevronRight className="w-3.5 h-3.5" />
                               </span>
                             </div>
                           </div>
                         </div>
                       ))}
-                    </div>
-                  )}
-
-                  {/* Order Detail Modal / Accordion */}
-                  {detail && (
-                    <div className="mt-6 border border-[var(--border-subtle)] rounded-[0.3rem] p-5 bg-[var(--bg-secondary)]/70 space-y-4">
-                      <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
-                        <div>
-                          <p className="text-xs font-bold uppercase tracking-wider text-[var(--accent-primary)]">
-                            Order Breakdown
-                          </p>
-                          <h4 className="text-sm font-bold text-[var(--text-primary)] font-mono">
-                            {detail.order.order_number}
-                          </h4>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setDetail(null)}
-                          className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
-                        >
-                          Close Details ✕
-                        </button>
-                      </div>
-
-                      {/* Items */}
-                      <div className="space-y-2">
-                        {detail.items.map((item, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between text-xs py-1.5 border-b border-[var(--border-subtle)]/40 text-[var(--text-secondary)]"
-                          >
-                            <span>
-                              {item.product_name} ({item.variant_name}) × {item.quantity}
-                            </span>
-                            <span className="font-bold text-[var(--text-primary)]">
-                              {money(item.unit_price_paise * item.quantity)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Totals */}
-                      <div className="pt-2 flex flex-col gap-1 text-xs">
-                        <div className="flex justify-between text-[var(--text-muted)]">
-                          <span>Subtotal</span>
-                          <span>{money(detail.order.subtotal_paise)}</span>
-                        </div>
-                        <div className="flex justify-between text-[var(--text-muted)]">
-                          <span>Shipping</span>
-                          <span>{money(detail.order.shipping_paise)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm font-bold text-[var(--text-primary)] pt-1 border-t border-[var(--border-subtle)]">
-                          <span>Total Paid</span>
-                          <span>{money(detail.order.total_paise)}</span>
-                        </div>
-                      </div>
-
-                      {/* Address */}
-                      {detail.address && (
-                        <div className="text-xs text-[var(--text-muted)] pt-2 border-t border-[var(--border-subtle)]">
-                          <span className="font-bold text-[var(--text-primary)] block mb-0.5">
-                            Delivered to:
-                          </span>
-                          {detail.address.full_name}, {detail.address.line1}, {detail.address.city} {detail.address.postal_code}
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>

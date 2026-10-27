@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ShoppingBag, User, Menu, ChevronDown, Heart, LogIn, LogOut, UserPlus } from 'lucide-react';
+import { ShoppingBag, User, Menu, ChevronDown, Heart, LogIn, LogOut, UserPlus, Package, MapPin } from 'lucide-react';
 import { VeloraaRougeeLogo } from '../brand/VeloraaRougeeLogo';
 import { TextRoll } from '../ui/TextRoll';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -364,8 +364,8 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
               onClick={() => handleUserAction(customer ? '/en/account' : '/en/login')}
               aria-label="Customer account menu"
               aria-expanded={userMenuOpen}
-              className={`flex items-center p-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer ${
-                userMenuOpen || currentPath.includes('/account') || currentPath.includes('/login') || currentPath.includes('/signup')
+              className={`flex items-center gap-1.5 px-2 py-1.5 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] cursor-pointer ${
+                userMenuOpen || currentPath.includes('/account') || currentPath.includes('/orders') || currentPath.includes('/login') || currentPath.includes('/signup')
                   ? 'text-[var(--accent-primary)]'
                   : 'text-[var(--text-primary)] hover:text-[var(--accent-primary)]'
               }`}
@@ -378,6 +378,14 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                 />
               ) : (
                 <User className="w-5 h-5 lg:w-[22px] lg:h-[22px]" />
+              )}
+              {customer && (
+                <>
+                  <span className="hidden md:inline text-sm font-medium max-w-[7rem] truncate">
+                    {(customer.fullName || customer.email).split(' ')[0].split('@')[0]}
+                  </span>
+                  <ChevronDown className={`hidden md:block w-3.5 h-3.5 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                </>
               )}
             </button>
 
@@ -400,19 +408,49 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                       <button
                         type="button"
                         onClick={() => handleUserAction('/en/account', false)}
-                        className="w-full text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
+                        className="w-full text-left px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
                       >
-                        <User className="w-4 h-4 text-[var(--accent-primary)]" />
-                        <span>My Account</span>
+                        <User className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
+                        <span>My Profile</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleUserAction('/en/orders', false)}
+                        className="w-full text-left px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
+                      >
+                        <Package className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
+                        <span>Orders</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleUserAction('/en/account?tab=addresses', false)}
+                        className="w-full text-left px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
+                      >
+                        <MapPin className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
+                        <span>Addresses</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => handleUserAction('/en/wishlist', false)}
-                        className="w-full text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
+                        className="w-full text-left px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
                       >
-                        <Heart className="w-4 h-4 text-[var(--accent-primary)]" />
-                        <span>My Wishlist</span>
+                        <Heart className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
+                        <span>Wishlist</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          onOpenCart();
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--accent-primary)] flex items-center gap-3 transition-colors cursor-pointer"
+                      >
+                        <ShoppingBag className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
+                        <span>Cart{cartCount > 0 ? ` (${cartCount})` : ''}</span>
                       </button>
                     </div>
 
@@ -420,10 +458,10 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-rose-500 hover:bg-rose-500/10 flex items-center gap-3 transition-colors cursor-pointer"
+                        className="w-full text-left px-4 py-2.5 text-sm text-rose-500 hover:bg-rose-500/10 flex items-center gap-3 transition-colors cursor-pointer"
                       >
-                        <LogOut className="w-4 h-4 text-rose-500" />
-                        <span>Sign Out</span>
+                        <LogOut className="w-4 h-4 text-rose-500 shrink-0" />
+                        <span>Logout</span>
                       </button>
                     </div>
                   </>

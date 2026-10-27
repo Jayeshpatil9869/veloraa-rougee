@@ -25,6 +25,14 @@ const KNOWN = new Set([
   'email_taken',
   'not_found',
   'product_has_orders',
+  'payment_not_paid',
+  'order_not_shippable',
+  'pickup_postcode_missing',
+  'pickup_location_missing',
+  'shipment_missing_provider_id',
+  'tracking_unavailable',
+  'webhook_not_configured',
+  'shiprocket_not_configured',
 ]);
 
 export function httpError(error: unknown) {

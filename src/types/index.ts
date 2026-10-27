@@ -22,6 +22,10 @@ export interface ProductVariant {
   sku?: string;
   image?: string;
   hexColor?: string;
+  weightGrams?: number;
+  lengthMm?: number;
+  widthMm?: number;
+  heightMm?: number;
 }
 
 export type CategoryId = 'face' | 'lips' | 'eyes' | 'brows' | 'bundles' | 'best-sellers';

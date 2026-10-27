@@ -24,6 +24,8 @@ import { AuthPage } from './pages/AuthPage';
 import { CheckoutPage, CheckoutReturnPage } from './pages/CheckoutPage';
 import { AccountPage, AuthCallbackPage, ResetPasswordPage } from './pages/AccountPage';
 import { WishlistPage } from './pages/WishlistPage';
+import { OrdersPage } from './pages/OrdersPage';
+import { OrderDetailPage } from './pages/OrderDetailPage';
 // Admin is lazy-loaded — never included in the initial storefront bundle
 const AdminApp = lazy(() => import('./admin/AdminApp').then(m => ({ default: m.AdminApp })));
 
@@ -160,7 +162,10 @@ export default function App() {
     const handlePopState = () => {
       const isAdmin = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
       const path = window.location.pathname || (isAdmin ? '/' : '/en');
-      setCurrentPath(path);
+      const search = window.location.search || '';
+      const next =
+        !isAdmin && path.startsWith('/en/account') && search ? `${path}${search}` : path;
+      setCurrentPath(next);
       if (!isAdmin) {
         parsePath(path);
       }
@@ -173,13 +178,18 @@ export default function App() {
 
   const navigate = (path: string, shouldScroll: boolean = true) => {
     const isAdmin = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
-    const target = (!isAdmin && path === '/') ? '/en' : path;
-    if (window.location.pathname !== target) {
-      window.history.pushState({}, '', target);
+    const raw = (!isAdmin && path === '/') ? '/en' : path;
+    const [pathnamePart, searchPart] = raw.split('?');
+    const pathname = pathnamePart || '/en';
+    const nextUrl = searchPart ? `${pathname}?${searchPart}` : pathname;
+    const currentFull = `${window.location.pathname}${window.location.search}`;
+    if (currentFull !== nextUrl) {
+      window.history.pushState({}, '', nextUrl);
     }
-    setCurrentPath(target);
+    // Keep query on account routes so tab deep-links remount correctly.
+    setCurrentPath(pathname.startsWith('/en/account') && searchPart ? nextUrl : pathname);
     if (!isAdmin) {
-      parsePath(target);
+      parsePath(pathname);
     }
     if (shouldScroll) {
       scrollToTop();
@@ -214,7 +224,14 @@ export default function App() {
     void catalogTick;
     if (currentPath === '/en/checkout') return <CheckoutPage onNavigate={navigate} />;
     if (currentPath.startsWith('/en/checkout/return')) return <CheckoutReturnPage />;
-    if (currentPath === '/en/account') return <AccountPage onNavigate={navigate} />;
+    if (currentPath === '/en/account' || currentPath.startsWith('/en/account?')) {
+      return <AccountPage key={currentPath} onNavigate={navigate} />;
+    }
+    if (currentPath === '/en/orders') return <OrdersPage onNavigate={navigate} />;
+    if (currentPath.startsWith('/en/orders/')) {
+      const orderNumber = decodeURIComponent(currentPath.replace('/en/orders/', '').split('/')[0] || '');
+      if (orderNumber) return <OrderDetailPage orderNumber={orderNumber} onNavigate={navigate} />;
+    }
     if (currentPath === '/en/wishlist') return <WishlistPage onNavigate={navigate} />;
     if (currentPath === '/en/auth/callback') return <AuthCallbackPage onNavigate={navigate} />;
     if (currentPath === '/en/reset-password') return <ResetPasswordPage onNavigate={navigate} />;

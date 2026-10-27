@@ -27,6 +27,9 @@ const variantSchema = z.object({
   sortOrder: z.coerce.number().int().default(0),
   barcode: z.string().optional(),
   weightGrams: z.coerce.number().int().optional(),
+  lengthMm: z.coerce.number().int().optional(),
+  widthMm: z.coerce.number().int().optional(),
+  heightMm: z.coerce.number().int().optional(),
   images: z.array(imageSchema).default([]),
 });
 
@@ -377,6 +380,9 @@ async function saveImagesAndVariants(productId: string, body: z.infer<typeof pro
       sort_order: variant.sortOrder,
       barcode: variant.barcode ?? null,
       weight_grams: variant.weightGrams ?? null,
+      length_mm: variant.lengthMm ?? null,
+      width_mm: variant.widthMm ?? null,
+      height_mm: variant.heightMm ?? null,
     };
     if (variantId) {
       const current = await one<{ stock_on_hand: number }>(db().from('product_variants').select('stock_on_hand').eq('id', variantId).maybeSingle());
@@ -795,8 +801,13 @@ export async function registerContent(app: FastifyInstance) {
       shippingFlatPaise: z.number().int().min(0),
       announcements: z.array(z.string()),
       claimTicker: z.array(z.string()),
+      shiprocketPickupPostcode: z.string().optional(),
+      defaultPackageWeightGrams: z.number().int().min(1).optional(),
+      defaultPackageLengthMm: z.number().int().min(1).optional(),
+      defaultPackageWidthMm: z.number().int().min(1).optional(),
+      defaultPackageHeightMm: z.number().int().min(1).optional(),
     }).parse(request.body);
-    await ok(db().from('site_settings').update({
+    const settingsUpdate: Record<string, unknown> = {
       brand_name: body.brandName,
       support_email: body.supportEmail,
       gst: body.gst ?? null,
@@ -804,7 +815,15 @@ export async function registerContent(app: FastifyInstance) {
       shipping_flat_paise: body.shippingFlatPaise,
       announcements: body.announcements,
       claim_ticker: body.claimTicker,
-    }).eq('id', 1));
+    };
+    if (body.shiprocketPickupPostcode !== undefined) {
+      settingsUpdate.shiprocket_pickup_postcode = body.shiprocketPickupPostcode || null;
+    }
+    if (body.defaultPackageWeightGrams != null) settingsUpdate.default_package_weight_grams = body.defaultPackageWeightGrams;
+    if (body.defaultPackageLengthMm != null) settingsUpdate.default_package_length_mm = body.defaultPackageLengthMm;
+    if (body.defaultPackageWidthMm != null) settingsUpdate.default_package_width_mm = body.defaultPackageWidthMm;
+    if (body.defaultPackageHeightMm != null) settingsUpdate.default_package_height_mm = body.defaultPackageHeightMm;
+    await ok(db().from('site_settings').update(settingsUpdate).eq('id', 1));
     await audit({
       actorType: 'admin', actorId: admin.id, actorLabel: admin.email, action: 'settings.updated',
       entityType: 'site_settings', entityId: '1', summary: 'Updated website settings', ip: clientIp(request),

@@ -2475,18 +2475,18 @@ var require_hooks = __commonJS({
       }
     }
     function hookRunnerGenerator(iterator) {
-      return function hookRunner(functions, request, reply, cb) {
+      return function hookRunner(functions, request2, reply, cb) {
         let i = 0;
         function next(err) {
           if (err || i === functions.length) {
-            cb(err, request, reply);
+            cb(err, request2, reply);
             return;
           }
           let result;
           try {
-            result = iterator(functions[i++], request, reply, next);
+            result = iterator(functions[i++], request2, reply, next);
           } catch (error) {
-            cb(error, request, reply);
+            cb(error, request2, reply);
             return;
           }
           if (result && typeof result.then === "function") {
@@ -2500,38 +2500,38 @@ var require_hooks = __commonJS({
           if (!err) {
             err = new FST_ERR_SEND_UNDEFINED_ERR();
           }
-          cb(err, request, reply);
+          cb(err, request2, reply);
         }
         next();
       };
     }
-    function onResponseHookIterator(fn, request, reply, next) {
-      return fn(request, reply, next);
+    function onResponseHookIterator(fn, request2, reply, next) {
+      return fn(request2, reply, next);
     }
     var onResponseHookRunner = hookRunnerGenerator(onResponseHookIterator);
     var preValidationHookRunner = hookRunnerGenerator(hookIterator);
     var preHandlerHookRunner = hookRunnerGenerator(hookIterator);
     var onTimeoutHookRunner = hookRunnerGenerator(hookIterator);
     var onRequestHookRunner = hookRunnerGenerator(hookIterator);
-    function onSendHookRunner(functions, request, reply, payload, cb) {
+    function onSendHookRunner(functions, request2, reply, payload, cb) {
       let i = 0;
       function next(err, newPayload) {
         if (err) {
-          cb(err, request, reply, payload);
+          cb(err, request2, reply, payload);
           return;
         }
         if (newPayload !== void 0) {
           payload = newPayload;
         }
         if (i === functions.length) {
-          cb(null, request, reply, payload);
+          cb(null, request2, reply, payload);
           return;
         }
         let result;
         try {
-          result = functions[i++](request, reply, payload, next);
+          result = functions[i++](request2, reply, payload, next);
         } catch (error) {
-          cb(error, request, reply);
+          cb(error, request2, reply);
           return;
         }
         if (result && typeof result.then === "function") {
@@ -2542,36 +2542,36 @@ var require_hooks = __commonJS({
         try {
           next(null, newPayload);
         } catch (err) {
-          cb(err, request, reply, payload);
+          cb(err, request2, reply, payload);
         }
       }
       function handleReject(err) {
         if (!err) {
           err = new FST_ERR_SEND_UNDEFINED_ERR();
         }
-        cb(err, request, reply, payload);
+        cb(err, request2, reply, payload);
       }
       next();
     }
     var preSerializationHookRunner = onSendHookRunner;
-    function preParsingHookRunner(functions, request, reply, cb) {
+    function preParsingHookRunner(functions, request2, reply, cb) {
       let i = 0;
       function next(err, newPayload) {
         if (reply.sent) {
           return;
         }
         if (newPayload !== void 0) {
-          request[kRequestPayloadStream] = newPayload;
+          request2[kRequestPayloadStream] = newPayload;
         }
         if (err || i === functions.length) {
-          cb(err, request, reply);
+          cb(err, request2, reply);
           return;
         }
         let result;
         try {
-          result = functions[i++](request, reply, request[kRequestPayloadStream], next);
+          result = functions[i++](request2, reply, request2[kRequestPayloadStream], next);
         } catch (error) {
-          cb(error, request, reply);
+          cb(error, request2, reply);
           return;
         }
         if (result && typeof result.then === "function") {
@@ -2585,22 +2585,22 @@ var require_hooks = __commonJS({
         if (!err) {
           err = new FST_ERR_SEND_UNDEFINED_ERR();
         }
-        cb(err, request, reply);
+        cb(err, request2, reply);
       }
       next();
     }
-    function onRequestAbortHookRunner(functions, request, cb) {
+    function onRequestAbortHookRunner(functions, request2, cb) {
       let i = 0;
       function next(err) {
         if (err || i === functions.length) {
-          cb(err, request);
+          cb(err, request2);
           return;
         }
         let result;
         try {
-          result = functions[i++](request, next);
+          result = functions[i++](request2, next);
         } catch (error) {
-          cb(error, request);
+          cb(error, request2);
           return;
         }
         if (result && typeof result.then === "function") {
@@ -2614,13 +2614,13 @@ var require_hooks = __commonJS({
         if (!err) {
           err = new FST_ERR_SEND_UNDEFINED_ERR();
         }
-        cb(err, request);
+        cb(err, request2);
       }
       next();
     }
-    function hookIterator(fn, request, reply, next) {
+    function hookIterator(fn, request2, reply, next) {
       if (reply.sent === true) return void 0;
-      return fn(request, reply, next);
+      return fn(request2, reply, next);
     }
     module2.exports = {
       Hooks,
@@ -3323,15 +3323,15 @@ var require_validation = __commonJS({
         FSTWRN001("params", method, url);
       }
     }
-    function validateParam(validatorFunction, request, paramName) {
+    function validateParam(validatorFunction, request2, paramName) {
       if (validatorFunction == null) return false;
-      const value = request[paramName];
+      const value = request2[paramName];
       let ret;
       try {
         const data = value === void 0 ? null : value;
         if (validatorFunction.schemaEnv) {
           ret = validatorFunction(data, {
-            parentData: request,
+            parentData: request2,
             parentDataProperty: paramName
           });
         } else {
@@ -3352,22 +3352,22 @@ var require_validation = __commonJS({
       function answer(ret2) {
         if (ret2 === false) return validatorFunction.errors;
         if (ret2 && ret2.error) return ret2.error;
-        if (ret2 && typeof ret2 === "object" && "value" in ret2) request[paramName] = ret2.value;
+        if (ret2 && typeof ret2 === "object" && "value" in ret2) request2[paramName] = ret2.value;
         return false;
       }
     }
-    function validate(context, request, execution) {
+    function validate(context, request2, execution) {
       const runExecution = execution === void 0;
       if (runExecution && context[paramsSchema] === void 0 && context[bodySchema] === void 0 && context[querystringSchema] === void 0 && context[headersSchema] === void 0) {
         return false;
       }
       if (runExecution || !execution.skipParams) {
-        const params = validateParam(context[paramsSchema], request, "params");
+        const params = validateParam(context[paramsSchema], request2, "params");
         if (params) {
           if (typeof params.then !== "function") {
             return wrapValidationError(params, "params", context.schemaErrorFormatter);
           } else {
-            return validateAsyncParams(params, context, request);
+            return validateAsyncParams(params, context, request2);
           }
         }
       }
@@ -3376,65 +3376,65 @@ var require_validation = __commonJS({
         if (typeof context[bodySchema] === "function") {
           validatorFunction = context[bodySchema];
         } else if (context[bodySchema]) {
-          const contentSchema = context[bodySchema][request.mediaType];
+          const contentSchema = context[bodySchema][request2.mediaType];
           if (contentSchema) {
             validatorFunction = contentSchema;
           }
         }
-        const body = validateParam(validatorFunction, request, "body");
+        const body = validateParam(validatorFunction, request2, "body");
         if (body) {
           if (typeof body.then !== "function") {
             return wrapValidationError(body, "body", context.schemaErrorFormatter);
           } else {
-            return validateAsyncBody(body, context, request);
+            return validateAsyncBody(body, context, request2);
           }
         }
       }
       if (runExecution || !execution.skipQuery) {
-        const query = validateParam(context[querystringSchema], request, "query");
+        const query = validateParam(context[querystringSchema], request2, "query");
         if (query) {
           if (typeof query.then !== "function") {
             return wrapValidationError(query, "querystring", context.schemaErrorFormatter);
           } else {
-            return validateAsyncQuery(query, context, request);
+            return validateAsyncQuery(query, context, request2);
           }
         }
       }
-      const headers = validateParam(context[headersSchema], request, "headers");
+      const headers = validateParam(context[headersSchema], request2, "headers");
       if (headers) {
         if (typeof headers.then !== "function") {
           return wrapValidationError(headers, "headers", context.schemaErrorFormatter);
         } else {
-          return validateAsyncHeaders(headers, context, request);
+          return validateAsyncHeaders(headers, context, request2);
         }
       }
       return false;
     }
-    function validateAsyncParams(validatePromise, context, request) {
+    function validateAsyncParams(validatePromise, context, request2) {
       return validatePromise.then((paramsResult) => {
         if (paramsResult) {
           return wrapValidationError(paramsResult, "params", context.schemaErrorFormatter);
         }
-        return validate(context, request, { skipParams: true });
+        return validate(context, request2, { skipParams: true });
       });
     }
-    function validateAsyncBody(validatePromise, context, request) {
+    function validateAsyncBody(validatePromise, context, request2) {
       return validatePromise.then((bodyResult) => {
         if (bodyResult) {
           return wrapValidationError(bodyResult, "body", context.schemaErrorFormatter);
         }
-        return validate(context, request, { skipParams: true, skipBody: true });
+        return validate(context, request2, { skipParams: true, skipBody: true });
       });
     }
-    function validateAsyncQuery(validatePromise, context, request) {
+    function validateAsyncQuery(validatePromise, context, request2) {
       return validatePromise.then((queryResult) => {
         if (queryResult) {
           return wrapValidationError(queryResult, "querystring", context.schemaErrorFormatter);
         }
-        return validate(context, request, { skipParams: true, skipBody: true, skipQuery: true });
+        return validate(context, request2, { skipParams: true, skipBody: true, skipQuery: true });
       });
     }
-    function validateAsyncHeaders(validatePromise, context, request) {
+    function validateAsyncHeaders(validatePromise, context, request2) {
       return validatePromise.then((headersResult) => {
         if (headersResult) {
           return wrapValidationError(headersResult, "headers", context.schemaErrorFormatter);
@@ -4280,20 +4280,20 @@ var require_handle_request = __commonJS({
     } = require_symbols2();
     var ContentType = require_content_type();
     var channels = diagnostics.tracingChannel("fastify.request.handler");
-    function handleRequest(err, request, reply) {
+    function handleRequest(err, request2, reply) {
       if (reply.sent === true) return;
       if (err != null) {
         reply[kReplyIsError] = true;
         reply.send(err);
         return;
       }
-      const method = request.method;
+      const method = request2.method;
       if (this[kSupportedHTTPMethods].bodyless.has(method)) {
-        handler2(request, reply);
+        handler2(request2, reply);
         return;
       }
       if (this[kSupportedHTTPMethods].bodywith.has(method)) {
-        const headers = request.headers;
+        const headers = request2.headers;
         const ctHeader = headers["content-type"];
         if (method === "QUERY") {
           if (ctHeader === void 0) {
@@ -4309,39 +4309,39 @@ var require_handle_request = __commonJS({
         }
         if (ctHeader === void 0) {
           if (isEmptyBody(headers)) {
-            handler2(request, reply);
+            handler2(request2, reply);
             return;
           }
-          request[kRouteContext].contentTypeParser.run("", handler2, request, reply);
+          request2[kRouteContext].contentTypeParser.run("", handler2, request2, reply);
           return;
         }
-        if (!request[kRequestContentType]) {
-          request[kRequestContentType] = ContentType.from(ctHeader);
+        if (!request2[kRequestContentType]) {
+          request2[kRequestContentType] = ContentType.from(ctHeader);
         }
-        if (request[kRequestContentType].isValid === false) {
+        if (request2[kRequestContentType].isValid === false) {
           reply[kReplyIsError] = true;
           reply.status(415).send(new FST_ERR_CTP_INVALID_MEDIA_TYPE());
           return;
         }
-        request[kRouteContext].contentTypeParser.run(request[kRequestContentType].toString(), handler2, request, reply);
+        request2[kRouteContext].contentTypeParser.run(request2[kRequestContentType].toString(), handler2, request2, reply);
         return;
       }
-      handler2(request, reply);
+      handler2(request2, reply);
     }
-    function handler2(request, reply) {
+    function handler2(request2, reply) {
       try {
-        if (request[kRouteContext].preValidation !== null) {
+        if (request2[kRouteContext].preValidation !== null) {
           preValidationHookRunner(
-            request[kRouteContext].preValidation,
-            request,
+            request2[kRouteContext].preValidation,
+            request2,
             reply,
             preValidationCallback
           );
         } else {
-          preValidationCallback(null, request, reply);
+          preValidationCallback(null, request2, reply);
         }
       } catch (err) {
-        preValidationCallback(err, request, reply);
+        preValidationCallback(err, request2, reply);
       }
     }
     function isEmptyBody(headers) {
@@ -4349,23 +4349,23 @@ var require_handle_request = __commonJS({
       const transferEncoding = headers["transfer-encoding"];
       return transferEncoding === void 0 && (contentLength === void 0 || contentLength === "0");
     }
-    function preValidationCallback(err, request, reply) {
+    function preValidationCallback(err, request2, reply) {
       if (reply.sent === true) return;
       if (err != null) {
         reply[kReplyIsError] = true;
         reply.send(err);
         return;
       }
-      const validationErr = validateSchema(reply[kRouteContext], request);
+      const validationErr = validateSchema(reply[kRouteContext], request2);
       const isAsync2 = validationErr && typeof validationErr.then === "function" || false;
       if (isAsync2) {
-        const cb = validationCompleted.bind(null, request, reply);
+        const cb = validationCompleted.bind(null, request2, reply);
         validationErr.then(cb, cb);
       } else {
-        validationCompleted(request, reply, validationErr);
+        validationCompleted(request2, reply, validationErr);
       }
     }
-    function validationCompleted(request, reply, validationErr) {
+    function validationCompleted(request2, reply, validationErr) {
       if (validationErr) {
         if (reply[kRouteContext].attachValidation === false) {
           reply.send(validationErr);
@@ -4373,25 +4373,25 @@ var require_handle_request = __commonJS({
         }
         reply.request.validationError = validationErr;
       }
-      if (request[kRouteContext].preHandler !== null) {
+      if (request2[kRouteContext].preHandler !== null) {
         preHandlerHookRunner(
-          request[kRouteContext].preHandler,
-          request,
+          request2[kRouteContext].preHandler,
+          request2,
           reply,
           preHandlerCallback
         );
       } else {
-        preHandlerCallback(null, request, reply);
+        preHandlerCallback(null, request2, reply);
       }
     }
-    function preHandlerCallback(err, request, reply) {
+    function preHandlerCallback(err, request2, reply) {
       if (reply.sent) return;
-      const context = request[kRouteContext];
+      const context = request2[kRouteContext];
       if (!channels.hasSubscribers || context[kFourOhFourContext] === null) {
-        preHandlerCallbackInner(err, request, reply);
+        preHandlerCallbackInner(err, request2, reply);
       } else {
         const store = {
-          request,
+          request: request2,
           reply,
           async: false,
           route: {
@@ -4400,11 +4400,11 @@ var require_handle_request = __commonJS({
           }
         };
         reply[kDiagnosticsStore] = store;
-        channels.start.runStores(store, preHandlerCallbackInner, void 0, err, request, reply, store);
+        channels.start.runStores(store, preHandlerCallbackInner, void 0, err, request2, reply, store);
       }
     }
-    function preHandlerCallbackInner(err, request, reply, store) {
-      const context = request[kRouteContext];
+    function preHandlerCallbackInner(err, request2, reply, store) {
+      const context = request2[kRouteContext];
       try {
         if (err != null) {
           reply[kReplyIsError] = true;
@@ -4418,7 +4418,7 @@ var require_handle_request = __commonJS({
         }
         let result;
         try {
-          result = context.handler(request, reply);
+          result = context.handler(request2, reply);
         } catch (err2) {
           if (store) {
             store.error = err2;
@@ -5866,11 +5866,11 @@ var require_log_controller = __commonJS({
        * @param {object} reply        Fastify reply object.
        * @param {object} [metadata]   Extra contextual data (unused).
        */
-      incomingRequest(request, reply, metadata) {
-        if (this.isLogDisabled(request)) {
+      incomingRequest(request2, reply, metadata) {
+        if (this.isLogDisabled(request2)) {
           return;
         }
-        request.log.info({ req: request }, "incoming request");
+        request2.log.info({ req: request2 }, "incoming request");
       }
       /**
        * Logs the outcome of a completed request.
@@ -5881,8 +5881,8 @@ var require_log_controller = __commonJS({
        * @param {object} reply        Fastify reply object.
        * @param {object} [metadata]   Extra contextual data (unused).
        */
-      requestCompleted(error, request, reply, metadata) {
-        if (this.isLogDisabled(request)) {
+      requestCompleted(error, request2, reply, metadata) {
+        if (this.isLogDisabled(request2)) {
           return;
         }
         if (error) {
@@ -5900,12 +5900,12 @@ var require_log_controller = __commonJS({
        * @param {object} reply        Fastify reply object (must have `statusCode`).
        * @param {object} [metadata]   Extra contextual data (unused).
        */
-      defaultErrorLog(error, request, reply, metadata) {
-        if (this.isLogDisabled(request)) {
+      defaultErrorLog(error, request2, reply, metadata) {
+        if (this.isLogDisabled(request2)) {
           return;
         }
         if (reply.statusCode >= 500) {
-          reply.log.error({ req: request, res: reply, err: error }, error?.message);
+          reply.log.error({ req: request2, res: reply, err: error }, error?.message);
         } else {
           reply.log.info({ res: reply, err: error }, error?.message);
         }
@@ -5919,8 +5919,8 @@ var require_log_controller = __commonJS({
        * @param {object} reply        Fastify reply object.
        * @param {object} [metadata]   Extra contextual data (unused).
        */
-      streamError(error, request, reply, metadata) {
-        if (this.isLogDisabled(request)) {
+      streamError(error, request2, reply, metadata) {
+        if (this.isLogDisabled(request2)) {
           return;
         }
         if (error.code === "ERR_STREAM_PREMATURE_CLOSE") {
@@ -5937,12 +5937,12 @@ var require_log_controller = __commonJS({
        * @param {object} reply        Fastify reply object.
        * @param {object} [metadata]   Extra contextual data (unused).
        */
-      routeNotFound(request, reply, metadata) {
-        if (this.isLogDisabled(request)) {
+      routeNotFound(request2, reply, metadata) {
+        if (this.isLogDisabled(request2)) {
           return;
         }
-        const { url, method } = request.raw;
-        request.log.info(`Route ${method}:${url} not found`);
+        const { url, method } = request2.raw;
+        request2.log.info(`Route ${method}:${url} not found`);
       }
       /**
        * Logs a warning when writeHead fails during error handling.
@@ -5952,12 +5952,12 @@ var require_log_controller = __commonJS({
        * @param {object} reply        Fastify reply object.
        * @param {object} [metadata]   Extra contextual data (unused).
        */
-      writeHeadError(error, request, reply, metadata) {
-        if (this.isLogDisabled(request)) {
+      writeHeadError(error, request2, reply, metadata) {
+        if (this.isLogDisabled(request2)) {
           return;
         }
         reply.log.warn(
-          { req: request, res: reply, err: error },
+          { req: request2, res: reply, err: error },
           error?.message
         );
       }
@@ -5970,8 +5970,8 @@ var require_log_controller = __commonJS({
        * @param {object} metadata     Extra contextual data.
        * @param {number} metadata.statusCode The status code that triggered the serializer.
        */
-      serializerError(error, request, reply, metadata) {
-        if (this.isLogDisabled(request)) {
+      serializerError(error, request2, reply, metadata) {
+        if (this.isLogDisabled(request2)) {
           return;
         }
         reply.log.error({ err: error, statusCode: metadata.statusCode }, "The serializer for the given status code failed");
@@ -6934,7 +6934,7 @@ var require_redaction = __commonJS({
     var CENSOR = "[Redacted]";
     var strict = false;
     function redaction(opts, serialize) {
-      const { paths, censor, remove: remove2 } = handle(opts);
+      const { paths, censor, remove: remove2 } = handle2(opts);
       const shape = paths.reduce((o, str) => {
         rx.lastIndex = 0;
         const first = rx.exec(str);
@@ -6990,7 +6990,7 @@ var require_redaction = __commonJS({
         return o;
       }, result);
     }
-    function handle(opts) {
+    function handle2(opts) {
       if (Array.isArray(opts)) {
         opts = { paths: opts, censor: CENSOR };
         return opts;
@@ -11152,10 +11152,10 @@ var require_error_handler = __commonJS({
         reply.send(err);
       }
     }
-    function defaultErrorHandler(error, request, reply) {
+    function defaultErrorHandler(error, request2, reply) {
       setErrorHeaders(error, reply);
       setErrorStatusCode(reply, error);
-      request.server[kLogController].defaultErrorLog(error, request, reply);
+      request2.server[kLogController].defaultErrorLog(error, request2, reply);
       reply.send(error);
     }
     function fallbackErrorHandler(error, reply, cb) {
@@ -11423,13 +11423,13 @@ var require_reply = __commonJS({
     var ContentType = require_content_type();
     var toString = Object.prototype.toString;
     var HTTP2_WRITE_CHUNK_SIZE = 64 * 1024;
-    function Reply(res, request, log) {
+    function Reply(res, request2, log) {
       this.raw = res;
       this[kReplySerializer] = null;
       this[kReplyErrorHandlerCalled] = false;
       this[kReplyIsError] = false;
       this[kReplyIsRunningOnErrorHook] = false;
-      this.request = request;
+      this.request = request2;
       this[kReplyHeaders] = {};
       this[kReplyTrailers] = null;
       this[kReplyHasStatusCode] = false;
@@ -11673,8 +11673,8 @@ var require_reply = __commonJS({
       return serialize2;
     };
     Reply.prototype.compileSerializationSchema = function(schema2, httpStatus = null, contentType = null) {
-      const { request } = this;
-      const { method, url } = request;
+      const { request: request2 } = this;
+      const { method, url } = request2;
       if (this[kRouteContext][kReplyCacheSerializeFns]?.has(schema2)) {
         return this[kRouteContext][kReplyCacheSerializeFns].get(schema2);
       }
@@ -11823,7 +11823,7 @@ var require_reply = __commonJS({
         onSendEnd(reply, payload);
       }
     }
-    function wrapOnSendEnd(err, request, reply, payload) {
+    function wrapOnSendEnd(err, request2, reply, payload) {
       if (err != null) {
         onErrorHook(reply, err);
       } else {
@@ -12154,18 +12154,18 @@ var require_reply = __commonJS({
       reply.raw.on("finish", onResFinished);
       reply.raw.on("error", onResFinished);
     }
-    function onResponseCallback(err, request, reply) {
-      reply.server[kLogController].requestCompleted(err, request, reply);
+    function onResponseCallback(err, request2, reply) {
+      reply.server[kLogController].requestCompleted(err, request2, reply);
     }
     function buildReply(R) {
       const props = R.props.slice();
-      function _Reply(res, request, log) {
+      function _Reply(res, request2, log) {
         this.raw = res;
         this[kReplyIsError] = false;
         this[kReplyErrorHandlerCalled] = false;
         this[kReplyHijacked] = false;
         this[kReplySerializer] = null;
-        this.request = request;
+        this.request = request2;
         this[kReplyHeaders] = {};
         this[kReplyTrailers] = null;
         this[kReplyStartTime] = void 0;
@@ -13381,8 +13381,8 @@ var require_request = __commonJS({
       });
       return _Request;
     }
-    function assertsRequestDecoration(request, name) {
-      if (!decorators.hasKey(request, name) && !decorators.exist(request, name)) {
+    function assertsRequestDecoration(request2, name) {
+      if (!decorators.hasKey(request2, name) && !decorators.exist(request2, name)) {
         throw new FST_ERR_DEC_UNDECLARED(name, "request");
       }
     }
@@ -13939,24 +13939,24 @@ var require_content_type_parser = __commonJS({
       }
       return removed || idx > -1;
     };
-    ContentTypeParser.prototype.run = function(contentType, handler2, request, reply) {
+    ContentTypeParser.prototype.run = function(contentType, handler2, request2, reply) {
       const parser = this.getParser(contentType);
       if (parser === void 0) {
-        if (request.is404 === true) {
-          handler2(request, reply);
+        if (request2.is404 === true) {
+          handler2(request2, reply);
           return;
         }
         reply[kReplyIsError] = true;
         reply.send(new FST_ERR_CTP_INVALID_MEDIA_TYPE());
         return;
       }
-      const resource = new AsyncResource("content-type-parser:run", request);
+      const resource = new AsyncResource("content-type-parser:run", request2);
       function done(error, body) {
         resource.runInAsyncScope(onDone, void 0, error, body);
       }
       if (parser.asString === true || parser.asBuffer === true) {
         rawBody(
-          request,
+          request2,
           reply,
           reply[kRouteContext]._parserOptions,
           parser,
@@ -13964,7 +13964,7 @@ var require_content_type_parser = __commonJS({
         );
         return;
       }
-      const result = parser.fn(request, request[kRequestPayloadStream], done);
+      const result = parser.fn(request2, request2[kRequestPayloadStream], done);
       if (result && typeof result.then === "function") {
         result.then((body) => {
           done(null, body);
@@ -13978,21 +13978,21 @@ var require_content_type_parser = __commonJS({
           reply.send(error);
           return;
         }
-        request.body = body;
-        handler2(request, reply);
+        request2.body = body;
+        handler2(request2, reply);
       }
     };
-    function rawBody(request, reply, options, parser, done) {
+    function rawBody(request2, reply, options, parser, done) {
       const asString = parser.asString === true;
       const limit = options.limit === null ? parser.bodyLimit : options.limit;
-      const contentLength = Number(request.headers["content-length"]);
+      const contentLength = Number(request2.headers["content-length"]);
       if (contentLength > limit) {
         done(new FST_ERR_CTP_BODY_TOO_LARGE(), void 0);
         return;
       }
       let receivedLength = 0;
       let body = asString ? "" : [];
-      const payload = request[kRequestPayloadStream] || request.raw;
+      const payload = request2[kRequestPayloadStream] || request2.raw;
       if (asString) {
         payload.setEncoding("utf8");
       }
@@ -14034,7 +14034,7 @@ var require_content_type_parser = __commonJS({
         if (!asString) {
           body = Buffer.concat(body);
         }
-        const result = parser.fn(request, body, done);
+        const result = parser.fn(request2, body, done);
         if (result && typeof result.then === "function") {
           result.then((body2) => {
             done(null, body2);
@@ -33076,8 +33076,8 @@ var require_find_my_way = __commonJS({
       }
       if (done === void 0) {
         const constraints = this.constrainer.deriveConstraints(req, ctx);
-        const handle = this.find(req.method, req.url, constraints);
-        return this.callHandler(handle, req, res, ctx);
+        const handle2 = this.find(req.method, req.url, constraints);
+        return this.callHandler(handle2, req, res, ctx);
       }
       this.constrainer.deriveConstraints(req, ctx, (err, constraints) => {
         if (err !== null) {
@@ -33085,17 +33085,17 @@ var require_find_my_way = __commonJS({
           return;
         }
         try {
-          const handle = this.find(req.method, req.url, constraints);
-          const result = this.callHandler(handle, req, res, ctx);
+          const handle2 = this.find(req.method, req.url, constraints);
+          const result = this.callHandler(handle2, req, res, ctx);
           done(null, result);
         } catch (err2) {
           done(err2);
         }
       });
     };
-    Router.prototype.callHandler = function callHandler(handle, req, res, ctx) {
-      if (handle === null) return this._defaultRoute(req, res, ctx);
-      return ctx === void 0 ? handle.handler(req, res, handle.params, handle.store, handle.searchParams) : handle.handler.call(ctx, req, res, handle.params, handle.store, handle.searchParams);
+    Router.prototype.callHandler = function callHandler(handle2, req, res, ctx) {
+      if (handle2 === null) return this._defaultRoute(req, res, ctx);
+      return ctx === void 0 ? handle2.handler(req, res, handle2.params, handle2.store, handle2.searchParams) : handle2.handler.call(ctx, req, res, handle2.params, handle2.store, handle2.searchParams);
     };
     Router.prototype.find = function find(method, path2, derivedConstraints) {
       let currentNode = method === "GET" ? this._treeGET : this.trees[method];
@@ -33136,12 +33136,12 @@ var require_find_my_way = __commonJS({
       let maxParamLengthExceeded = false;
       while (true) {
         if (pathIndex === pathLen && currentNode.isLeafNode) {
-          const handle = currentNode.handlerStorage.getMatchingHandler(derivedConstraints);
-          if (handle !== null) {
+          const handle2 = currentNode.handlerStorage.getMatchingHandler(derivedConstraints);
+          if (handle2 !== null) {
             return {
-              handler: handle.handler,
-              store: handle.store,
-              params: handle._createParamsObject(params),
+              handler: handle2.handler,
+              store: handle2.store,
+              params: handle2._createParamsObject(params),
               searchParams: this.querystringParser(querystring2)
             };
           }
@@ -33861,14 +33861,14 @@ var require_route = __commonJS({
           req.headers["accept-version"] = req.headers[kRequestAcceptVersion];
           req.headers[kRequestAcceptVersion] = void 0;
         }
-        const request = new context.Request(id, params, req, query, childLogger, context);
-        const reply = new context.Reply(res, request, childLogger);
-        context.server[kLogController].incomingRequest(request, reply);
+        const request2 = new context.Request(id, params, req, query, childLogger, context);
+        const reply = new context.Reply(res, request2, childLogger);
+        context.server[kLogController].incomingRequest(request2, reply);
         const handlerTimeout = context.handlerTimeout;
         if (handlerTimeout > 0) {
           const ac = new AbortController();
-          request[kRequestSignal] = ac;
-          request[kTimeoutTimer] = setTimeout(() => {
+          request2[kRequestSignal] = ac;
+          request2[kTimeoutTimer] = setTimeout(() => {
             if (!reply.sent) {
               const err = new FST_ERR_HANDLER_TIMEOUT(handlerTimeout, context.config?.url);
               ac.abort(err);
@@ -33880,36 +33880,36 @@ var require_route = __commonJS({
             if (!ac.signal.aborted) {
               ac.abort();
             }
-            clearTimeout(request[kTimeoutTimer]);
+            clearTimeout(request2[kTimeoutTimer]);
           };
           req.on("close", onAbort);
-          request[kOnAbort] = onAbort;
+          request2[kOnAbort] = onAbort;
         }
         if (hasLogger === true || context.onResponse !== null || handlerTimeout > 0) {
           setupResponseListeners(reply);
         }
         if (context.onTimeout !== null) {
-          if (!request.raw.socket._meta) {
-            request.raw.socket.on("timeout", handleTimeout);
+          if (!request2.raw.socket._meta) {
+            request2.raw.socket.on("timeout", handleTimeout);
           }
-          request.raw.socket._meta = { context, request, reply, onTimeout: handleTimeout };
+          request2.raw.socket._meta = { context, request: request2, reply, onTimeout: handleTimeout };
         }
         if (context.onRequest !== null) {
           onRequestHookRunner(
             context.onRequest,
-            request,
+            request2,
             reply,
             runPreParsing
           );
         } else {
-          runPreParsing(null, request, reply);
+          runPreParsing(null, request2, reply);
         }
         if (context.onRequestAbort !== null) {
           req.on("close", () => {
             if (req.aborted) {
               onRequestAbortHookRunner(
                 context.onRequestAbort,
-                request,
+                request2,
                 handleOnRequestAbortHooksErrors.bind(null, reply)
               );
             }
@@ -33923,10 +33923,10 @@ var require_route = __commonJS({
       }
     }
     function handleTimeout() {
-      const { context, request, reply } = this._meta;
+      const { context, request: request2, reply } = this._meta;
       onTimeoutHookRunner(
         context.onTimeout,
-        request,
+        request2,
         reply,
         noop
       );
@@ -33965,18 +33965,18 @@ var require_route = __commonJS({
         throw new FST_ERR_ROUTE_LOG_LEVEL_INVALID(method, path2, logLevel);
       }
     }
-    function runPreParsing(err, request, reply) {
+    function runPreParsing(err, request2, reply) {
       if (reply.sent === true) return;
       if (err != null) {
         reply[kReplyIsError] = true;
         reply.send(err);
         return;
       }
-      request[kRequestPayloadStream] = request.raw;
-      if (request[kRouteContext].preParsing !== null) {
-        preParsingHookRunner(request[kRouteContext].preParsing, request, reply, handleRequest.bind(request.server));
+      request2[kRequestPayloadStream] = request2.raw;
+      if (request2[kRouteContext].preParsing !== null) {
+        preParsingHookRunner(request2[kRouteContext].preParsing, request2, reply, handleRequest.bind(request2.server));
       } else {
-        handleRequest.call(request.server, null, request, reply);
+        handleRequest.call(request2.server, null, request2, reply);
       }
     }
     function buildRouterOptions(options, defaultOptions) {
@@ -34038,9 +34038,9 @@ var require_four_oh_four = __commonJS({
         instance[kCanSetNotFoundHandler] = true;
         router.defaultRoute = router.defaultRoute.bind(instance);
       }
-      function basic404(request, reply) {
-        request.server[kLogController].routeNotFound(request, reply);
-        const { url, method } = request.raw;
+      function basic404(request2, reply) {
+        request2.server[kLogController].routeNotFound(request2, reply);
+        const { url, method } = request2.raw;
         reply.code(404).send({
           message: `Route ${method}:${url} not found`,
           error: "Not Found",
@@ -34123,11 +34123,11 @@ var require_four_oh_four = __commonJS({
         const fourOhFourContext = this[kFourOhFourLevelInstance][kFourOhFourContext];
         const id = getGenReqId(fourOhFourContext.server, req);
         const childLogger = createChildLogger(fourOhFourContext, logger, req, id);
-        const request = new Request(id, null, req, null, childLogger, fourOhFourContext);
-        const reply = new Reply(res, request, childLogger);
-        fourOhFourContext.server[kLogController].incomingRequest(request, reply);
-        request.log.warn("the default handler for 404 did not catch this, this is likely a fastify bug, please report it");
-        request.log.warn(router.prettyPrint());
+        const request2 = new Request(id, null, req, null, childLogger, fourOhFourContext);
+        const reply = new Reply(res, request2, childLogger);
+        fourOhFourContext.server[kLogController].incomingRequest(request2, reply);
+        request2.log.warn("the default handler for 404 did not catch this, this is likely a fastify bug, please report it");
+        request2.log.warn(router.prettyPrint());
         reply.code(404).send(new FST_ERR_NOT_FOUND());
       }
     }
@@ -36711,10 +36711,10 @@ var require_fastify = __commonJS({
         if (options.frameworkErrors) {
           const id = getGenReqId(routeEventContext.server, req);
           const childLogger = createChildLogger(routeEventContext, options.logger, req, id);
-          const request = new Request(id, null, req, null, childLogger, routeEventContext);
-          const reply = new Reply(res, request, childLogger);
-          routeEventContext.server[kLogController].incomingRequest(request, reply);
-          return options.frameworkErrors(new FST_ERR_BAD_URL(path2), request, reply);
+          const request2 = new Request(id, null, req, null, childLogger, routeEventContext);
+          const reply = new Reply(res, request2, childLogger);
+          routeEventContext.server[kLogController].incomingRequest(request2, reply);
+          return options.frameworkErrors(new FST_ERR_BAD_URL(path2), request2, reply);
         }
         const body = JSON.stringify({
           error: "Bad Request",
@@ -36732,10 +36732,10 @@ var require_fastify = __commonJS({
         if (options.frameworkErrors) {
           const id = getGenReqId(routeEventContext.server, req);
           const childLogger = createChildLogger(routeEventContext, options.logger, req, id);
-          const request = new Request(id, null, req, null, childLogger, routeEventContext);
-          const reply = new Reply(res, request, childLogger);
-          routeEventContext.server[kLogController].incomingRequest(request, reply);
-          return options.frameworkErrors(new FST_ERR_MAX_PARAM_LENGTH(path2), request, reply);
+          const request2 = new Request(id, null, req, null, childLogger, routeEventContext);
+          const reply = new Reply(res, request2, childLogger);
+          routeEventContext.server[kLogController].incomingRequest(request2, reply);
+          return options.frameworkErrors(new FST_ERR_MAX_PARAM_LENGTH(path2), request2, reply);
         }
         const body = JSON.stringify({
           error: "Bad Request",
@@ -36756,10 +36756,10 @@ var require_fastify = __commonJS({
             if (options.frameworkErrors) {
               const id = getGenReqId(routeEventContext.server, req);
               const childLogger = createChildLogger(routeEventContext, options.logger, req, id);
-              const request = new Request(id, null, req, null, childLogger, routeEventContext);
-              const reply = new Reply(res, request, childLogger);
-              routeEventContext.server[kLogController].incomingRequest(request, reply);
-              return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply);
+              const request2 = new Request(id, null, req, null, childLogger, routeEventContext);
+              const reply = new Reply(res, request2, childLogger);
+              routeEventContext.server[kLogController].incomingRequest(request2, reply);
+              return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request2, reply);
             }
             const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}';
             res.writeHead(500, {
@@ -37803,10 +37803,10 @@ var require_cookie = __commonJS({
       });
       return fastifyCookieSetCookie(reply, name, "", opts);
     }
-    function parseCookies(fastify, request, reply) {
+    function parseCookies(fastify, request2, reply) {
       if (reply[kReplySetCookies]) return;
-      const cookieHeader = request.raw.headers.cookie;
-      request.cookies = cookieHeader ? fastify.parseCookie(cookieHeader) : {};
+      const cookieHeader = request2.raw.headers.cookie;
+      request2.cookies = cookieHeader ? fastify.parseCookie(cookieHeader) : {};
       reply[kReplySetCookies] = /* @__PURE__ */ new Map();
     }
     function onReqHandlerWrapper(fastify, hook) {
@@ -40837,8 +40837,8 @@ var require_multipart2 = __commonJS({
       fastify.decorateRequest("files", getMultipartFiles);
       fastify.decorateRequest("saveRequestFiles", saveRequestFiles);
       fastify.decorateRequest("cleanRequestFiles", cleanRequestFiles);
-      fastify.addHook("onResponse", async (request) => {
-        await request.cleanRequestFiles();
+      fastify.addHook("onResponse", async (request2) => {
+        await request2.cleanRequestFiles();
       });
       function isMultipart() {
         return this[kMultipart];
@@ -40858,7 +40858,7 @@ var require_multipart2 = __commonJS({
             values.push(val);
           }
         };
-        const handle = (handler2) => {
+        const handle2 = (handler2) => {
           if (values.length > 0) {
             const value = values[0];
             values = values.slice(1);
@@ -40869,7 +40869,7 @@ var require_multipart2 = __commonJS({
         };
         const parts = () => {
           return new Promise((resolve, reject) => {
-            handle((val) => {
+            handle2((val) => {
               if (val instanceof Error) {
                 if (val.message === "Unexpected end of multipart data") {
                   resolve(null);
@@ -40885,16 +40885,16 @@ var require_multipart2 = __commonJS({
         const body = {};
         let lastError = null;
         let currentFile = null;
-        const request = this.raw;
+        const request2 = this.raw;
         const busboyOptions = deepmergeAll(
-          { headers: request.headers },
+          { headers: request2.headers },
           options,
           opts
         );
         this.log.trace({ busboyOptions }, "Providing options to busboy");
         const bb = busboy(busboyOptions);
-        request.on("close", cleanup);
-        request.on("error", cleanup);
+        request2.on("close", cleanup);
+        request2.on("error", cleanup);
         bb.on("field", onField).on("file", onFile).on("end", cleanup).on("finish", cleanup).on("close", cleanup).on("error", cleanup);
         bb.on("partsLimit", function() {
           const err = new PartsLimitError();
@@ -40911,7 +40911,7 @@ var require_multipart2 = __commonJS({
           onError(err);
           process.nextTick(() => cleanup(err));
         });
-        request.pipe(bb);
+        request2.pipe(bb);
         function onField(name, fieldValue, fieldnameTruncated, valueTruncated, encoding, contentType) {
           if (name in Object.prototype) {
             onError(new PrototypeViolationError());
@@ -41015,8 +41015,8 @@ var require_multipart2 = __commonJS({
           currentFile = null;
         }
         function cleanup(err) {
-          request.unpipe(bb);
-          if ((err || request.aborted) && currentFile) {
+          request2.unpipe(bb);
+          if ((err || request2.aborted) && currentFile) {
             currentFile.destroy();
             currentFile = null;
           }
@@ -46124,7 +46124,12 @@ var init_env = __esm({
       CRON_SECRET: external_exports.string().optional(),
       ADMIN_EMAIL: external_exports.string().optional(),
       ADMIN_PASSWORD: external_exports.string().optional(),
-      ADMIN_NAME: external_exports.string().default("Veloraa Admin")
+      ADMIN_NAME: external_exports.string().default("Veloraa Admin"),
+      SHIPROCKET_EMAIL: external_exports.string().optional(),
+      SHIPROCKET_PASSWORD: external_exports.string().optional(),
+      SHIPROCKET_BASE_URL: external_exports.string().default("https://apiv2.shiprocket.in"),
+      SHIPROCKET_WEBHOOK_TOKEN: external_exports.string().optional(),
+      SHIPROCKET_PICKUP_LOCATION: external_exports.string().optional()
     });
     parsed = schema.parse(process.env);
     env = {
@@ -47141,37 +47146,37 @@ function shouldRetry(method, status, attemptCount, retryEnabled) {
   if (!RETRYABLE_STATUS_CODES.includes(status)) return false;
   return true;
 }
-async function fetchWithRetry(fetchImpl, url, request, retryEnabled) {
+async function fetchWithRetry(fetchImpl, url, request2, retryEnabled) {
   let attemptCount = 0;
   while (true) {
-    const headers = _objectSpread2({}, request.headers);
+    const headers = _objectSpread2({}, request2.headers);
     if (attemptCount > 0) headers["X-Retry-Count"] = String(attemptCount);
     let res;
     try {
       res = await fetchImpl(url, {
-        method: request.method,
+        method: request2.method,
         headers,
-        body: request.body,
-        signal: request.signal
+        body: request2.body,
+        signal: request2.signal
       });
     } catch (fetchError) {
       if ((fetchError === null || fetchError === void 0 ? void 0 : fetchError.name) === "AbortError" || (fetchError === null || fetchError === void 0 ? void 0 : fetchError.code) === "ABORT_ERR") throw fetchError;
-      if (!RETRYABLE_METHODS.includes(request.method)) throw fetchError;
+      if (!RETRYABLE_METHODS.includes(request2.method)) throw fetchError;
       if (retryEnabled && attemptCount < DEFAULT_MAX_RETRIES) {
         const delay = getRetryDelay(attemptCount);
         attemptCount++;
-        await sleep(delay, request.signal);
+        await sleep(delay, request2.signal);
         continue;
       }
       throw fetchError;
     }
-    if (shouldRetry(request.method, res.status, attemptCount, retryEnabled)) {
+    if (shouldRetry(request2.method, res.status, attemptCount, retryEnabled)) {
       var _res$headers$get, _res$headers;
       const retryAfterHeader = (_res$headers$get = (_res$headers = res.headers) === null || _res$headers === void 0 ? void 0 : _res$headers.get("Retry-After")) !== null && _res$headers$get !== void 0 ? _res$headers$get : null;
       const delay = retryAfterHeader !== null ? Math.max(0, parseInt(retryAfterHeader, 10) || 0) * 1e3 : getRetryDelay(attemptCount);
       await res.text();
       attemptCount++;
-      await sleep(delay, request.signal);
+      await sleep(delay, request2.signal);
       continue;
     }
     return res;
@@ -55322,8 +55327,8 @@ var require_main3 = __commonJS({
 });
 
 // server/node_modules/iceberg-js/dist/index.mjs
-function buildUrl(baseUrl, path2, query) {
-  const url = new URL(path2, baseUrl);
+function buildUrl(baseUrl2, path2, query) {
+  const url = new URL(path2, baseUrl2);
   if (query) {
     for (const [key, value] of Object.entries(query)) {
       if (value !== void 0) {
@@ -55442,14 +55447,14 @@ var init_dist3 = __esm({
         return response.data.namespaces.map((ns) => ({ namespace: ns }));
       }
       async createNamespace(id, metadata) {
-        const request = {
+        const request2 = {
           namespace: id.namespace,
           properties: metadata?.properties
         };
         const response = await this.client.request({
           method: "POST",
           path: `${this.prefix}/namespaces`,
-          body: request
+          body: request2
         });
         return response.data;
       }
@@ -55506,7 +55511,7 @@ var init_dist3 = __esm({
         });
         return response.data.identifiers;
       }
-      async createTable(namespace, request) {
+      async createTable(namespace, request2) {
         const headers = {};
         if (this.accessDelegation) {
           headers["X-Iceberg-Access-Delegation"] = this.accessDelegation;
@@ -55514,16 +55519,16 @@ var init_dist3 = __esm({
         const response = await this.client.request({
           method: "POST",
           path: `${this.prefix}/namespaces/${namespaceToPath2(namespace.namespace)}/tables`,
-          body: request,
+          body: request2,
           headers
         });
         return response.data.metadata;
       }
-      async updateTable(id, request) {
+      async updateTable(id, request2) {
         const response = await this.client.request({
           method: "POST",
           path: `${this.prefix}/namespaces/${namespaceToPath2(id.namespace)}/tables/${id.name}`,
-          body: request
+          body: request2
         });
         return {
           "metadata-location": response.data["metadata-location"],
@@ -55568,12 +55573,12 @@ var init_dist3 = __esm({
           throw error;
         }
       }
-      async createTableIfNotExists(namespace, request) {
+      async createTableIfNotExists(namespace, request2) {
         try {
-          return await this.createTable(namespace, request);
+          return await this.createTable(namespace, request2);
         } catch (error) {
           if (error instanceof IcebergError && error.status === 409) {
-            return await this.loadTable({ namespace: namespace.namespace, name: request.name });
+            return await this.loadTable({ namespace: namespace.namespace, name: request2.name });
           }
           throw error;
         }
@@ -55590,9 +55595,9 @@ var init_dist3 = __esm({
         if (options.catalogName) {
           prefix += `/${options.catalogName}`;
         }
-        const baseUrl = options.baseUrl.endsWith("/") ? options.baseUrl : `${options.baseUrl}/`;
+        const baseUrl2 = options.baseUrl.endsWith("/") ? options.baseUrl : `${options.baseUrl}/`;
         this.client = createFetchClient({
-          baseUrl,
+          baseUrl: baseUrl2,
           auth: options.auth,
           fetchImpl: options.fetch
         });
@@ -55714,8 +55719,8 @@ var init_dist3 = __esm({
        * );
        * ```
        */
-      async createTable(namespace, request) {
-        return this.tableOps.createTable(namespace, request);
+      async createTable(namespace, request2) {
+        return this.tableOps.createTable(namespace, request2);
       }
       /**
        * Updates an existing table's metadata.
@@ -55738,8 +55743,8 @@ var init_dist3 = __esm({
        * console.log(response.metadata); // TableMetadata object
        * ```
        */
-      async updateTable(id, request) {
-        return this.tableOps.updateTable(id, request);
+      async updateTable(id, request2) {
+        return this.tableOps.updateTable(id, request2);
       }
       /**
        * Drops a table from the catalog.
@@ -55852,8 +55857,8 @@ var init_dist3 = __esm({
        * );
        * ```
        */
-      async createTableIfNotExists(namespace, request) {
-        return this.tableOps.createTableIfNotExists(namespace, request);
+      async createTableIfNotExists(namespace, request2) {
+        return this.tableOps.createTableIfNotExists(namespace, request2);
       }
     };
   }
@@ -57279,11 +57284,11 @@ var init_dist4 = __esm({
     DEFAULT_HEADERS = { "X-Client-Info": `storage-js/${version}` };
     StorageBucketApi = class extends BaseApiClient {
       constructor(url, headers = {}, fetch$1, opts) {
-        const baseUrl = new URL(url);
+        const baseUrl2 = new URL(url);
         if (opts === null || opts === void 0 ? void 0 : opts.useNewHostname) {
-          if (/supabase\.(co|in|red)$/.test(baseUrl.hostname) && !baseUrl.hostname.includes("storage.supabase.")) baseUrl.hostname = baseUrl.hostname.replace("supabase.", "storage.supabase.");
+          if (/supabase\.(co|in|red)$/.test(baseUrl2.hostname) && !baseUrl2.hostname.includes("storage.supabase.")) baseUrl2.hostname = baseUrl2.hostname.replace("supabase.", "storage.supabase.");
         }
-        const finalUrl = baseUrl.href.replace(/\/$/, "");
+        const finalUrl = baseUrl2.href.replace(/\/$/, "");
         const finalHeaders = _objectSpread22(_objectSpread22({}, DEFAULT_HEADERS), headers);
         super(finalUrl, finalHeaders, fetch$1, "storage");
       }
@@ -67942,16 +67947,16 @@ var init_dist5 = __esm({
         var _settings$auth$storag, _settings$global$head;
         this.supabaseUrl = supabaseUrl;
         this.supabaseKey = supabaseKey;
-        const baseUrl = validateSupabaseUrl(supabaseUrl);
+        const baseUrl2 = validateSupabaseUrl(supabaseUrl);
         if (!supabaseKey) throw new Error("supabaseKey is required.");
         checkApiKeyFormat(supabaseKey);
         checkTopLevelSchemaOption(options);
-        this.realtimeUrl = new URL("realtime/v1", baseUrl);
+        this.realtimeUrl = new URL("realtime/v1", baseUrl2);
         this.realtimeUrl.protocol = this.realtimeUrl.protocol.replace("http", "ws");
-        this.authUrl = new URL("auth/v1", baseUrl);
-        this.storageUrl = new URL("storage/v1", baseUrl);
-        this.functionsUrl = new URL("functions/v1", baseUrl);
-        const defaultStorageKey = `sb-${baseUrl.hostname.split(".")[0]}-auth-token`;
+        this.authUrl = new URL("auth/v1", baseUrl2);
+        this.storageUrl = new URL("storage/v1", baseUrl2);
+        this.functionsUrl = new URL("functions/v1", baseUrl2);
+        const defaultStorageKey = `sb-${baseUrl2.hostname.split(".")[0]}-auth-token`;
         const DEFAULTS = {
           db: DEFAULT_DB_OPTIONS,
           realtime: DEFAULT_REALTIME_OPTIONS,
@@ -67980,7 +67985,7 @@ var init_dist5 = __esm({
           fetch: this.fetch
         }, settings.realtime));
         if (this.accessToken) Promise.resolve(this.accessToken()).then((token) => this.realtime.setAuth(token)).catch((e) => console.warn("Failed to set initial Realtime auth token:", e));
-        this.rest = new PostgrestClient(new URL("rest/v1", baseUrl).href, {
+        this.rest = new PostgrestClient(new URL("rest/v1", baseUrl2).href, {
           headers: this.headers,
           schema: settings.db.schema,
           fetch: this.fetch,
@@ -70618,10 +70623,10 @@ function httpError(error) {
   if (KNOWN.has(message)) return { status: 400, error: message };
   return { status: 500, error: "request_failed" };
 }
-function cookieBase(request) {
+function cookieBase(request2) {
   const isProd = env.NODE_ENV === "production";
-  const origin2 = request?.headers?.origin || "";
-  const host = request?.headers?.host || "";
+  const origin2 = request2?.headers?.origin || "";
+  const host = request2?.headers?.host || "";
   const isCustomDomain = origin2.includes("veloraarougee.com") || host.includes("veloraarougee.com");
   return {
     httpOnly: true,
@@ -70634,11 +70639,11 @@ function cookieBase(request) {
 function supabaseAdmin() {
   return authGateway;
 }
-async function readAdmin(request) {
+async function readAdmin(request2) {
   if (!supabase) return null;
-  const authHeader = request.headers.authorization;
+  const authHeader = request2.headers.authorization;
   const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  const token = request.cookies.vr_admin || bearerToken;
+  const token = request2.cookies.vr_admin || bearerToken;
   if (!token) return null;
   const session = await one(
     db().from("admin_sessions").select("admin_users ( id, email, full_name, role_id, active )").eq("token_hash", sha256(token)).gt("expires_at", (/* @__PURE__ */ new Date()).toISOString()).maybeSingle()
@@ -70657,20 +70662,20 @@ async function readAdmin(request) {
     permissions: permissions.map((row) => row.permission_id)
   };
 }
-async function requireAdmin(request, permission) {
-  const admin = await readAdmin(request);
+async function requireAdmin(request2, permission) {
+  const admin = await readAdmin(request2);
   if (!admin) throw new Error("unauthorized");
   if (permission && admin.roleId !== "super_admin" && !admin.permissions.includes(permission)) {
     throw new Error("forbidden");
   }
   return admin;
 }
-async function readCustomer(request) {
+async function readCustomer(request2) {
   const client = supabaseAdmin();
   if (!client) return null;
-  const authHeader = request.headers.authorization;
+  const authHeader = request2.headers.authorization;
   const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  const token = request.cookies.vr_access || bearerToken;
+  const token = request2.cookies.vr_access || bearerToken;
   if (!token) return null;
   const { data, error } = await client.auth.getUser(token);
   if (error || !data.user?.email) return null;
@@ -70690,8 +70695,8 @@ async function readCustomer(request) {
     authProvider: customer.auth_provider || "email"
   };
 }
-async function requireCustomer(request) {
-  const customer = await readCustomer(request);
+async function requireCustomer(request2) {
+  const customer = await readCustomer(request2);
   if (!customer) throw new Error("unauthorized");
   return customer;
 }
@@ -70727,10 +70732,10 @@ async function notify(input) {
   for (const send of subscribers) send(row);
   return row;
 }
-function clientIp(request) {
-  const forwarded = request.headers["x-forwarded-for"];
+function clientIp(request2) {
+  const forwarded = request2.headers["x-forwarded-for"];
   if (typeof forwarded === "string") return forwarded.split(",")[0]?.trim();
-  return request.ip;
+  return request2.ip;
 }
 var KNOWN, subscribers;
 var init_http = __esm({
@@ -70760,7 +70765,15 @@ var init_http = __esm({
       "invalid_credentials",
       "email_taken",
       "not_found",
-      "product_has_orders"
+      "product_has_orders",
+      "payment_not_paid",
+      "order_not_shippable",
+      "pickup_postcode_missing",
+      "pickup_location_missing",
+      "shipment_missing_provider_id",
+      "tracking_unavailable",
+      "webhook_not_configured",
+      "shiprocket_not_configured"
     ]);
     subscribers = /* @__PURE__ */ new Set();
   }
@@ -70809,8 +70822,8 @@ function setSessionCookies(reply, access, refresh, expiresIn) {
   reply.setCookie("vr_refresh", refresh, { ...base, maxAge: 60 * 60 * 24 * 14 });
 }
 async function registerAuth(app) {
-  app.post("/auth/signup", { config: { rateLimit: { max: 8, timeWindow: "1 minute" } } }, async (request, reply) => {
-    const body = credentials.parse(request.body);
+  app.post("/auth/signup", { config: { rateLimit: { max: 8, timeWindow: "1 minute" } } }, async (request2, reply) => {
+    const body = credentials.parse(request2.body);
     const client = supabaseAdmin();
     if (!client) return reply.status(503).send({ error: "auth_unconfigured" });
     const { data, error } = await client.auth.signUp({
@@ -70840,11 +70853,11 @@ async function registerAuth(app) {
     }
     return { needsVerification: !data.session, email: body.email.toLowerCase() };
   });
-  app.post("/auth/verify-otp", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (request, reply) => {
+  app.post("/auth/verify-otp", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (request2, reply) => {
     const body = external_exports.object({
       email: external_exports.string().email(),
       token: external_exports.string().min(4).max(10)
-    }).parse(request.body);
+    }).parse(request2.body);
     const client = supabaseAdmin();
     if (!client) return reply.status(503).send({ error: "auth_unconfigured" });
     let result = await client.auth.verifyOtp({
@@ -70877,8 +70890,8 @@ async function registerAuth(app) {
     setSessionCookies(reply, result.data.session.access_token, result.data.session.refresh_token, result.data.session.expires_in ?? 3600);
     return { ok: true, email: (verifiedUser.email || body.email).toLowerCase() };
   });
-  app.post("/auth/resend-otp", { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } }, async (request, reply) => {
-    const body = external_exports.object({ email: external_exports.string().email() }).parse(request.body);
+  app.post("/auth/resend-otp", { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } }, async (request2, reply) => {
+    const body = external_exports.object({ email: external_exports.string().email() }).parse(request2.body);
     const client = supabaseAdmin();
     if (!client) return reply.status(503).send({ error: "auth_unconfigured" });
     const resendRes = await client.auth.resend({
@@ -70894,8 +70907,8 @@ async function registerAuth(app) {
     }
     return { ok: true };
   });
-  app.post("/auth/login", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (request, reply) => {
-    const body = credentials.pick({ email: true, password: true }).parse(request.body);
+  app.post("/auth/login", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (request2, reply) => {
+    const body = credentials.pick({ email: true, password: true }).parse(request2.body);
     const client = supabaseAdmin();
     if (!client) return reply.status(503).send({ error: "auth_unconfigured" });
     const { data, error } = await client.auth.signInWithPassword({ email: body.email, password: body.password });
@@ -70931,8 +70944,8 @@ async function registerAuth(app) {
     if (error || !data.url) return reply.status(503).send({ error: "google_unconfigured" });
     return reply.redirect(data.url);
   });
-  app.post("/auth/exchange", async (request, reply) => {
-    const body = external_exports.object({ code: external_exports.string().min(4) }).parse(request.body);
+  app.post("/auth/exchange", async (request2, reply) => {
+    const body = external_exports.object({ code: external_exports.string().min(4) }).parse(request2.body);
     const client = supabaseAdmin();
     if (!client) return reply.status(503).send({ error: "auth_unconfigured" });
     const { data, error } = await client.auth.exchangeCodeForSession(body.code);
@@ -70961,24 +70974,24 @@ async function registerAuth(app) {
     });
     return { email: data.user.email.toLowerCase() };
   });
-  app.post("/auth/logout", async (request, reply) => {
+  app.post("/auth/logout", async (request2, reply) => {
     reply.clearCookie("vr_access", { path: "/" });
     reply.clearCookie("vr_refresh", { path: "/" });
     return { ok: true };
   });
-  app.get("/auth/me", async (request) => {
-    const customer = await readCustomer(request);
+  app.get("/auth/me", async (request2) => {
+    const customer = await readCustomer(request2);
     return { customer };
   });
-  app.post("/auth/forgot-password", { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } }, async (request, reply) => {
-    const body = external_exports.object({ email: external_exports.string().email() }).parse(request.body);
+  app.post("/auth/forgot-password", { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } }, async (request2, reply) => {
+    const body = external_exports.object({ email: external_exports.string().email() }).parse(request2.body);
     const client = supabaseAdmin();
     if (!client) return reply.status(503).send({ error: "auth_unconfigured" });
     await client.auth.resetPasswordForEmail(body.email, { redirectTo: `${env.APP_ORIGIN}/en/reset-password` });
     return { ok: true };
   });
-  app.post("/auth/reset-password", async (request, reply) => {
-    const body = external_exports.object({ accessToken: external_exports.string().min(10), password: external_exports.string().min(8).max(200) }).parse(request.body);
+  app.post("/auth/reset-password", async (request2, reply) => {
+    const body = external_exports.object({ accessToken: external_exports.string().min(10), password: external_exports.string().min(8).max(200) }).parse(request2.body);
     const client = supabaseAdmin();
     if (!client) return reply.status(503).send({ error: "auth_unconfigured" });
     const user = await client.auth.getUser(body.accessToken);
@@ -70987,18 +71000,18 @@ async function registerAuth(app) {
     if (updated.error) return reply.status(400).send({ error: "reset_failed" });
     return { ok: true };
   });
-  app.patch("/auth/profile", async (request) => {
-    const customer = await requireCustomer(request);
-    const body = external_exports.object({ fullName: external_exports.string().min(1).max(120), phone: external_exports.string().max(30).optional() }).parse(request.body);
+  app.patch("/auth/profile", async (request2) => {
+    const customer = await requireCustomer(request2);
+    const body = external_exports.object({ fullName: external_exports.string().min(1).max(120), phone: external_exports.string().max(30).optional() }).parse(request2.body);
     await ok(db().from("customers").update({ full_name: body.fullName, phone: body.phone ?? null }).eq("id", customer.id));
     return { ok: true };
   });
-  app.get("/account/addresses", async (request) => {
-    const customer = await requireCustomer(request);
+  app.get("/account/addresses", async (request2) => {
+    const customer = await requireCustomer(request2);
     return rows(db().from("addresses").select("*").eq("customer_id", customer.id).order("is_default", { ascending: false }).order("created_at", { ascending: false }));
   });
-  app.post("/account/addresses", async (request) => {
-    const customer = await requireCustomer(request);
+  app.post("/account/addresses", async (request2) => {
+    const customer = await requireCustomer(request2);
     const body = external_exports.object({
       fullName: external_exports.string().min(1),
       phone: external_exports.string().min(5),
@@ -71009,7 +71022,7 @@ async function registerAuth(app) {
       postalCode: external_exports.string().min(3),
       country: external_exports.string().optional().default("India"),
       isDefault: external_exports.boolean().optional().default(false)
-    }).parse(request.body);
+    }).parse(request2.body);
     if (body.isDefault) await ok(db().from("addresses").update({ is_default: false }).eq("customer_id", customer.id));
     const created = await rows(
       db().from("addresses").insert({
@@ -71027,17 +71040,17 @@ async function registerAuth(app) {
     );
     return created[0];
   });
-  app.delete("/account/addresses/:id", async (request) => {
-    const customer = await requireCustomer(request);
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.delete("/account/addresses/:id", async (request2) => {
+    const customer = await requireCustomer(request2);
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     await ok(db().from("addresses").delete().eq("id", params.id).eq("customer_id", customer.id));
     return { ok: true };
   });
-  app.post("/admin/auth/login", { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } }, async (request, reply) => {
+  app.post("/admin/auth/login", { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } }, async (request2, reply) => {
     const body = external_exports.object({
       email: external_exports.string().min(1).max(200),
       password: external_exports.string().min(1).max(200)
-    }).parse(request.body);
+    }).parse(request2.body);
     const inputEmail = body.email.trim().toLowerCase();
     const admin = await one(
       db().from("admin_users").select("id, email, full_name, password_hash, role_id, active").eq("email", inputEmail).maybeSingle()
@@ -71050,11 +71063,11 @@ async function registerAuth(app) {
       admin_user_id: admin.id,
       token_hash: sha256(token),
       expires_at: new Date(Date.now() + 12 * 60 * 60 * 1e3).toISOString(),
-      ip: clientIp(request),
-      user_agent: request.headers["user-agent"] ?? null
+      ip: clientIp(request2),
+      user_agent: request2.headers["user-agent"] ?? null
     }));
     await ok(db().from("admin_users").update({ last_login_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", admin.id));
-    reply.setCookie("vr_admin", token, { ...cookieBase(request), maxAge: 60 * 60 * 12 });
+    reply.setCookie("vr_admin", token, { ...cookieBase(request2), maxAge: 60 * 60 * 12 });
     await audit({
       actorType: "admin",
       actorId: admin.id,
@@ -71063,25 +71076,25 @@ async function registerAuth(app) {
       entityType: "admin_user",
       entityId: admin.id,
       summary: `${admin.email} signed in`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { email: admin.email, roleId: admin.role_id, fullName: admin.full_name, token };
   });
-  app.post("/admin/auth/logout", async (request, reply) => {
-    const authHeader = request.headers.authorization;
+  app.post("/admin/auth/logout", async (request2, reply) => {
+    const authHeader = request2.headers.authorization;
     const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-    const token = request.cookies.vr_admin || bearerToken;
+    const token = request2.cookies.vr_admin || bearerToken;
     if (token) {
       await ok(db().from("admin_sessions").delete().eq("token_hash", sha256(token)));
     }
-    reply.clearCookie("vr_admin", { ...cookieBase(request), maxAge: 0 });
+    reply.clearCookie("vr_admin", { ...cookieBase(request2), maxAge: 0 });
     return { ok: true };
   });
-  app.post("/auth/session", async (request, reply) => {
+  app.post("/auth/session", async (request2, reply) => {
     const body = external_exports.object({
       accessToken: external_exports.string().min(10),
       refreshToken: external_exports.string().min(10)
-    }).parse(request.body);
+    }).parse(request2.body);
     const client = supabaseAdmin();
     if (!client) return reply.status(503).send({ error: "auth_unconfigured" });
     const user = await client.auth.getUser(body.accessToken);
@@ -71111,19 +71124,19 @@ async function registerAuth(app) {
     }
     return { email: user.data.user.email.toLowerCase() };
   });
-  app.get("/admin/auth/me", async (request, reply) => {
-    const admin = await readAdmin(request);
+  app.get("/admin/auth/me", async (request2, reply) => {
+    const admin = await readAdmin(request2);
     if (!admin) return reply.status(401).send({ error: "unauthorized" });
     return { admin };
   });
-  app.post("/admin/users", async (request) => {
-    const actor = await requireAdmin(request, "admins.manage");
+  app.post("/admin/users", async (request2) => {
+    const actor = await requireAdmin(request2, "admins.manage");
     const body = external_exports.object({
       email: external_exports.string().email(),
       fullName: external_exports.string().min(1),
       password: external_exports.string().min(8),
       roleId: external_exports.enum(["super_admin", "content_manager", "order_manager", "inventory_manager", "support_manager", "seo_manager"])
-    }).parse(request.body);
+    }).parse(request2.body);
     const created = await rows(
       db().from("admin_users").insert({
         email: body.email.toLowerCase(),
@@ -71140,7 +71153,7 @@ async function registerAuth(app) {
       entityType: "admin_user",
       entityId: created[0]?.id,
       summary: `Created admin ${body.email} as ${body.roleId}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return created[0];
   });
@@ -71172,7 +71185,7 @@ async function loadProducts(options) {
       ingredients, benefits, option_name, featured, bestseller, new_arrival, status,
       brand, product_type, updated_at,
       categories ( id, slug, name, legacy_id ),
-      product_variants ( id, product_id, legacy_variant_id, name, sku, price_paise, compare_at_paise, stock_on_hand, stock_reserved, hex_color, active, is_default, sort_order, product_variant_images ( id, url, alt, sort_order ) ),
+      product_variants ( id, product_id, legacy_variant_id, name, sku, price_paise, compare_at_paise, stock_on_hand, stock_reserved, hex_color, weight_grams, length_mm, width_mm, height_mm, active, is_default, sort_order, product_variant_images ( id, url, alt, sort_order ) ),
       product_images ( id, url, alt, width, height, sort_order ),
       product_tags ( tag ),
       reviews ( rating, status )
@@ -71215,6 +71228,10 @@ async function loadProducts(options) {
         sku: variant.sku ?? void 0,
         image: gallery[0]?.src,
         hexColor: variant.hex_color ?? void 0,
+        weightGrams: variant.weight_grams ?? void 0,
+        lengthMm: variant.length_mm ?? void 0,
+        widthMm: variant.width_mm ?? void 0,
+        heightMm: variant.height_mm ?? void 0,
         images: gallery
       };
     });
@@ -71278,11 +71295,11 @@ function slugify(value) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
 }
 async function registerCatalogAdmin(app) {
-  app.get("/products", async (request) => {
+  app.get("/products", async (request2) => {
     const query = external_exports.object({
       category: external_exports.string().optional(),
       q: external_exports.string().optional()
-    }).parse(request.query);
+    }).parse(request2.query);
     const products = await loadProducts({
       status: "published",
       category: query.category === "all" || query.category === "best-sellers" ? null : query.category,
@@ -71292,13 +71309,13 @@ async function registerCatalogAdmin(app) {
     if (query.category === "best-sellers") return products.filter((product) => product.bestseller);
     return products;
   });
-  app.get("/products/:slug", async (request, reply) => {
-    const params = external_exports.object({ slug: external_exports.string() }).parse(request.params);
-    const query = external_exports.object({ preview: external_exports.string().optional() }).parse(request.query);
+  app.get("/products/:slug", async (request2, reply) => {
+    const params = external_exports.object({ slug: external_exports.string() }).parse(request2.params);
+    const query = external_exports.object({ preview: external_exports.string().optional() }).parse(request2.query);
     let status = "published";
     if (query.preview === "1") {
       try {
-        await requireAdmin(request, "products.read");
+        await requireAdmin(request2, "products.read");
         status = null;
       } catch {
         status = "published";
@@ -71308,8 +71325,8 @@ async function registerCatalogAdmin(app) {
     if (!products[0]) return reply.status(404).send({ error: "not_found" });
     return products[0];
   });
-  app.get("/products/:slug/reviews", async (request) => {
-    const params = external_exports.object({ slug: external_exports.string() }).parse(request.params);
+  app.get("/products/:slug/reviews", async (request2) => {
+    const params = external_exports.object({ slug: external_exports.string() }).parse(request2.params);
     const product = await one(db().from("products").select("id").eq("slug", params.slug).maybeSingle());
     if (!product) return [];
     const reviews = await rows(
@@ -71329,14 +71346,14 @@ async function registerCatalogAdmin(app) {
     const categories = await loadCategories();
     return categories.filter((category) => category.active);
   });
-  app.get("/admin/products", async (request) => {
-    await requireAdmin(request, "products.read");
+  app.get("/admin/products", async (request2) => {
+    await requireAdmin(request2, "products.read");
     const query = external_exports.object({
       q: external_exports.string().optional(),
       status: external_exports.string().optional(),
       page: external_exports.coerce.number().optional().default(1),
       pageSize: external_exports.coerce.number().int().min(1).max(200).optional().default(20)
-    }).parse(request.query);
+    }).parse(request2.query);
     const pageSize = query.pageSize;
     const products = await loadProducts({
       status: query.status || null,
@@ -71346,9 +71363,9 @@ async function registerCatalogAdmin(app) {
     });
     return { items: products, page: query.page, pageSize };
   });
-  app.post("/admin/products", async (request) => {
-    const admin = await requireAdmin(request, "products.write");
-    const body = productSchema.parse(request.body);
+  app.post("/admin/products", async (request2) => {
+    const admin = await requireAdmin(request2, "products.write");
+    const body = productSchema.parse(request2.body);
     const category = await categoryId(body.categorySlug);
     if (!category) throw new Error("not_found");
     const created = await rows(db().from("products").insert({
@@ -71379,14 +71396,14 @@ async function registerCatalogAdmin(app) {
       entityType: "product",
       entityId: productId,
       summary: `Created ${body.name}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { id: productId };
   });
-  app.put("/admin/products/:id", async (request) => {
-    const admin = await requireAdmin(request, "products.write");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
-    const body = productSchema.parse(request.body);
+  app.put("/admin/products/:id", async (request2) => {
+    const admin = await requireAdmin(request2, "products.write");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+    const body = productSchema.parse(request2.body);
     const category = await categoryId(body.categorySlug);
     if (!category) throw new Error("not_found");
     await ok(db().from("products").update({
@@ -71418,14 +71435,14 @@ async function registerCatalogAdmin(app) {
       entityType: "product",
       entityId: params.id,
       summary: `Updated ${body.name}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.post("/admin/products/:id/status", async (request) => {
-    const admin = await requireAdmin(request, "products.publish");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
-    const body = external_exports.object({ status: external_exports.enum(["draft", "published", "archived"]) }).parse(request.body);
+  app.post("/admin/products/:id/status", async (request2) => {
+    const admin = await requireAdmin(request2, "products.publish");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+    const body = external_exports.object({ status: external_exports.enum(["draft", "published", "archived"]) }).parse(request2.body);
     await ok(db().from("products").update({ status: body.status }).eq("id", params.id));
     await audit({
       actorType: "admin",
@@ -71435,13 +71452,13 @@ async function registerCatalogAdmin(app) {
       entityType: "product",
       entityId: params.id,
       summary: `Status set to ${body.status}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.post("/admin/products/:id/duplicate", async (request) => {
-    const admin = await requireAdmin(request, "products.write");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.post("/admin/products/:id/duplicate", async (request2) => {
+    const admin = await requireAdmin(request2, "products.write");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const products = await loadProducts({ status: null, limit: 500 });
     const source = products.find((product) => product.databaseId === params.id);
     if (!source) throw new Error("not_found");
@@ -71490,13 +71507,13 @@ async function registerCatalogAdmin(app) {
       entityType: "product",
       entityId: created[0].id,
       summary: `Duplicated ${source.name}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { id: created[0].id };
   });
-  app.delete("/admin/products/:id", async (request, reply) => {
-    const admin = await requireAdmin(request, "products.write");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.delete("/admin/products/:id", async (request2, reply) => {
+    const admin = await requireAdmin(request2, "products.write");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const variants = await rows(db().from("product_variants").select("id").eq("product_id", params.id));
     const variantIds = variants.map((variant) => variant.id);
     const byProduct = await db().from("order_items").select("id", { count: "exact", head: true }).eq("product_id", params.id);
@@ -71512,7 +71529,7 @@ async function registerCatalogAdmin(app) {
         entityType: "product",
         entityId: params.id,
         summary: "Archived product (has order history)",
-        ip: clientIp(request)
+        ip: clientIp(request2)
       });
       return { ok: true, archived: true };
     }
@@ -71526,16 +71543,16 @@ async function registerCatalogAdmin(app) {
       entityType: "product",
       entityId: params.id,
       summary: "Deleted product with no orders",
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true, archived: false };
   });
-  app.get("/admin/categories", async (request) => {
-    await requireAdmin(request, "products.read");
+  app.get("/admin/categories", async (request2) => {
+    await requireAdmin(request2, "products.read");
     return loadCategories();
   });
-  app.post("/admin/categories", async (request) => {
-    const admin = await requireAdmin(request, "categories.write");
+  app.post("/admin/categories", async (request2) => {
+    const admin = await requireAdmin(request2, "categories.write");
     const body = external_exports.object({
       name: external_exports.string().min(1),
       slug: external_exports.string().min(1),
@@ -71543,7 +71560,7 @@ async function registerCatalogAdmin(app) {
       image: external_exports.string().optional(),
       active: external_exports.boolean().default(true),
       sortOrder: external_exports.number().int().default(0)
-    }).parse(request.body);
+    }).parse(request2.body);
     const created = await rows(db().from("categories").insert({
       name: body.name,
       slug: slugify(body.slug),
@@ -71560,7 +71577,7 @@ async function registerCatalogAdmin(app) {
       entityType: "category",
       entityId: created[0]?.id,
       summary: `Category ${body.name}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return created[0];
   });
@@ -71621,7 +71638,10 @@ async function saveImagesAndVariants(productId, body) {
       is_default: variant.isDefault,
       sort_order: variant.sortOrder,
       barcode: variant.barcode ?? null,
-      weight_grams: variant.weightGrams ?? null
+      weight_grams: variant.weightGrams ?? null,
+      length_mm: variant.lengthMm ?? null,
+      width_mm: variant.widthMm ?? null,
+      height_mm: variant.heightMm ?? null
     };
     if (variantId) {
       const current = await one(db().from("product_variants").select("stock_on_hand").eq("id", variantId).maybeSingle());
@@ -71674,8 +71694,8 @@ async function registerContent(app) {
       product_slugs: links.filter((link) => link.story_id === id).map((link) => asOne(link.products)?.slug).filter(Boolean)
     }));
   });
-  app.get("/stories/:slug", async (request, reply) => {
-    const params = external_exports.object({ slug: external_exports.string() }).parse(request.params);
+  app.get("/stories/:slug", async (request2, reply) => {
+    const params = external_exports.object({ slug: external_exports.string() }).parse(request2.params);
     const story = await one(db().from("stories").select("*").eq("slug", params.slug).eq("status", "published").maybeSingle());
     if (!story) return reply.status(404).send({ error: "not_found" });
     const products = await rows(
@@ -71689,20 +71709,20 @@ async function registerContent(app) {
     return { sections, settings };
   });
   app.get("/locations", async () => rows(db().from("locations").select("*").eq("active", true).order("city")));
-  app.get("/legal/:slug", async (request, reply) => {
-    const params = external_exports.object({ slug: external_exports.string() }).parse(request.params);
+  app.get("/legal/:slug", async (request2, reply) => {
+    const params = external_exports.object({ slug: external_exports.string() }).parse(request2.params);
     const page = await one(db().from("legal_pages").select("*").eq("slug", params.slug).maybeSingle());
     if (!page) return reply.status(404).send({ error: "not_found" });
     return page;
   });
-  app.post("/contact", { config: { rateLimit: { max: 6, timeWindow: "1 minute" } } }, async (request) => {
+  app.post("/contact", { config: { rateLimit: { max: 6, timeWindow: "1 minute" } } }, async (request2) => {
     const body = external_exports.object({
       firstName: external_exports.string().min(1),
       lastName: external_exports.string().optional().default(""),
       email: external_exports.string().email(),
       phone: external_exports.string().optional().default(""),
       message: external_exports.string().min(4).max(4e3)
-    }).parse(request.body);
+    }).parse(request2.body);
     const created = await rows(db().from("contact_enquiries").insert({
       first_name: body.firstName,
       last_name: body.lastName,
@@ -71713,8 +71733,8 @@ async function registerContent(app) {
     await notify({ type: "enquiry.created", title: "New enquiry", body: body.email, href: "/admin/enquiries" });
     return { id: created[0]?.id };
   });
-  app.post("/newsletter", { config: { rateLimit: { max: 6, timeWindow: "1 minute" } } }, async (request) => {
-    const body = external_exports.object({ email: external_exports.string().email(), source: external_exports.string().default("footer") }).parse(request.body);
+  app.post("/newsletter", { config: { rateLimit: { max: 6, timeWindow: "1 minute" } } }, async (request2) => {
+    const body = external_exports.object({ email: external_exports.string().email(), source: external_exports.string().default("footer") }).parse(request2.body);
     await ok(db().from("newsletter_subscribers").upsert({
       email: body.email.toLowerCase(),
       source: body.source,
@@ -71725,17 +71745,17 @@ async function registerContent(app) {
     await notify({ type: "newsletter.subscribed", title: "Newsletter signup", body: body.email, href: "/admin/newsletter" });
     return { ok: true };
   });
-  app.post("/newsletter/unsubscribe", async (request) => {
-    const body = external_exports.object({ email: external_exports.string().email() }).parse(request.body);
+  app.post("/newsletter/unsubscribe", async (request2) => {
+    const body = external_exports.object({ email: external_exports.string().email() }).parse(request2.body);
     await ok(db().from("newsletter_subscribers").update({
       status: "unsubscribed",
       unsubscribed_at: (/* @__PURE__ */ new Date()).toISOString()
     }).eq("email", body.email.toLowerCase()));
     return { ok: true };
   });
-  app.get("/admin/customers", async (request) => {
-    await requireAdmin(request, "customers.read");
-    const query = external_exports.object({ q: external_exports.string().optional() }).parse(request.query);
+  app.get("/admin/customers", async (request2) => {
+    await requireAdmin(request2, "customers.read");
+    const query = external_exports.object({ q: external_exports.string().optional() }).parse(request2.query);
     let requestQuery = db().from("customers").select("id, email, full_name, phone, email_verified, auth_provider, avatar_url, created_at").order("created_at", { ascending: false }).limit(200);
     if (query.q) {
       const term = query.q.replace(/[,()]/g, "");
@@ -71743,16 +71763,16 @@ async function registerContent(app) {
     }
     return rows(requestQuery);
   });
-  app.get("/admin/customers/:id", async (request) => {
-    await requireAdmin(request, "customers.read");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.get("/admin/customers/:id", async (request2) => {
+    await requireAdmin(request2, "customers.read");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const customer = await one(db().from("customers").select("id, email, full_name, phone, email_verified, created_at").eq("id", params.id).maybeSingle());
     const addresses = await rows(db().from("addresses").select("*").eq("customer_id", params.id));
     const orders = await rows(db().from("orders").select("id, order_number, status, total_paise, created_at").eq("customer_id", params.id).order("created_at", { ascending: false }));
     return { customer, addresses, orders };
   });
-  app.get("/admin/reviews", async (request) => {
-    await requireAdmin(request, "reviews.moderate");
+  app.get("/admin/reviews", async (request2) => {
+    await requireAdmin(request2, "reviews.moderate");
     const reviews = await rows(db().from("reviews").select("*").order("created_at", { ascending: false }));
     const productIds = [...new Set(reviews.map((review) => review.product_id))];
     const customerIds = [...new Set(reviews.map((review) => review.customer_id))];
@@ -71764,10 +71784,10 @@ async function registerContent(app) {
       customer_email: customers.find((customer) => customer.id === review.customer_id)?.email ?? ""
     }));
   });
-  app.patch("/admin/reviews/:id", async (request) => {
-    const admin = await requireAdmin(request, "reviews.moderate");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
-    const body = external_exports.object({ status: external_exports.enum(["pending", "approved", "rejected", "hidden"]) }).parse(request.body);
+  app.patch("/admin/reviews/:id", async (request2) => {
+    const admin = await requireAdmin(request2, "reviews.moderate");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+    const body = external_exports.object({ status: external_exports.enum(["pending", "approved", "rejected", "hidden"]) }).parse(request2.body);
     await ok(db().from("reviews").update({ status: body.status }).eq("id", params.id));
     await audit({
       actorType: "admin",
@@ -71777,21 +71797,21 @@ async function registerContent(app) {
       entityType: "review",
       entityId: params.id,
       summary: `Review ${body.status}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.get("/admin/enquiries", async (request) => {
-    await requireAdmin(request, "enquiries.manage");
+  app.get("/admin/enquiries", async (request2) => {
+    await requireAdmin(request2, "enquiries.manage");
     return rows(db().from("contact_enquiries").select("*").order("created_at", { ascending: false }).limit(200));
   });
-  app.patch("/admin/enquiries/:id", async (request) => {
-    await requireAdmin(request, "enquiries.manage");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.patch("/admin/enquiries/:id", async (request2) => {
+    await requireAdmin(request2, "enquiries.manage");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const body = external_exports.object({
       status: external_exports.enum(["open", "in_progress", "resolved"]),
       notes: external_exports.string().optional()
-    }).parse(request.body);
+    }).parse(request2.body);
     const current = body.notes == null ? await one(db().from("contact_enquiries").select("notes").eq("id", params.id).maybeSingle()) : null;
     await ok(db().from("contact_enquiries").update({
       status: body.status,
@@ -71799,16 +71819,16 @@ async function registerContent(app) {
     }).eq("id", params.id));
     return { ok: true };
   });
-  app.get("/admin/newsletter", async (request) => {
-    await requireAdmin(request, "newsletter.read");
+  app.get("/admin/newsletter", async (request2) => {
+    await requireAdmin(request2, "newsletter.read");
     return rows(db().from("newsletter_subscribers").select("id, email, status, source, consented_at, unsubscribed_at").order("consented_at", { ascending: false }));
   });
-  app.get("/admin/stories", async (request) => {
-    await requireAdmin(request, "content.write");
+  app.get("/admin/stories", async (request2) => {
+    await requireAdmin(request2, "content.write");
     return rows(db().from("stories").select("*").order("updated_at", { ascending: false }));
   });
-  app.post("/admin/stories", async (request) => {
-    const admin = await requireAdmin(request, "content.write");
+  app.post("/admin/stories", async (request2) => {
+    const admin = await requireAdmin(request2, "content.write");
     const body = external_exports.object({
       title: external_exports.string().min(1),
       slug: external_exports.string().min(1),
@@ -71822,7 +71842,7 @@ async function registerContent(app) {
       chips: external_exports.array(external_exports.string()).default([]),
       status: external_exports.enum(["draft", "published"]).default("draft"),
       productSlugs: external_exports.array(external_exports.string()).default([])
-    }).parse(request.body);
+    }).parse(request2.body);
     const created = await rows(db().from("stories").insert({
       slug: slugify(body.slug),
       title: body.title,
@@ -71854,13 +71874,13 @@ async function registerContent(app) {
       entityType: "story",
       entityId: created[0].id,
       summary: body.title,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return created[0];
   });
-  app.put("/admin/stories/:id", async (request) => {
-    const admin = await requireAdmin(request, "content.write");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.put("/admin/stories/:id", async (request2) => {
+    const admin = await requireAdmin(request2, "content.write");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const body = external_exports.object({
       title: external_exports.string().min(1),
       slug: external_exports.string().min(1),
@@ -71874,7 +71894,7 @@ async function registerContent(app) {
       chips: external_exports.array(external_exports.string()).default([]),
       status: external_exports.enum(["draft", "published"]).default("draft"),
       productSlugs: external_exports.array(external_exports.string()).default([])
-    }).parse(request.body);
+    }).parse(request2.body);
     await ok(db().from("stories").update({
       slug: slugify(body.slug),
       title: body.title,
@@ -71907,13 +71927,13 @@ async function registerContent(app) {
       entityType: "story",
       entityId: params.id,
       summary: `Updated story ${body.title}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.delete("/admin/stories/:id", async (request) => {
-    const admin = await requireAdmin(request, "content.write");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.delete("/admin/stories/:id", async (request2) => {
+    const admin = await requireAdmin(request2, "content.write");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     await ok(db().from("story_products").delete().eq("story_id", params.id));
     await ok(db().from("stories").delete().eq("id", params.id));
     await audit({
@@ -71924,17 +71944,17 @@ async function registerContent(app) {
       entityType: "story",
       entityId: params.id,
       summary: `Deleted story`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.get("/admin/homepage", async (request) => {
-    await requireAdmin(request, "homepage.write");
+  app.get("/admin/homepage", async (request2) => {
+    await requireAdmin(request2, "homepage.write");
     return rows(db().from("homepage_sections").select("*").order("sort_order"));
   });
-  app.put("/admin/homepage/:key", async (request) => {
-    const admin = await requireAdmin(request, "homepage.write");
-    const params = external_exports.object({ key: external_exports.string() }).parse(request.params);
+  app.put("/admin/homepage/:key", async (request2) => {
+    const admin = await requireAdmin(request2, "homepage.write");
+    const params = external_exports.object({ key: external_exports.string() }).parse(request2.params);
     const body = external_exports.object({
       title: external_exports.string().default(""),
       subtitle: external_exports.string().default(""),
@@ -71943,7 +71963,7 @@ async function registerContent(app) {
       linkUrl: external_exports.string().optional(),
       enabled: external_exports.boolean().default(true),
       sortOrder: external_exports.number().int().default(0)
-    }).parse(request.body);
+    }).parse(request2.body);
     await ok(db().from("homepage_sections").upsert({
       section_key: params.key,
       title: body.title,
@@ -71962,16 +71982,16 @@ async function registerContent(app) {
       entityType: "homepage_section",
       entityId: params.key,
       summary: `Updated ${params.key}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.get("/admin/locations", async (request) => {
-    await requireAdmin(request, "locations.write");
+  app.get("/admin/locations", async (request2) => {
+    await requireAdmin(request2, "locations.write");
     return rows(db().from("locations").select("*").order("city"));
   });
-  app.post("/admin/locations", async (request) => {
-    const admin = await requireAdmin(request, "locations.write");
+  app.post("/admin/locations", async (request2) => {
+    const admin = await requireAdmin(request2, "locations.write");
     const body = external_exports.object({
       name: external_exports.string().min(1),
       address: external_exports.string().default(""),
@@ -71984,7 +72004,7 @@ async function registerContent(app) {
       openingHours: external_exports.string().optional(),
       mapUrl: external_exports.string().optional(),
       active: external_exports.boolean().default(true)
-    }).parse(request.body);
+    }).parse(request2.body);
     const created = await rows(db().from("locations").insert({
       name: body.name,
       address: body.address,
@@ -72006,21 +72026,21 @@ async function registerContent(app) {
       entityType: "location",
       entityId: created[0]?.id,
       summary: body.name,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return created[0];
   });
-  app.get("/admin/legal", async (request) => {
-    await requireAdmin(request, "content.write");
+  app.get("/admin/legal", async (request2) => {
+    await requireAdmin(request2, "content.write");
     return rows(db().from("legal_pages").select("*").order("slug"));
   });
-  app.put("/admin/legal/:slug", async (request) => {
-    const admin = await requireAdmin(request, "content.write");
-    const params = external_exports.object({ slug: external_exports.string() }).parse(request.params);
+  app.put("/admin/legal/:slug", async (request2) => {
+    const admin = await requireAdmin(request2, "content.write");
+    const params = external_exports.object({ slug: external_exports.string() }).parse(request2.params);
     const body = external_exports.object({
       title: external_exports.string().min(1),
       sections: external_exports.array(external_exports.object({ heading: external_exports.string(), body: external_exports.string() }))
-    }).parse(request.body);
+    }).parse(request2.body);
     await ok(db().from("legal_pages").upsert({ slug: params.slug, title: body.title, sections: body.sections }, { onConflict: "slug" }));
     await audit({
       actorType: "admin",
@@ -72030,16 +72050,16 @@ async function registerContent(app) {
       entityType: "legal_page",
       entityId: params.slug,
       summary: body.title,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.get("/admin/settings", async (request) => {
-    await requireAdmin(request, "settings.write");
+  app.get("/admin/settings", async (request2) => {
+    await requireAdmin(request2, "settings.write");
     return rows(db().from("site_settings").select("*").eq("id", 1));
   });
-  app.put("/admin/settings", async (request) => {
-    const admin = await requireAdmin(request, "settings.write");
+  app.put("/admin/settings", async (request2) => {
+    const admin = await requireAdmin(request2, "settings.write");
     const body = external_exports.object({
       brandName: external_exports.string().min(1),
       supportEmail: external_exports.string().email(),
@@ -72047,9 +72067,14 @@ async function registerContent(app) {
       freeShippingThresholdPaise: external_exports.number().int().min(0),
       shippingFlatPaise: external_exports.number().int().min(0),
       announcements: external_exports.array(external_exports.string()),
-      claimTicker: external_exports.array(external_exports.string())
-    }).parse(request.body);
-    await ok(db().from("site_settings").update({
+      claimTicker: external_exports.array(external_exports.string()),
+      shiprocketPickupPostcode: external_exports.string().optional(),
+      defaultPackageWeightGrams: external_exports.number().int().min(1).optional(),
+      defaultPackageLengthMm: external_exports.number().int().min(1).optional(),
+      defaultPackageWidthMm: external_exports.number().int().min(1).optional(),
+      defaultPackageHeightMm: external_exports.number().int().min(1).optional()
+    }).parse(request2.body);
+    const settingsUpdate = {
       brand_name: body.brandName,
       support_email: body.supportEmail,
       gst: body.gst ?? null,
@@ -72057,7 +72082,15 @@ async function registerContent(app) {
       shipping_flat_paise: body.shippingFlatPaise,
       announcements: body.announcements,
       claim_ticker: body.claimTicker
-    }).eq("id", 1));
+    };
+    if (body.shiprocketPickupPostcode !== void 0) {
+      settingsUpdate.shiprocket_pickup_postcode = body.shiprocketPickupPostcode || null;
+    }
+    if (body.defaultPackageWeightGrams != null) settingsUpdate.default_package_weight_grams = body.defaultPackageWeightGrams;
+    if (body.defaultPackageLengthMm != null) settingsUpdate.default_package_length_mm = body.defaultPackageLengthMm;
+    if (body.defaultPackageWidthMm != null) settingsUpdate.default_package_width_mm = body.defaultPackageWidthMm;
+    if (body.defaultPackageHeightMm != null) settingsUpdate.default_package_height_mm = body.defaultPackageHeightMm;
+    await ok(db().from("site_settings").update(settingsUpdate).eq("id", 1));
     await audit({
       actorType: "admin",
       actorId: admin.id,
@@ -72066,7 +72099,7 @@ async function registerContent(app) {
       entityType: "site_settings",
       entityId: "1",
       summary: "Updated website settings",
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
@@ -72101,6 +72134,9 @@ var init_content_routes = __esm({
       sortOrder: external_exports.coerce.number().int().default(0),
       barcode: external_exports.string().optional(),
       weightGrams: external_exports.coerce.number().int().optional(),
+      lengthMm: external_exports.coerce.number().int().optional(),
+      widthMm: external_exports.coerce.number().int().optional(),
+      heightMm: external_exports.coerce.number().int().optional(),
       images: external_exports.array(imageSchema).default([])
     });
     productSchema = external_exports.object({
@@ -72241,15 +72277,1105 @@ var init_commerce = __esm({
   }
 });
 
+// server/src/shiprocket/errors.ts
+function classifyHttpStatus(status) {
+  if (status === 401) return { category: "authentication", retryable: false };
+  if (status === 403) return { category: "authorization", retryable: false };
+  if (status === 429) return { category: "rate_limit", retryable: true };
+  if (status === 400 || status === 404 || status === 405 || status === 422) {
+    return { category: "invalid_request", retryable: false };
+  }
+  if (status >= 500) return { category: "provider_server", retryable: true };
+  return { category: "invalid_response", retryable: false };
+}
+var ShiprocketError;
+var init_errors2 = __esm({
+  "server/src/shiprocket/errors.ts"() {
+    "use strict";
+    ShiprocketError = class extends Error {
+      category;
+      status;
+      retryable;
+      details;
+      constructor(category, message, options) {
+        super(message);
+        this.name = "ShiprocketError";
+        this.category = category;
+        this.status = options?.status;
+        this.retryable = options?.retryable ?? false;
+        this.details = options?.details;
+        if (options?.cause !== void 0) {
+          this.cause = options.cause;
+        }
+      }
+    };
+  }
+});
+
+// server/src/shiprocket/client.ts
+function baseUrl() {
+  return (env.SHIPROCKET_BASE_URL || "https://apiv2.shiprocket.in").replace(/\/$/, "");
+}
+function assertConfigured() {
+  if (!env.SHIPROCKET_EMAIL || !env.SHIPROCKET_PASSWORD) {
+    throw new ShiprocketError("not_configured", "shiprocket_not_configured");
+  }
+}
+function rupeesToPaise(value) {
+  return Math.round(Number(value) * 100);
+}
+function parseEtdDays(value) {
+  if (value == null || value === "") return null;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  const match = String(value).match(/(\d+(\.\d+)?)/);
+  return match ? Number(match[1]) : null;
+}
+async function readStoredToken() {
+  try {
+    const row = await one(
+      db().from("provider_tokens").select("access_token, expires_at").eq("provider", "shiprocket").maybeSingle()
+    );
+    if (!row?.access_token || !row.expires_at) return null;
+    const expiresAt = new Date(row.expires_at).getTime();
+    if (Number.isNaN(expiresAt) || expiresAt <= Date.now() + 6e4) return null;
+    return { token: row.access_token, expiresAt };
+  } catch {
+    return null;
+  }
+}
+async function writeStoredToken(token, expiresAt) {
+  try {
+    await ok(
+      db().from("provider_tokens").upsert({
+        provider: "shiprocket",
+        access_token: token,
+        expires_at: new Date(expiresAt).toISOString(),
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      })
+    );
+  } catch {
+  }
+}
+async function login() {
+  assertConfigured();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch(`${baseUrl()}/v1/external/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: env.SHIPROCKET_EMAIL, password: env.SHIPROCKET_PASSWORD }),
+      signal: controller.signal
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok || !body.token) {
+      const classified = classifyHttpStatus(response.status);
+      throw new ShiprocketError(classified.category, "shiprocket_auth_failed", {
+        status: response.status,
+        retryable: classified.retryable,
+        details: { message: body.message }
+      });
+    }
+    const expiresAt = Date.now() + TOKEN_TTL_MS;
+    memoryToken = { token: body.token, expiresAt };
+    await writeStoredToken(body.token, expiresAt);
+    return body.token;
+  } catch (error) {
+    if (error instanceof ShiprocketError) throw error;
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new ShiprocketError("timeout", "shiprocket_auth_timeout", { retryable: true, cause: error });
+    }
+    throw new ShiprocketError("network", "shiprocket_auth_network", { retryable: true, cause: error });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+async function getToken(force = false) {
+  assertConfigured();
+  if (!force && memoryToken && memoryToken.expiresAt > Date.now() + 6e4) {
+    return memoryToken.token;
+  }
+  if (!force) {
+    const stored = await readStoredToken();
+    if (stored) {
+      memoryToken = stored;
+      return stored.token;
+    }
+  }
+  if (!loginInFlight) {
+    loginInFlight = login().finally(() => {
+      loginInFlight = null;
+    });
+  }
+  return loginInFlight;
+}
+async function request(method, path2, options) {
+  assertConfigured();
+  const idempotent = options?.idempotent ?? method === "GET";
+  let token = await getToken(false);
+  const url = new URL(`${baseUrl()}${path2}`);
+  if (options?.query) {
+    for (const [key, value] of Object.entries(options.query)) {
+      if (value === void 0) continue;
+      url.searchParams.set(key, String(value));
+    }
+  }
+  const attempt = async (authToken) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    try {
+      const response = await fetch(url.toString(), {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`
+        },
+        body: options?.body === void 0 ? void 0 : JSON.stringify(options.body),
+        signal: controller.signal
+      });
+      const text = await response.text();
+      let json = {};
+      if (text) {
+        try {
+          json = JSON.parse(text);
+        } catch {
+          throw new ShiprocketError("invalid_response", "shiprocket_invalid_json", {
+            status: response.status,
+            details: { snippet: text.slice(0, 200) }
+          });
+        }
+      }
+      return { response, json };
+    } catch (error) {
+      if (error instanceof ShiprocketError) throw error;
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new ShiprocketError(
+          idempotent ? "timeout" : "unknown_outcome",
+          idempotent ? "shiprocket_timeout" : "shiprocket_timeout_uncertain",
+          { retryable: idempotent, cause: error }
+        );
+      }
+      throw new ShiprocketError(
+        idempotent ? "network" : "unknown_outcome",
+        idempotent ? "shiprocket_network" : "shiprocket_network_uncertain",
+        { retryable: idempotent, cause: error }
+      );
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  let result = await attempt(token);
+  if (result.response.status === 401) {
+    token = await getToken(true);
+    result = await attempt(token);
+  }
+  if (!result.response.ok) {
+    const classified = classifyHttpStatus(result.response.status);
+    throw new ShiprocketError(classified.category, `shiprocket_http_${result.response.status}`, {
+      status: result.response.status,
+      retryable: classified.retryable && idempotent,
+      details: result.json
+    });
+  }
+  return result.json;
+}
+function normalizeCourierRates(payload) {
+  const companies = payload.data?.available_courier_companies ?? [];
+  return companies.filter((row) => row && row.courier_company_id != null && row.courier_name).map((row) => ({
+    courierId: Number(row.courier_company_id),
+    courierName: String(row.courier_name),
+    ratePaise: rupeesToPaise(Number(row.rate ?? row.freight_charge ?? 0)),
+    etdDays: parseEtdDays(row.etd ?? row.estimated_delivery_days),
+    raw: row
+  })).sort((a, b) => a.ratePaise - b.ratePaise);
+}
+function normalizeTrackingEvents(scans = []) {
+  return scans.map((scan, index) => {
+    const eventAt = scan.date ? new Date(scan.date) : null;
+    const atIso = eventAt && !Number.isNaN(eventAt.getTime()) ? eventAt.toISOString() : (/* @__PURE__ */ new Date()).toISOString();
+    const label = scan.activity || scan["sr-status-label"] || scan.status || "Update";
+    const code = scan["sr-status"] || scan.status || null;
+    const key = [atIso, code ?? "", label, scan.location ?? "", index].join("|");
+    return {
+      providerEventKey: key,
+      eventCode: code,
+      eventLabel: label,
+      eventAt: atIso,
+      location: scan.location ?? null
+    };
+  }).sort((a, b) => a.eventAt.localeCompare(b.eventAt));
+}
+function mapProviderStatusToShipment(status) {
+  if (status == null || status === "") return null;
+  const raw = String(status).trim().toLowerCase();
+  const map = {
+    new: "created",
+    created: "created",
+    "awb assigned": "awb_assigned",
+    pickup: "pickup_scheduled",
+    "pickup scheduled": "pickup_scheduled",
+    "picked up": "picked_up",
+    shipped: "in_transit",
+    "in transit": "in_transit",
+    "out for delivery": "out_for_delivery",
+    delivered: "delivered",
+    delayed: "delayed",
+    exception: "exception",
+    undelivered: "exception",
+    rto: "rto_initiated",
+    "rto initiated": "rto_initiated",
+    "rto delivered": "rto_delivered",
+    canceled: "cancelled",
+    cancelled: "cancelled",
+    "6": "in_transit",
+    "7": "delivered",
+    "17": "out_for_delivery",
+    "18": "in_transit",
+    "19": "out_for_delivery",
+    "20": "in_transit",
+    "21": "delivered",
+    "42": "picked_up",
+    "46": "rto_initiated"
+  };
+  return map[raw] ?? null;
+}
+function shipmentStatusRank(status) {
+  const order = [
+    "pending",
+    "created",
+    "awb_assigned",
+    "pickup_scheduled",
+    "picked_up",
+    "in_transit",
+    "out_for_delivery",
+    "delayed",
+    "exception",
+    "delivered",
+    "rto_initiated",
+    "rto_delivered",
+    "cancelled",
+    "failed"
+  ];
+  return order.indexOf(status);
+}
+var TOKEN_TTL_MS, REQUEST_TIMEOUT_MS, memoryToken, loginInFlight, shiprocketClient;
+var init_client = __esm({
+  "server/src/shiprocket/client.ts"() {
+    "use strict";
+    init_env();
+    init_db();
+    init_errors2();
+    TOKEN_TTL_MS = 9 * 24 * 60 * 60 * 1e3;
+    REQUEST_TIMEOUT_MS = 2e4;
+    memoryToken = null;
+    loginInFlight = null;
+    shiprocketClient = {
+      async checkServiceability(input) {
+        const payload = await request("GET", "/v1/external/courier/serviceability/", {
+          query: {
+            pickup_postcode: input.pickupPostcode,
+            delivery_postcode: input.deliveryPostcode,
+            weight: input.weightKg,
+            cod: input.cod ? 1 : 0
+          },
+          idempotent: true
+        });
+        return normalizeCourierRates(payload);
+      },
+      async createAdhocOrder(body) {
+        return request("POST", "/v1/external/orders/create/adhoc", {
+          body,
+          idempotent: false
+        });
+      },
+      async assignAwb(input) {
+        return request("POST", "/v1/external/courier/assign/awb", {
+          body: {
+            shipment_id: input.shipmentId,
+            courier_id: input.courierId
+          },
+          idempotent: false
+        });
+      },
+      async generatePickup(shipmentIds) {
+        return request("POST", "/v1/external/courier/generate/pickup", {
+          body: { shipment_id: shipmentIds },
+          idempotent: false
+        });
+      },
+      async generateLabel(shipmentIds) {
+        return request("POST", "/v1/external/courier/generate/label", {
+          body: { shipment_id: shipmentIds },
+          idempotent: true
+        });
+      },
+      async trackByAwb(awb) {
+        return request("GET", `/v1/external/courier/track/awb/${encodeURIComponent(awb)}`, {
+          idempotent: true
+        });
+      },
+      async trackByShipmentId(shipmentId) {
+        return request(
+          "GET",
+          `/v1/external/courier/track/shipment/${encodeURIComponent(String(shipmentId))}`,
+          { idempotent: true }
+        );
+      },
+      async createReturn(body) {
+        return request("POST", "/v1/external/orders/create/return", {
+          body,
+          idempotent: false
+        });
+      },
+      async listNdr() {
+        return request("GET", "/v1/external/ndr/all", { idempotent: true });
+      },
+      async getNdr(awb) {
+        return request("GET", `/v1/external/ndr/${encodeURIComponent(awb)}`, { idempotent: true });
+      },
+      async actNdr(awb, body) {
+        return request("POST", `/v1/external/ndr/${encodeURIComponent(awb)}/action`, {
+          body,
+          idempotent: false
+        });
+      },
+      /** Test helper: clear in-memory token cache */
+      _resetTokenCache() {
+        memoryToken = null;
+        loginInFlight = null;
+      }
+    };
+  }
+});
+
+// server/src/shipping-service.ts
+function mmToCm(mm) {
+  return Math.max(Math.ceil(mm / 10), 1);
+}
+function gramsToKg(grams) {
+  return Math.max(Number((grams / 1e3).toFixed(3)), 0.05);
+}
+function normalizeTrackingPayload(shipment, events, admin = false) {
+  const base = {
+    shipmentId: shipment.id,
+    orderId: shipment.order_id,
+    status: shipment.status,
+    courierName: shipment.courier_name,
+    awb: shipment.awb,
+    etdAt: shipment.etd_at,
+    trackingUrl: shipment.tracking_url,
+    lastSyncedAt: shipment.last_synced_at,
+    estimatedCostPaise: shipment.estimated_cost_paise,
+    confirmedCostPaise: shipment.confirmed_cost_paise,
+    costVerificationStatus: shipment.cost_verification_status,
+    events: events.map((event) => ({
+      at: event.event_at,
+      label: event.event_label,
+      location: event.location,
+      code: event.event_code
+    }))
+  };
+  if (!admin) return base;
+  return {
+    ...base,
+    providerOrderId: shipment.provider_order_id,
+    providerShipmentId: shipment.provider_shipment_id,
+    courierId: shipment.courier_id,
+    pickupStatus: shipment.pickup_status,
+    operationState: shipment.operation_state,
+    lastError: shipment.last_error
+  };
+}
+async function loadPackageForOrder(orderId) {
+  const settings = await one(
+    db().from("site_settings").select(
+      "shiprocket_pickup_postcode, default_package_weight_grams, default_package_length_mm, default_package_width_mm, default_package_height_mm"
+    ).eq("id", 1).maybeSingle()
+  );
+  const items = await rows(
+    db().from("order_items").select("quantity, sku, product_name, variant_name, unit_price_paise, variant_id").eq("order_id", orderId)
+  );
+  const variantIds = items.map((item) => item.variant_id).filter(Boolean);
+  const variants = variantIds.length ? await rows(
+    db().from("product_variants").select("id, weight_grams, length_mm, width_mm, height_mm, sku").in("id", variantIds)
+  ) : [];
+  const byId = new Map(variants.map((row) => [row.id, row]));
+  const defaultWeight = settings?.default_package_weight_grams ?? 250;
+  const defaultLength = settings?.default_package_length_mm ?? 150;
+  const defaultWidth = settings?.default_package_width_mm ?? 100;
+  const defaultHeight = settings?.default_package_height_mm ?? 50;
+  let weightGrams = 0;
+  let lengthMm = defaultLength;
+  let widthMm = defaultWidth;
+  let heightMm = defaultHeight;
+  for (const item of items) {
+    const variant = item.variant_id ? byId.get(item.variant_id) : void 0;
+    weightGrams += (variant?.weight_grams ?? defaultWeight) * item.quantity;
+    lengthMm = Math.max(lengthMm, variant?.length_mm ?? defaultLength);
+    widthMm = Math.max(widthMm, variant?.width_mm ?? defaultWidth);
+    heightMm = Math.max(heightMm, variant?.height_mm ?? defaultHeight);
+  }
+  if (weightGrams <= 0) weightGrams = defaultWeight;
+  return {
+    pickupPostcode: settings?.shiprocket_pickup_postcode || "",
+    weightGrams,
+    lengthMm,
+    widthMm,
+    heightMm,
+    items
+  };
+}
+async function requirePaidOrder(orderId) {
+  const order = await one(
+    db().from("orders").select("id, order_number, status, email, subtotal_paise, discount_paise, total_paise").eq("id", orderId).maybeSingle()
+  );
+  if (!order) throw new Error("not_found");
+  const payment = await one(
+    db().from("payments").select("status").eq("order_id", orderId).order("created_at", { ascending: false }).limit(1).maybeSingle()
+  );
+  if (payment?.status !== "paid") throw new Error("payment_not_paid");
+  if (["cancelled", "refunded"].includes(order.status)) throw new Error("order_not_shippable");
+  const address = await one(db().from("order_addresses").select("*").eq("order_id", orderId).maybeSingle());
+  if (!address?.postal_code) throw new Error("address_required");
+  return { order, address, payment };
+}
+async function compareCourierRates(orderId) {
+  const { order, address } = await requirePaidOrder(orderId);
+  const pkg = await loadPackageForOrder(orderId);
+  if (!pkg.pickupPostcode) throw new Error("pickup_postcode_missing");
+  const rates = await shiprocketClient.checkServiceability({
+    pickupPostcode: pkg.pickupPostcode,
+    deliveryPostcode: address.postal_code,
+    weightKg: gramsToKg(pkg.weightGrams),
+    cod: false
+  });
+  const quotedAt = (/* @__PURE__ */ new Date()).toISOString();
+  if (rates.length) {
+    await ok(
+      db().from("courier_rate_quotes").insert(
+        rates.map((rate) => ({
+          order_id: order.id,
+          pickup_postcode: pkg.pickupPostcode,
+          delivery_postcode: address.postal_code,
+          weight_grams: pkg.weightGrams,
+          cod: false,
+          courier_id: rate.courierId,
+          courier_name: rate.courierName,
+          rate_paise: rate.ratePaise,
+          etd_days: rate.etdDays,
+          quoted_at: quotedAt,
+          metadata: { source: "serviceability" }
+        }))
+      )
+    );
+  }
+  return {
+    orderId: order.id,
+    orderNumber: order.order_number,
+    pickupPostcode: pkg.pickupPostcode,
+    deliveryPostcode: address.postal_code,
+    weightGrams: pkg.weightGrams,
+    dimensionsMm: { length: pkg.lengthMm, width: pkg.widthMm, height: pkg.heightMm },
+    quotedAt,
+    couriers: rates.map((rate) => ({
+      courierId: rate.courierId,
+      courierName: rate.courierName,
+      ratePaise: rate.ratePaise,
+      etdDays: rate.etdDays
+    }))
+  };
+}
+async function createShipmentForOrder(orderId, courierId) {
+  const { order, address } = await requirePaidOrder(orderId);
+  const existing = await one(
+    db().from("shipments").select("*").eq("order_id", orderId).not("status", "in", '("cancelled","failed")').maybeSingle()
+  );
+  if (existing && !["pending", "failed"].includes(existing.status) && existing.provider_shipment_id) {
+    return existing;
+  }
+  const pkg = await loadPackageForOrder(orderId);
+  const pickupLocation = env.SHIPROCKET_PICKUP_LOCATION;
+  if (!pickupLocation) throw new Error("pickup_location_missing");
+  if (!pkg.pickupPostcode) throw new Error("pickup_postcode_missing");
+  let shipment = existing ?? await one(
+    db().from("shipments").insert({
+      order_id: order.id,
+      channel_order_id: order.order_number,
+      status: "pending",
+      operation_state: "creating",
+      weight_grams: pkg.weightGrams,
+      length_mm: pkg.lengthMm,
+      width_mm: pkg.widthMm,
+      height_mm: pkg.heightMm,
+      courier_id: courierId ?? null
+    }).select("*").single()
+  );
+  if (!shipment) throw new Error("shipment_create_failed");
+  await ok(
+    db().from("shipments").update({
+      operation_state: "creating",
+      courier_id: courierId ?? shipment.courier_id,
+      weight_grams: pkg.weightGrams,
+      length_mm: pkg.lengthMm,
+      width_mm: pkg.widthMm,
+      height_mm: pkg.heightMm,
+      updated_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("id", shipment.id)
+  );
+  const nameParts = address.full_name.trim().split(/\s+/);
+  const firstName = nameParts[0] || "Customer";
+  const lastName = nameParts.slice(1).join(" ") || void 0;
+  const subTotalRupees = Math.max((order.subtotal_paise - order.discount_paise) / 100, 0);
+  try {
+    const created = await shiprocketClient.createAdhocOrder({
+      order_id: order.order_number,
+      order_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", " "),
+      pickup_location: pickupLocation,
+      billing_customer_name: firstName,
+      billing_last_name: lastName,
+      billing_address: address.line1,
+      billing_address_2: address.line2 || void 0,
+      billing_city: address.city,
+      billing_pincode: address.postal_code,
+      billing_state: address.region || address.city,
+      billing_country: address.country || "India",
+      billing_email: order.email,
+      billing_phone: address.phone,
+      shipping_is_billing: true,
+      order_items: pkg.items.map((item, index) => ({
+        name: `${item.product_name} ${item.variant_name}`.trim(),
+        sku: item.sku || `SKU-${index + 1}`,
+        units: item.quantity,
+        selling_price: item.unit_price_paise / 100
+      })),
+      payment_method: "Prepaid",
+      sub_total: subTotalRupees,
+      length: mmToCm(pkg.lengthMm),
+      breadth: mmToCm(pkg.widthMm),
+      height: mmToCm(pkg.heightMm),
+      weight: gramsToKg(pkg.weightGrams)
+    });
+    shipment = await one(
+      db().from("shipments").update({
+        provider_order_id: String(created.order_id),
+        provider_shipment_id: String(created.shipment_id),
+        status: "created",
+        operation_state: courierId ? "awb_pending" : "ready",
+        courier_name: created.courier_name || null,
+        awb: created.awb_code || null,
+        last_error: null,
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      }).eq("id", shipment.id).select("*").single()
+    );
+    await ok(
+      db().from("shipment_charges").upsert({
+        shipment_id: shipment.id,
+        estimated_paise: shipment.estimated_cost_paise,
+        charge_status: "estimated",
+        reconciliation_status: "open",
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      })
+    );
+    if (courierId) {
+      shipment = await assignAwb(shipment.id, courierId);
+    }
+    return shipment;
+  } catch (error) {
+    const uncertain = error instanceof ShiprocketError && error.category === "unknown_outcome";
+    await ok(
+      db().from("shipments").update({
+        operation_state: uncertain ? "uncertain" : "failed",
+        last_error: error instanceof Error ? error.message : "create_failed",
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      }).eq("id", shipment.id)
+    );
+    await enqueueJob("reconcile_uncertain_create", { shipmentId: shipment.id, orderId: order.id });
+    throw error;
+  }
+}
+async function assignAwb(shipmentId, courierId) {
+  const shipment = await one(db().from("shipments").select("*").eq("id", shipmentId).maybeSingle());
+  if (!shipment?.provider_shipment_id) throw new Error("shipment_missing_provider_id");
+  await ok(db().from("shipments").update({ operation_state: "awb_pending", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", shipmentId));
+  try {
+    const result = await shiprocketClient.assignAwb({
+      shipmentId: Number(shipment.provider_shipment_id),
+      courierId: courierId ?? shipment.courier_id ?? void 0
+    });
+    const data = result.response?.data;
+    const freightPaise = data?.freight_charges != null ? rupeesToPaise(Number(data.freight_charges)) : null;
+    const updated = await one(
+      db().from("shipments").update({
+        awb: data?.awb_code || shipment.awb,
+        courier_id: data?.courier_company_id ?? courierId ?? shipment.courier_id,
+        courier_name: data?.courier_name || shipment.courier_name,
+        status: "awb_assigned",
+        operation_state: "pickup_pending",
+        estimated_cost_paise: freightPaise ?? shipment.estimated_cost_paise,
+        confirmed_cost_paise: freightPaise,
+        cost_verification_status: freightPaise != null ? "confirmed" : "awaiting_statement",
+        last_error: null,
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      }).eq("id", shipmentId).select("*").single()
+    );
+    if (freightPaise != null) {
+      await ok(
+        db().from("shipment_charges").upsert({
+          shipment_id: shipmentId,
+          estimated_paise: freightPaise,
+          confirmed_paise: freightPaise,
+          confirmed_source: "assign_awb",
+          charge_status: "confirmed",
+          reconciliation_status: "matched",
+          confirmed_at: (/* @__PURE__ */ new Date()).toISOString(),
+          updated_at: (/* @__PURE__ */ new Date()).toISOString()
+        })
+      );
+    }
+    const order = await one(db().from("orders").select("status").eq("id", shipment.order_id).maybeSingle());
+    if (order && !["shipped", "delivered", "cancelled", "refunded"].includes(order.status)) {
+      await ok(db().from("orders").update({ status: "shipped", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", shipment.order_id));
+      await ok(
+        db().from("order_status_history").insert({
+          order_id: shipment.order_id,
+          from_status: order.status,
+          to_status: "shipped",
+          note: "AWB assigned via Shiprocket",
+          actor: "system:shipping"
+        })
+      );
+    }
+    return updated;
+  } catch (error) {
+    await ok(
+      db().from("shipments").update({
+        operation_state: "failed",
+        last_error: error instanceof Error ? error.message : "awb_failed",
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      }).eq("id", shipmentId)
+    );
+    await enqueueJob("retry_awb", { shipmentId, orderId: shipment.order_id });
+    throw error;
+  }
+}
+async function schedulePickup(shipmentId) {
+  const shipment = await one(db().from("shipments").select("*").eq("id", shipmentId).maybeSingle());
+  if (!shipment?.provider_shipment_id) throw new Error("shipment_missing_provider_id");
+  await ok(db().from("shipments").update({ operation_state: "pickup_pending" }).eq("id", shipmentId));
+  try {
+    await shiprocketClient.generatePickup([Number(shipment.provider_shipment_id)]);
+    return one(
+      db().from("shipments").update({
+        pickup_status: "scheduled",
+        status: shipment.status === "awb_assigned" ? "pickup_scheduled" : shipment.status,
+        operation_state: "label_pending",
+        pickup_at: (/* @__PURE__ */ new Date()).toISOString(),
+        last_error: null,
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      }).eq("id", shipmentId).select("*").single()
+    );
+  } catch (error) {
+    await enqueueJob("retry_pickup", { shipmentId, orderId: shipment.order_id });
+    throw error;
+  }
+}
+async function retrieveLabel(shipmentId) {
+  const shipment = await one(db().from("shipments").select("*").eq("id", shipmentId).maybeSingle());
+  if (!shipment?.provider_shipment_id) throw new Error("shipment_missing_provider_id");
+  const result = await shiprocketClient.generateLabel([Number(shipment.provider_shipment_id)]);
+  const labelUrl = result.label_url || null;
+  if (labelUrl) {
+    await ok(
+      db().from("shipment_documents").insert({
+        shipment_id: shipmentId,
+        doc_type: "label",
+        provider_url: labelUrl
+      })
+    );
+  }
+  await ok(
+    db().from("shipments").update({ operation_state: "ready", last_error: null, updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", shipmentId)
+  );
+  return { labelUrl, shipmentId };
+}
+async function persistTrackingEvents(shipmentId, events, source) {
+  if (!events.length) return;
+  await ok(
+    db().from("shipment_tracking_events").upsert(
+      events.map((event) => ({
+        shipment_id: shipmentId,
+        provider_event_key: event.providerEventKey,
+        event_code: event.eventCode,
+        event_label: event.eventLabel,
+        event_at: event.eventAt,
+        location: event.location,
+        source
+      })),
+      { onConflict: "shipment_id,provider_event_key", ignoreDuplicates: true }
+    )
+  );
+}
+function maybeAdvanceStatus(current, next) {
+  if (!next) return current;
+  if (current === "delivered" || current === "rto_delivered" || current === "cancelled") {
+    if (next === "rto_initiated" || next === "rto_delivered") return next;
+    return current;
+  }
+  if (next === "exception" || next === "delayed" || next === "rto_initiated" || next === "rto_delivered") {
+    return next;
+  }
+  if (shipmentStatusRank(next) >= shipmentStatusRank(current)) return next;
+  return current;
+}
+async function syncShipmentTracking(shipmentId) {
+  const shipment = await one(db().from("shipments").select("*").eq("id", shipmentId).maybeSingle());
+  if (!shipment) throw new Error("not_found");
+  if (!shipment.awb && !shipment.provider_shipment_id) throw new Error("tracking_unavailable");
+  const track = shipment.awb ? await shiprocketClient.trackByAwb(shipment.awb) : await shiprocketClient.trackByShipmentId(shipment.provider_shipment_id);
+  const activities = track.tracking_data?.shipment_track_activities ?? [];
+  const events = normalizeTrackingEvents(activities);
+  await persistTrackingEvents(shipmentId, events, "track_api");
+  const currentStatusLabel = track.tracking_data?.shipment_track?.[0]?.current_status || activities[activities.length - 1]?.["sr-status-label"] || activities[activities.length - 1]?.activity;
+  const mapped = mapProviderStatusToShipment(currentStatusLabel) || mapProviderStatusToShipment(track.tracking_data?.shipment_status);
+  const nextStatus = maybeAdvanceStatus(shipment.status, mapped);
+  const etd = track.tracking_data?.shipment_track?.[0]?.etd;
+  const etdAt = etd ? new Date(etd) : null;
+  const updated = await one(
+    db().from("shipments").update({
+      status: nextStatus,
+      tracking_url: track.tracking_data?.track_url || shipment.tracking_url,
+      etd_at: etdAt && !Number.isNaN(etdAt.getTime()) ? etdAt.toISOString() : shipment.etd_at,
+      delivered_at: nextStatus === "delivered" ? (/* @__PURE__ */ new Date()).toISOString() : shipment.delivered_at,
+      pickup_status: nextStatus === "picked_up" || shipmentStatusRank(nextStatus) > shipmentStatusRank("picked_up") ? "picked_up" : shipment.pickup_status,
+      last_synced_at: (/* @__PURE__ */ new Date()).toISOString(),
+      updated_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("id", shipmentId).select("*").single()
+  );
+  if (nextStatus === "delivered") {
+    const order = await one(db().from("orders").select("status").eq("id", shipment.order_id).maybeSingle());
+    if (order && order.status !== "delivered" && order.status !== "refunded" && order.status !== "cancelled") {
+      await ok(db().from("orders").update({ status: "delivered", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", shipment.order_id));
+      await ok(
+        db().from("order_status_history").insert({
+          order_id: shipment.order_id,
+          from_status: order.status,
+          to_status: "delivered",
+          note: "Delivered via Shiprocket tracking",
+          actor: "system:shipping"
+        })
+      );
+    }
+  }
+  const eventRows = await rows(
+    db().from("shipment_tracking_events").select("*").eq("shipment_id", shipmentId).order("event_at", { ascending: true })
+  );
+  return { shipment: updated, events: eventRows };
+}
+async function getShipmentTracking(shipmentId) {
+  const shipment = await one(db().from("shipments").select("*").eq("id", shipmentId).maybeSingle());
+  if (!shipment) throw new Error("not_found");
+  const events = await rows(
+    db().from("shipment_tracking_events").select("*").eq("shipment_id", shipmentId).order("event_at", { ascending: true })
+  );
+  return { shipment, events };
+}
+async function getShipmentForOrder(orderId) {
+  return one(
+    db().from("shipments").select("*").eq("order_id", orderId).order("created_at", { ascending: false }).limit(1).maybeSingle()
+  );
+}
+function verifyWebhookToken(headerValue) {
+  const expected = env.SHIPROCKET_WEBHOOK_TOKEN;
+  if (!expected) throw new Error("webhook_not_configured");
+  if (!headerValue) throw new Error("unauthorized");
+  const a = Buffer.from(headerValue);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !(0, import_node_crypto3.timingSafeEqual)(a, b)) throw new Error("unauthorized");
+}
+async function processLogisticsWebhook(payload) {
+  const awb = payload.awb != null ? String(payload.awb) : "";
+  const currentStatus = payload.current_status != null ? String(payload.current_status) : "";
+  const timestamp = payload.current_timestamp != null ? String(payload.current_timestamp) : "";
+  const srOrderId = payload.sr_order_id != null ? String(payload.sr_order_id) : "";
+  const channelOrderId = payload.order_id != null ? String(payload.order_id) : "";
+  const dedupeKey = (0, import_node_crypto3.createHash)("sha256").update([awb, currentStatus, timestamp, srOrderId, channelOrderId].join("|")).digest("hex");
+  const existing = await one(
+    db().from("shipping_webhook_events").select("id, processing_status").eq("provider", "shiprocket").eq("dedupe_key", dedupeKey).maybeSingle()
+  );
+  if (existing?.processing_status === "processed") {
+    return { ok: true, duplicate: true };
+  }
+  const eventRow = await one(
+    db().from("shipping_webhook_events").upsert({
+      provider: "shiprocket",
+      dedupe_key: dedupeKey,
+      awb: awb || null,
+      processing_status: "received",
+      payload
+    }, { onConflict: "provider,dedupe_key" }).select("id").single()
+  );
+  let shipment = (awb ? await one(db().from("shipments").select("*").eq("awb", awb).maybeSingle()) : null) || (srOrderId ? await one(db().from("shipments").select("*").eq("provider_order_id", srOrderId).maybeSingle()) : null) || (channelOrderId ? await one(db().from("shipments").select("*").eq("channel_order_id", channelOrderId).maybeSingle()) : null);
+  if (!shipment) {
+    await ok(
+      db().from("shipping_webhook_events").update({ processing_status: "ignored", error_message: "shipment_not_found", processed_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", eventRow.id)
+    );
+    return { ok: true, ignored: true };
+  }
+  const scans = Array.isArray(payload.scans) ? payload.scans : [];
+  const events = normalizeTrackingEvents(
+    scans.map((scan) => ({
+      date: scan.date,
+      status: scan.status,
+      activity: scan.activity,
+      location: scan.location,
+      "sr-status": scan["sr-status"],
+      "sr-status-label": scan["sr-status-label"]
+    }))
+  );
+  if (!events.length && currentStatus) {
+    events.push({
+      providerEventKey: `${timestamp}|${currentStatus}`,
+      eventCode: payload.current_status_id != null ? String(payload.current_status_id) : null,
+      eventLabel: currentStatus,
+      eventAt: timestamp ? new Date(timestamp.replace(/(\d{2}) (\d{2}) (\d{4})/, "$3-$2-$1")).toISOString() : (/* @__PURE__ */ new Date()).toISOString(),
+      location: null
+    });
+  }
+  await persistTrackingEvents(shipment.id, events, "webhook");
+  const mapped = mapProviderStatusToShipment(currentStatus) || mapProviderStatusToShipment(String(payload.shipment_status ?? ""));
+  const nextStatus = maybeAdvanceStatus(shipment.status, mapped);
+  const etd = payload.etd != null ? new Date(String(payload.etd)) : null;
+  await ok(
+    db().from("shipments").update({
+      status: nextStatus,
+      courier_name: payload.courier_name != null ? String(payload.courier_name) : shipment.courier_name,
+      awb: awb || shipment.awb,
+      etd_at: etd && !Number.isNaN(etd.getTime()) ? etd.toISOString() : shipment.etd_at,
+      delivered_at: nextStatus === "delivered" ? (/* @__PURE__ */ new Date()).toISOString() : shipment.delivered_at,
+      last_synced_at: (/* @__PURE__ */ new Date()).toISOString(),
+      updated_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("id", shipment.id)
+  );
+  if (nextStatus === "delivered") {
+    const order = await one(db().from("orders").select("status").eq("id", shipment.order_id).maybeSingle());
+    if (order && !["delivered", "cancelled", "refunded"].includes(order.status)) {
+      await ok(db().from("orders").update({ status: "delivered" }).eq("id", shipment.order_id));
+      await ok(
+        db().from("order_status_history").insert({
+          order_id: shipment.order_id,
+          from_status: order.status,
+          to_status: "delivered",
+          note: "Delivered via logistics webhook",
+          actor: "system:shipping"
+        })
+      );
+    }
+  }
+  await ok(
+    db().from("shipping_webhook_events").update({
+      shipment_id: shipment.id,
+      processing_status: "processed",
+      processed_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("id", eventRow.id)
+  );
+  return { ok: true, shipmentId: shipment.id, status: nextStatus };
+}
+async function enqueueJob(jobType, input) {
+  await ok(
+    db().from("shipping_sync_jobs").insert({
+      job_type: jobType,
+      shipment_id: input.shipmentId ?? null,
+      order_id: input.orderId ?? null,
+      status: "pending",
+      next_retry_at: new Date(Date.now() + 6e4).toISOString()
+    })
+  );
+}
+async function processShippingJobs(limit = 20) {
+  const jobs = await rows(
+    db().from("shipping_sync_jobs").select("id, job_type, shipment_id, order_id, attempts, max_attempts").in("status", ["pending", "failed"]).lte("next_retry_at", (/* @__PURE__ */ new Date()).toISOString()).order("next_retry_at").limit(limit)
+  );
+  const results = [];
+  for (const job of jobs) {
+    await ok(
+      db().from("shipping_sync_jobs").update({ status: "running", attempts: job.attempts + 1, updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", job.id)
+    );
+    try {
+      if (job.job_type === "sync_tracking" && job.shipment_id) {
+        await syncShipmentTracking(job.shipment_id);
+      } else if (job.job_type === "retry_awb" && job.shipment_id) {
+        await assignAwb(job.shipment_id);
+      } else if (job.job_type === "retry_pickup" && job.shipment_id) {
+        await schedulePickup(job.shipment_id);
+      } else if (job.job_type === "retry_label" && job.shipment_id) {
+        await retrieveLabel(job.shipment_id);
+      } else if (job.job_type === "reconcile_uncertain_create" && job.shipment_id) {
+        const shipment = await one(db().from("shipments").select("*").eq("id", job.shipment_id).maybeSingle());
+        if (shipment && !shipment.provider_shipment_id && shipment.operation_state === "uncertain") {
+          await ok(
+            db().from("shipments").update({ operation_state: "failed", last_error: "manual_reconcile_required", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", shipment.id)
+          );
+        }
+      } else if (job.job_type === "sync_tracking" || !job.shipment_id) {
+      }
+      await ok(
+        db().from("shipping_sync_jobs").update({ status: "succeeded", updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", job.id)
+      );
+      results.push({ id: job.id, ok: true });
+    } catch (error) {
+      const attempts = job.attempts + 1;
+      const abandoned = attempts >= job.max_attempts;
+      await ok(
+        db().from("shipping_sync_jobs").update({
+          status: abandoned ? "abandoned" : "failed",
+          last_error: error instanceof Error ? error.message : "job_failed",
+          last_error_category: error instanceof ShiprocketError ? error.category : "unknown",
+          next_retry_at: abandoned ? null : new Date(Date.now() + attempts * 12e4).toISOString(),
+          updated_at: (/* @__PURE__ */ new Date()).toISOString()
+        }).eq("id", job.id)
+      );
+      results.push({ id: job.id, ok: false, error: error instanceof Error ? error.message : "job_failed" });
+    }
+  }
+  const stale = await rows(
+    db().from("shipments").select("id").not("status", "in", '("delivered","cancelled","failed","rto_delivered")').or(`last_synced_at.is.null,last_synced_at.lt.${new Date(Date.now() - 6 * 60 * 60 * 1e3).toISOString()}`).limit(limit)
+  );
+  for (const row of stale) {
+    try {
+      await syncShipmentTracking(row.id);
+    } catch {
+      await enqueueJob("sync_tracking", { shipmentId: row.id });
+    }
+  }
+  return results;
+}
+async function createReturnForShipment(shipmentId, reason) {
+  const shipment = await one(db().from("shipments").select("*").eq("id", shipmentId).maybeSingle());
+  if (!shipment) throw new Error("not_found");
+  if (!["delivered", "exception", "rto_initiated"].includes(shipment.status) && shipment.status !== "out_for_delivery") {
+  }
+  const { order, address } = await requirePaidOrder(shipment.order_id);
+  const pkg = await loadPackageForOrder(shipment.order_id);
+  const pickupLocation = env.SHIPROCKET_PICKUP_LOCATION;
+  if (!pickupLocation) throw new Error("pickup_location_missing");
+  const nameParts = address.full_name.trim().split(/\s+/);
+  const created = await shiprocketClient.createReturn({
+    order_id: `${order.order_number}-R`,
+    order_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", " "),
+    channel_id: "",
+    pickup_customer_name: nameParts[0] || "Customer",
+    pickup_address: address.line1,
+    pickup_city: address.city,
+    pickup_state: address.region || address.city,
+    pickup_country: address.country || "India",
+    pickup_pincode: address.postal_code,
+    pickup_email: order.email,
+    pickup_phone: address.phone,
+    shipping_customer_name: "Veloraa Rougee",
+    shipping_address: pickupLocation,
+    shipping_city: "Warehouse",
+    shipping_state: "Warehouse",
+    shipping_country: "India",
+    shipping_pincode: pkg.pickupPostcode,
+    shipping_phone: address.phone,
+    order_items: pkg.items.map((item, index) => ({
+      name: `${item.product_name} ${item.variant_name}`.trim(),
+      sku: item.sku || `SKU-${index + 1}`,
+      units: item.quantity,
+      selling_price: item.unit_price_paise / 100
+    })),
+    payment_method: "Prepaid",
+    sub_total: Math.max((order.subtotal_paise - order.discount_paise) / 100, 0),
+    length: mmToCm(pkg.lengthMm),
+    breadth: mmToCm(pkg.widthMm),
+    height: mmToCm(pkg.heightMm),
+    weight: gramsToKg(pkg.weightGrams)
+  });
+  const returnRow = await one(
+    db().from("shipment_returns").insert({
+      order_id: order.id,
+      original_shipment_id: shipment.id,
+      provider_order_id: String(created.order_id),
+      provider_shipment_id: String(created.shipment_id),
+      awb: created.awb_code || null,
+      reason,
+      reverse_pickup_status: "requested",
+      tracking_status: created.status || null
+    }).select("*").single()
+  );
+  return returnRow;
+}
+async function shippingAnalytics(fromIso, toIso) {
+  let query = db().from("shipments").select("id, status, courier_name, estimated_cost_paise, confirmed_cost_paise, created_at, delivered_at, pickup_at");
+  if (fromIso) query = query.gte("created_at", fromIso);
+  if (toIso) query = query.lte("created_at", toIso);
+  const shipments = await rows(query);
+  const byStatus = {};
+  const byCourier = {};
+  let estimated = 0;
+  let confirmed = 0;
+  let confirmedCount = 0;
+  let deliveryHoursSum = 0;
+  let deliveryCount = 0;
+  let rto = 0;
+  let exceptions = 0;
+  for (const row of shipments) {
+    byStatus[row.status] = (byStatus[row.status] ?? 0) + 1;
+    if (row.estimated_cost_paise) estimated += row.estimated_cost_paise;
+    if (row.confirmed_cost_paise != null) {
+      confirmed += row.confirmed_cost_paise;
+      confirmedCount += 1;
+    }
+    const courier = row.courier_name || "Unknown";
+    byCourier[courier] ??= { count: 0, confirmedPaise: 0 };
+    byCourier[courier].count += 1;
+    byCourier[courier].confirmedPaise += row.confirmed_cost_paise ?? 0;
+    if (row.status.startsWith("rto")) rto += 1;
+    if (row.status === "exception" || row.status === "delayed") exceptions += 1;
+    if (row.delivered_at && row.created_at) {
+      const hours = (new Date(row.delivered_at).getTime() - new Date(row.created_at).getTime()) / 36e5;
+      if (Number.isFinite(hours) && hours >= 0) {
+        deliveryHoursSum += hours;
+        deliveryCount += 1;
+      }
+    }
+  }
+  return {
+    totalShipments: shipments.length,
+    byStatus,
+    estimatedShippingExpenditurePaise: estimated,
+    confirmedShippingExpenditurePaise: confirmed,
+    averageConfirmedCostPaise: confirmedCount ? Math.round(confirmed / confirmedCount) : null,
+    estimatedVersusConfirmedDeltaPaise: confirmed - estimated,
+    deliverySuccessRate: shipments.length ? (byStatus.delivered ?? 0) / shipments.length : null,
+    averageDeliveryHours: deliveryCount ? deliveryHoursSum / deliveryCount : null,
+    rtoPercentage: shipments.length ? rto / shipments.length : null,
+    exceptionPercentage: shipments.length ? exceptions / shipments.length : null,
+    byCourier,
+    note: "Confirmed costs only include provider values when available; otherwise awaiting_statement."
+  };
+}
+var import_node_crypto3;
+var init_shipping_service = __esm({
+  "server/src/shipping-service.ts"() {
+    "use strict";
+    import_node_crypto3 = require("node:crypto");
+    init_env();
+    init_db();
+    init_client();
+    init_errors2();
+  }
+});
+
 // server/src/commerce-routes.ts
-async function cartIdFor(request, reply, customerId) {
+async function cartIdFor(request2, reply, customerId) {
   if (customerId) {
     const existing = await one(db().from("carts").select("id").eq("customer_id", customerId).maybeSingle());
     if (existing) return existing.id;
     const created2 = await rows(db().from("carts").insert({ customer_id: customerId }).select("id"));
     return created2[0].id;
   }
-  const token = request.cookies.vr_cart;
+  const token = request2.cookies.vr_cart;
   if (token) {
     const existing = await one(db().from("carts").select("id").eq("guest_token", token).maybeSingle());
     if (existing) return existing.id;
@@ -72352,15 +73478,15 @@ function payuFields(input) {
 }
 async function registerCommerce(app) {
   const callbackBase = env.API_PUBLIC_URL || process.env.API_PUBLIC_URL || `http://localhost:${env.PORT}`;
-  app.get("/cart", async (request, reply) => {
-    const customer = await readCustomer(request);
-    const id = await cartIdFor(request, reply, customer?.id);
+  app.get("/cart", async (request2, reply) => {
+    const customer = await readCustomer(request2);
+    const id = await cartIdFor(request2, reply, customer?.id);
     return cartPayload(id);
   });
-  app.post("/cart/items", async (request, reply) => {
-    const body = external_exports.object({ variantId: external_exports.string().min(1), quantity: external_exports.number().int().min(1).max(10) }).parse(request.body);
-    const customer = await readCustomer(request);
-    const id = await cartIdFor(request, reply, customer?.id);
+  app.post("/cart/items", async (request2, reply) => {
+    const body = external_exports.object({ variantId: external_exports.string().min(1), quantity: external_exports.number().int().min(1).max(10) }).parse(request2.body);
+    const customer = await readCustomer(request2);
+    const id = await cartIdFor(request2, reply, customer?.id);
     const variant = await findVariant(body.variantId);
     if (!variant) return reply.status(404).send({ error: "not_found" });
     const available = variant.stock_on_hand - variant.stock_reserved;
@@ -72370,11 +73496,11 @@ async function registerCommerce(app) {
     await ok(db().from("cart_items").upsert({ cart_id: id, variant_id: variant.id, quantity }, { onConflict: "cart_id,variant_id" }));
     return cartPayload(id);
   });
-  app.patch("/cart/items/:variantId", async (request, reply) => {
-    const params = external_exports.object({ variantId: external_exports.string() }).parse(request.params);
-    const body = external_exports.object({ quantity: external_exports.number().int().min(0).max(10) }).parse(request.body);
-    const customer = await readCustomer(request);
-    const id = await cartIdFor(request, reply, customer?.id);
+  app.patch("/cart/items/:variantId", async (request2, reply) => {
+    const params = external_exports.object({ variantId: external_exports.string() }).parse(request2.params);
+    const body = external_exports.object({ quantity: external_exports.number().int().min(0).max(10) }).parse(request2.body);
+    const customer = await readCustomer(request2);
+    const id = await cartIdFor(request2, reply, customer?.id);
     const variantIds = await variantIdsFor(params.variantId);
     if (variantIds.length > 0) {
       if (body.quantity === 0) await ok(db().from("cart_items").delete().eq("cart_id", id).in("variant_id", variantIds));
@@ -72382,18 +73508,18 @@ async function registerCommerce(app) {
     }
     return cartPayload(id);
   });
-  app.delete("/cart/items/:variantId", async (request, reply) => {
-    const params = external_exports.object({ variantId: external_exports.string() }).parse(request.params);
-    const customer = await readCustomer(request);
-    const id = await cartIdFor(request, reply, customer?.id);
+  app.delete("/cart/items/:variantId", async (request2, reply) => {
+    const params = external_exports.object({ variantId: external_exports.string() }).parse(request2.params);
+    const customer = await readCustomer(request2);
+    const id = await cartIdFor(request2, reply, customer?.id);
     const variantIds = await variantIdsFor(params.variantId);
     if (variantIds.length > 0) await ok(db().from("cart_items").delete().eq("cart_id", id).in("variant_id", variantIds));
     return cartPayload(id);
   });
-  app.post("/cart/merge", async (request, reply) => {
-    const customer = await requireCustomer(request);
-    const guest = request.cookies.vr_cart;
-    const id = await cartIdFor(request, reply, customer.id);
+  app.post("/cart/merge", async (request2, reply) => {
+    const customer = await requireCustomer(request2);
+    const guest = request2.cookies.vr_cart;
+    const id = await cartIdFor(request2, reply, customer.id);
     if (guest) {
       const guestCart = await one(db().from("carts").select("id").eq("guest_token", guest).maybeSingle());
       const guestId = guestCart?.id;
@@ -72413,14 +73539,14 @@ async function registerCommerce(app) {
     }
     return cartPayload(id);
   });
-  app.post("/checkout", { config: { rateLimit: { max: 8, timeWindow: "1 minute" } } }, async (request, reply) => {
+  app.post("/checkout", { config: { rateLimit: { max: 8, timeWindow: "1 minute" } } }, async (request2, reply) => {
     const body = external_exports.object({
       email: external_exports.string().email(),
       address: addressSchema,
       couponCode: external_exports.string().max(40).optional()
-    }).parse(request.body);
-    const customer = await readCustomer(request);
-    const id = await cartIdFor(request, reply, customer?.id);
+    }).parse(request2.body);
+    const customer = await readCustomer(request2);
+    const id = await cartIdFor(request2, reply, customer?.id);
     const { data, error } = await db().rpc("create_order_from_cart", {
       p_cart_id: id,
       p_email: body.email,
@@ -72453,14 +73579,6 @@ async function registerCommerce(app) {
     }
     fields.surl = `${callbackBase}/payments/payu/callback`;
     fields.furl = `${callbackBase}/payments/payu/callback`;
-    await notify({
-      type: "order.placed",
-      title: "New customer order",
-      body: `Order #${result.orderNumber} placed for \u20B9${(result.amountPaise / 100).toLocaleString("en-IN")}`,
-      entityType: "order",
-      entityId: result.orderNumber,
-      href: "/admin/orders"
-    });
     return {
       orderNumber: result.orderNumber,
       viewToken: result.viewToken,
@@ -72468,8 +73586,8 @@ async function registerCommerce(app) {
       payu: fields
     };
   });
-  app.post("/payments/payu/callback", async (request, reply) => {
-    const body = request.body;
+  app.post("/payments/payu/callback", async (request2, reply) => {
+    const body = request2.body;
     if (!env.PAYU_KEY || !env.PAYU_SALT || !verifyPayuHash(body, env.PAYU_KEY, env.PAYU_SALT)) {
       return reply.status(400).send({ error: "invalid_payment_signature" });
     }
@@ -72478,26 +73596,32 @@ async function registerCommerce(app) {
     target.searchParams.set("order", outcome.orderNumber);
     return reply.redirect(target.toString());
   });
-  app.post("/payments/payu/webhook", async (request, reply) => {
-    const body = request.body;
+  app.post("/payments/payu/webhook", async (request2, reply) => {
+    const body = request2.body;
     if (!env.PAYU_KEY || !env.PAYU_SALT || !verifyPayuHash(body, env.PAYU_KEY, env.PAYU_SALT)) {
       return reply.status(400).send({ error: "invalid_payment_signature" });
     }
     await finalizePayuBody(body, "webhook");
     return { ok: true };
   });
-  app.get("/orders/lookup", async (request, reply) => {
-    const query = external_exports.object({ order: external_exports.string(), token: external_exports.string().min(10) }).parse(request.query);
+  app.get("/orders/lookup", async (request2, reply) => {
+    const query = external_exports.object({ order: external_exports.string(), token: external_exports.string().min(10) }).parse(request2.query);
     const order = await one(
       db().from("orders").select("id, order_number, status, email, subtotal_paise, discount_paise, shipping_paise, total_paise, created_at").eq("order_number", query.order).eq("view_token_hash", sha256(query.token)).maybeSingle()
     );
     if (!order) return reply.status(404).send({ error: "not_found" });
     const payment = await one(db().from("payments").select("status").eq("order_id", order.id).order("created_at", { ascending: false }).limit(1).maybeSingle());
     const items = await rows(db().from("order_items").select("product_name, variant_name, sku, quantity, unit_price_paise, image_url").eq("order_id", order.id));
-    return { order: { ...order, payment_status: payment?.status ?? null }, items };
+    const shipment = await getShipmentForOrder(order.id);
+    let tracking = null;
+    if (shipment) {
+      const { events } = await getShipmentTracking(shipment.id);
+      tracking = normalizeTrackingPayload(shipment, events, false);
+    }
+    return { order: { ...order, payment_status: payment?.status ?? null }, items, tracking };
   });
-  app.get("/account/orders", async (request) => {
-    const customer = await requireCustomer(request);
+  app.get("/account/orders", async (request2) => {
+    const customer = await requireCustomer(request2);
     const orders = await rows(
       db().from("orders").select("id, order_number, status, total_paise, created_at").eq("customer_id", customer.id).order("created_at", { ascending: false })
     );
@@ -72507,9 +73631,9 @@ async function registerCommerce(app) {
       payment_status: payments.find((payment) => payment.order_id === order.id)?.status ?? null
     }));
   });
-  app.get("/account/orders/:orderNumber", async (request, reply) => {
-    const customer = await requireCustomer(request);
-    const params = external_exports.object({ orderNumber: external_exports.string() }).parse(request.params);
+  app.get("/account/orders/:orderNumber", async (request2, reply) => {
+    const customer = await requireCustomer(request2);
+    const params = external_exports.object({ orderNumber: external_exports.string() }).parse(request2.params);
     const order = await one(
       db().from("orders").select("*").eq("order_number", params.orderNumber).eq("customer_id", customer.id).maybeSingle()
     );
@@ -72517,10 +73641,16 @@ async function registerCommerce(app) {
     const items = await rows(db().from("order_items").select("*").eq("order_id", order.id));
     const address = await one(db().from("order_addresses").select("*").eq("order_id", order.id).maybeSingle());
     const payments = await rows(db().from("payments").select("id, status, amount_paise, gateway, failure_reason, created_at").eq("order_id", order.id).order("created_at"));
-    return { order, items, address, payments };
+    const shipment = await getShipmentForOrder(order.id);
+    let tracking = null;
+    if (shipment) {
+      const { events } = await getShipmentTracking(shipment.id);
+      tracking = normalizeTrackingPayload(shipment, events, false);
+    }
+    return { order, items, address, payments, tracking };
   });
-  app.get("/account/payments", async (request) => {
-    const customer = await requireCustomer(request);
+  app.get("/account/payments", async (request2) => {
+    const customer = await requireCustomer(request2);
     const orders = await rows(db().from("orders").select("id, order_number").eq("customer_id", customer.id));
     if (!orders.length) return [];
     const payments = await rows(
@@ -72531,8 +73661,8 @@ async function registerCommerce(app) {
       order_number: orders.find((order) => order.id === payment.order_id)?.order_number ?? ""
     }));
   });
-  app.get("/account/wishlist", async (request) => {
-    const customer = await requireCustomer(request);
+  app.get("/account/wishlist", async (request2) => {
+    const customer = await requireCustomer(request2);
     const saved = await rows(
       db().from("wishlists").select("variant_id, created_at, product_variants ( id, legacy_variant_id, name, products ( name, slug ) )").eq("customer_id", customer.id).order("created_at", { ascending: false })
     );
@@ -72549,9 +73679,9 @@ async function registerCommerce(app) {
       };
     });
   });
-  app.post("/account/wishlist", async (request, reply) => {
-    const customer = await requireCustomer(request);
-    const body = external_exports.object({ variantId: external_exports.string().min(1) }).parse(request.body);
+  app.post("/account/wishlist", async (request2, reply) => {
+    const customer = await requireCustomer(request2);
+    const body = external_exports.object({ variantId: external_exports.string().min(1) }).parse(request2.body);
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.variantId);
     const query = db().from("product_variants").select("id");
     const variant = await one(
@@ -72561,9 +73691,9 @@ async function registerCommerce(app) {
     await ok(db().from("wishlists").upsert({ customer_id: customer.id, variant_id: variant.id }, { onConflict: "customer_id,variant_id", ignoreDuplicates: true }));
     return { ok: true };
   });
-  app.delete("/account/wishlist/:variantId", async (request) => {
-    const customer = await requireCustomer(request);
-    const params = external_exports.object({ variantId: external_exports.string().min(1) }).parse(request.params);
+  app.delete("/account/wishlist/:variantId", async (request2) => {
+    const customer = await requireCustomer(request2);
+    const params = external_exports.object({ variantId: external_exports.string().min(1) }).parse(request2.params);
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.variantId);
     const query = db().from("product_variants").select("id");
     const variant = await one(
@@ -72572,9 +73702,9 @@ async function registerCommerce(app) {
     if (variant) await ok(db().from("wishlists").delete().eq("customer_id", customer.id).eq("variant_id", variant.id));
     return { ok: true };
   });
-  app.post("/orders/:orderNumber/retry", async (request, reply) => {
-    const params = external_exports.object({ orderNumber: external_exports.string() }).parse(request.params);
-    const body = external_exports.object({ token: external_exports.string().min(10) }).parse(request.body);
+  app.post("/orders/:orderNumber/retry", async (request2, reply) => {
+    const params = external_exports.object({ orderNumber: external_exports.string() }).parse(request2.params);
+    const body = external_exports.object({ token: external_exports.string().min(10) }).parse(request2.body);
     if (!env.PAYU_KEY || !env.PAYU_SALT) {
       return reply.status(503).send({ error: "payment_gateway_unavailable" });
     }
@@ -72601,15 +73731,15 @@ async function registerCommerce(app) {
     fields.furl = `${callbackBase}/payments/payu/callback`;
     return { payu: fields, orderNumber: params.orderNumber };
   });
-  app.post("/reviews", async (request) => {
-    const customer = await requireCustomer(request);
+  app.post("/reviews", async (request2) => {
+    const customer = await requireCustomer(request2);
     const body = external_exports.object({
       productSlug: external_exports.string(),
       variantId: external_exports.string().optional(),
       rating: external_exports.number().int().min(1).max(5),
       title: external_exports.string().max(120).optional().default(""),
       body: external_exports.string().min(4).max(2e3)
-    }).parse(request.body);
+    }).parse(request2.body);
     const product = await one(db().from("products").select("id, name").eq("slug", body.productSlug).maybeSingle());
     if (!product) throw new Error("not_found");
     const saved = await rows(
@@ -72632,14 +73762,14 @@ async function registerCommerce(app) {
     });
     return saved[0];
   });
-  app.put("/reviews/:id", async (request) => {
-    const customer = await requireCustomer(request);
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.put("/reviews/:id", async (request2) => {
+    const customer = await requireCustomer(request2);
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const body = external_exports.object({
       rating: external_exports.number().int().min(1).max(5),
       title: external_exports.string().max(120).optional().default(""),
       body: external_exports.string().min(4).max(2e3)
-    }).parse(request.body);
+    }).parse(request2.body);
     const review = await one(
       db().from("reviews").select("id, customer_id").eq("id", params.id).maybeSingle()
     );
@@ -72653,9 +73783,9 @@ async function registerCommerce(app) {
     }).eq("id", params.id));
     return { ok: true };
   });
-  app.delete("/reviews/:id", async (request) => {
-    const customer = await requireCustomer(request);
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.delete("/reviews/:id", async (request2) => {
+    const customer = await requireCustomer(request2);
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const review = await one(
       db().from("reviews").select("id, customer_id").eq("id", params.id).maybeSingle()
     );
@@ -72664,13 +73794,13 @@ async function registerCommerce(app) {
     await ok(db().from("reviews").delete().eq("id", params.id));
     return { ok: true };
   });
-  app.get("/admin/orders", async (request) => {
-    await requireAdmin(request, "orders.read");
+  app.get("/admin/orders", async (request2) => {
+    await requireAdmin(request2, "orders.read");
     const query = external_exports.object({
       q: external_exports.string().optional(),
       status: external_exports.string().optional(),
       page: external_exports.coerce.number().optional().default(1)
-    }).parse(request.query);
+    }).parse(request2.query);
     const size = 20;
     const offset = (query.page - 1) * size;
     let orderQuery = db().from("orders").select("*").order("created_at", { ascending: false }).range(offset, offset + size - 1);
@@ -72692,23 +73822,29 @@ async function registerCommerce(app) {
       items: items.filter((item) => item.order_id === order.id)
     }));
   });
-  app.get("/admin/orders/:id", async (request, reply) => {
-    await requireAdmin(request, "orders.read");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.get("/admin/orders/:id", async (request2, reply) => {
+    await requireAdmin(request2, "orders.read");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const order = await one(db().from("orders").select("*").eq("id", params.id).maybeSingle());
     if (!order) return reply.status(404).send({ error: "not_found" });
     const items = await rows(db().from("order_items").select("*").eq("order_id", order.id));
     const address = await one(db().from("order_addresses").select("*").eq("order_id", order.id).maybeSingle());
     const payments = await rows(db().from("payments").select("id, status, amount_paise, gateway, gateway_txn_id, failure_reason, created_at").eq("order_id", order.id).order("created_at", { ascending: false }));
-    return { order, items, address, payments };
+    const shipment = await getShipmentForOrder(order.id);
+    let tracking = null;
+    if (shipment) {
+      const { events } = await getShipmentTracking(shipment.id);
+      tracking = normalizeTrackingPayload(shipment, events, true);
+    }
+    return { order, items, address, payments, shipment, tracking };
   });
-  app.patch("/admin/orders/:id/status", async (request) => {
-    const admin = await requireAdmin(request, "orders.write");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.patch("/admin/orders/:id/status", async (request2) => {
+    const admin = await requireAdmin(request2, "orders.write");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const body = external_exports.object({
       status: external_exports.enum(["pending", "confirmed", "processing", "packed", "shipped", "delivered", "cancelled", "refunded"]),
       note: external_exports.string().optional().default("")
-    }).parse(request.body);
+    }).parse(request2.body);
     const current = await one(db().from("orders").select("status, order_number").eq("id", params.id).maybeSingle());
     if (!current) throw new Error("not_found");
     await ok(db().from("orders").update({ status: body.status }).eq("id", params.id));
@@ -72734,17 +73870,17 @@ async function registerCommerce(app) {
       entityType: "order",
       entityId: params.id,
       summary: `${current.order_number} moved from ${current.status} to ${body.status}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.get("/admin/payments", async (request) => {
-    await requireAdmin(request, "payments.read");
+  app.get("/admin/payments", async (request2) => {
+    await requireAdmin(request2, "payments.read");
     const query = external_exports.object({
       days: external_exports.enum(["7", "15", "30"]).optional(),
       status: external_exports.enum(["pending", "paid", "failed", "cancelled"]).optional(),
       q: external_exports.string().optional()
-    }).parse(request.query);
+    }).parse(request2.query);
     let paymentQuery = db().from("payments").select("id, status, amount_paise, currency, gateway, gateway_txn_id, txn_id, failure_reason, method, verified_at, paid_at, created_at, order_id").order("created_at", { ascending: false }).limit(500);
     if (query.days) {
       const since = new Date(Date.now() - Number(query.days) * 24 * 60 * 60 * 1e3).toISOString();
@@ -72771,9 +73907,9 @@ async function registerCommerce(app) {
     }
     return mapped;
   });
-  app.get("/admin/payments/:id", async (request, reply) => {
-    await requireAdmin(request, "payments.read");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.get("/admin/payments/:id", async (request2, reply) => {
+    await requireAdmin(request2, "payments.read");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const payment = await one(
       db().from("payments").select("*").eq("id", params.id).maybeSingle()
     );
@@ -72802,9 +73938,9 @@ async function registerCommerce(app) {
       }
     };
   });
-  app.post("/admin/payments/:id/verify", async (request, reply) => {
-    const admin = await requireAdmin(request, "payments.read");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.post("/admin/payments/:id/verify", async (request2, reply) => {
+    const admin = await requireAdmin(request2, "payments.read");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const payment = await one(
       db().from("payments").select("id, txn_id, amount_paise, status, gateway_txn_id").eq("id", params.id).maybeSingle()
     );
@@ -72834,17 +73970,17 @@ async function registerCommerce(app) {
       entityType: "payment",
       entityId: payment.id,
       summary: `Admin re-verify ${payment.txn_id} \u2192 ${rpcStatus}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true, status: rpcStatus, result: data };
   });
-  app.post("/admin/payments/:id/refund", async (request, reply) => {
-    const admin = await requireAdmin(request, "payments.refund");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.post("/admin/payments/:id/refund", async (request2, reply) => {
+    const admin = await requireAdmin(request2, "payments.refund");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const body = external_exports.object({
       amountPaise: external_exports.number().int().positive().optional(),
       reason: external_exports.string().max(500).optional().default("")
-    }).parse(request.body ?? {});
+    }).parse(request2.body ?? {});
     if (!env.PAYU_KEY || !env.PAYU_SALT) {
       return reply.status(503).send({ error: "payment_gateway_unavailable" });
     }
@@ -72904,13 +74040,13 @@ async function registerCommerce(app) {
       entityType: "payment",
       entityId: payment.id,
       summary: `Refund ${amountPaise} paise on ${payment.txn_id}: ${payuResult.ok ? "succeeded" : "failed"}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: payuResult.ok, refundId, error: payuResult.error ?? null };
   });
-  app.post("/admin/payments/reconcile", async (request) => {
-    const admin = await requireAdmin(request, "payments.read");
-    const body = external_exports.object({ limit: external_exports.number().int().min(1).max(50).optional().default(20) }).parse(request.body ?? {});
+  app.post("/admin/payments/reconcile", async (request2) => {
+    const admin = await requireAdmin(request2, "payments.read");
+    const body = external_exports.object({ limit: external_exports.number().int().min(1).max(50).optional().default(20) }).parse(request2.body ?? {});
     const results = await reconcilePendingPayments(body.limit);
     await audit({
       actorType: "admin",
@@ -72920,26 +74056,26 @@ async function registerCommerce(app) {
       entityType: "payments",
       entityId: "batch",
       summary: `Reconciled ${results.length} pending payments`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true, results };
   });
-  app.post("/internal/payments/reconcile", async (request, reply) => {
+  app.post("/internal/payments/reconcile", async (request2, reply) => {
     const secret = env.CRON_SECRET;
     if (!secret) return reply.status(503).send({ error: "cron_not_configured" });
-    const header = String(request.headers["x-cron-secret"] || "");
+    const header = String(request2.headers["x-cron-secret"] || "");
     if (header !== secret) return reply.status(401).send({ error: "unauthorized" });
-    const query = external_exports.object({ limit: external_exports.coerce.number().int().min(1).max(50).optional().default(20) }).parse(request.query);
+    const query = external_exports.object({ limit: external_exports.coerce.number().int().min(1).max(50).optional().default(20) }).parse(request2.query);
     const results = await reconcilePendingPayments(query.limit);
     return { ok: true, results };
   });
-  app.post("/admin/inventory/adjust", async (request) => {
-    const admin = await requireAdmin(request, "inventory.write");
+  app.post("/admin/inventory/adjust", async (request2) => {
+    const admin = await requireAdmin(request2, "inventory.write");
     const body = external_exports.object({
       variantId: external_exports.string().uuid(),
       stockOnHand: external_exports.number().int().min(0),
       note: external_exports.string().optional().default("")
-    }).parse(request.body);
+    }).parse(request2.body);
     const current = await one(
       db().from("product_variants").select("stock_on_hand, stock_reserved, low_stock_threshold, name").eq("id", body.variantId).maybeSingle()
     );
@@ -72971,12 +74107,12 @@ async function registerCommerce(app) {
       entityType: "variant",
       entityId: body.variantId,
       summary: `Stock set to ${body.stockOnHand}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.get("/admin/inventory", async (request) => {
-    await requireAdmin(request, "inventory.read");
+  app.get("/admin/inventory", async (request2) => {
+    await requireAdmin(request2, "inventory.read");
     const variants = await rows(db().from("product_variants").select("id, name, sku, stock_on_hand, stock_reserved, low_stock_threshold, product_id").limit(200));
     const productIds = [...new Set(variants.map((variant) => variant.product_id))];
     const products = productIds.length ? await rows(db().from("products").select("id, name, slug").in("id", productIds)) : [];
@@ -72994,12 +74130,12 @@ async function registerCommerce(app) {
       };
     }).sort((a, b) => a.stock_on_hand - a.stock_reserved - (b.stock_on_hand - b.stock_reserved) || a.product_name.localeCompare(b.product_name));
   });
-  app.get("/admin/coupons", async (request) => {
-    await requireAdmin(request, "coupons.write");
+  app.get("/admin/coupons", async (request2) => {
+    await requireAdmin(request2, "coupons.write");
     return rows(db().from("coupons").select("*").order("created_at", { ascending: false }));
   });
-  app.post("/admin/coupons", async (request) => {
-    const admin = await requireAdmin(request, "coupons.write");
+  app.post("/admin/coupons", async (request2) => {
+    const admin = await requireAdmin(request2, "coupons.write");
     const body = external_exports.object({
       code: external_exports.string().min(2).max(40),
       discountType: external_exports.enum(["percent", "fixed"]),
@@ -73012,7 +74148,7 @@ async function registerCommerce(app) {
       usageLimit: external_exports.number().int().positive().nullable().optional(),
       perCustomerLimit: external_exports.number().int().positive().nullable().optional(),
       active: external_exports.boolean().default(true)
-    }).parse(request.body);
+    }).parse(request2.body);
     const discountValue = body.discountType === "percent" ? Math.round(body.discountValue) : Math.round(body.discountValue * 100);
     const created = await rows(
       db().from("coupons").insert({
@@ -73037,7 +74173,7 @@ async function registerCommerce(app) {
       entityType: "coupon",
       entityId: created[0]?.id,
       summary: `Coupon ${body.code} saved`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return created[0];
   });
@@ -73130,14 +74266,14 @@ async function finalizePayuBody(body, source) {
   if (error) throw new Error(error.message);
   const raw = data ?? {};
   const orderNumber = String(raw.orderNumber ?? body.udf1 ?? "");
-  if (rpcStatus !== "pending" && !raw.idempotent) {
+  if (rpcStatus === "paid" && !raw.idempotent) {
     await notify({
-      type: rpcStatus === "paid" ? "payment.received" : "payment.failed",
-      title: rpcStatus === "paid" ? "Payment received" : "Payment failed",
-      body: `Order #${orderNumber}: ${rpcStatus === "paid" ? `\u20B9${((callbackAmountPaise ?? 0) / 100).toLocaleString("en-IN")} paid` : "Payment declined"}`,
-      entityType: "payment",
-      entityId: body.txnid,
-      href: "/admin/payments"
+      type: "payment.received",
+      title: "New paid order",
+      body: `Order #${orderNumber}: \u20B9${((callbackAmountPaise ?? 0) / 100).toLocaleString("en-IN")} paid`,
+      entityType: "order",
+      entityId: orderNumber,
+      href: "/admin/orders"
     });
   }
   return { orderNumber, rpcStatus, result: raw };
@@ -73231,6 +74367,7 @@ var init_commerce_routes = __esm({
     init_db();
     init_http();
     init_password();
+    init_shipping_service();
     addressSchema = external_exports.object({
       fullName: external_exports.string().min(1),
       phone: external_exports.string().min(5),
@@ -73241,6 +74378,323 @@ var init_commerce_routes = __esm({
       postalCode: external_exports.string().min(3),
       country: external_exports.string().optional().default("India")
     });
+  }
+});
+
+// server/src/shipping-routes.ts
+function shippingHttpError(error) {
+  if (error instanceof ShiprocketError) {
+    if (error.category === "not_configured") return { status: 503, error: "shiprocket_not_configured" };
+    if (error.category === "authentication" || error.category === "authorization") {
+      return { status: 502, error: "shiprocket_auth_failed" };
+    }
+    if (error.category === "invalid_request") return { status: 400, error: error.message };
+    if (error.category === "unknown_outcome") return { status: 409, error: "shiprocket_uncertain_outcome" };
+    return { status: 502, error: "shiprocket_provider_error" };
+  }
+  const message = error instanceof Error ? error.message : "request_failed";
+  if ([
+    "not_found",
+    "payment_not_paid",
+    "order_not_shippable",
+    "address_required",
+    "pickup_postcode_missing",
+    "pickup_location_missing",
+    "shipment_missing_provider_id",
+    "tracking_unavailable",
+    "webhook_not_configured",
+    "unauthorized",
+    "forbidden"
+  ].includes(message)) {
+    const status = message === "unauthorized" ? 401 : message === "forbidden" ? 403 : message === "not_found" ? 404 : 400;
+    return { status, error: message };
+  }
+  return { status: 500, error: "request_failed" };
+}
+async function handle(reply, fn) {
+  try {
+    return await fn();
+  } catch (error) {
+    const mapped = shippingHttpError(error);
+    return reply.status(mapped.status).send({ error: mapped.error });
+  }
+}
+async function registerShipping(app) {
+  app.post("/webhooks/logistics", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } } }, async (request2, reply) => {
+    try {
+      verifyWebhookToken(String(request2.headers["x-api-key"] || ""));
+      const payload = request2.body ?? {};
+      const result = await processLogisticsWebhook(payload);
+      return result;
+    } catch (error) {
+      const mapped = shippingHttpError(error);
+      return reply.status(mapped.status).send({ error: mapped.error });
+    }
+  });
+  app.post("/internal/shipping/reconcile", async (request2, reply) => {
+    const secret = env.CRON_SECRET;
+    if (!secret) return reply.status(503).send({ error: "cron_not_configured" });
+    const header = String(request2.headers["x-cron-secret"] || "");
+    const a = Buffer.from(header);
+    const b = Buffer.from(secret);
+    if (a.length !== b.length || !(0, import_node_crypto4.timingSafeEqual)(a, b)) {
+      return reply.status(401).send({ error: "unauthorized" });
+    }
+    const query = external_exports.object({ limit: external_exports.coerce.number().int().min(1).max(50).optional().default(20) }).parse(request2.query);
+    const results = await processShippingJobs(query.limit);
+    return { ok: true, results };
+  });
+  app.post("/admin/orders/:id/shipping/rates", async (request2, reply) => {
+    return handle(reply, async () => {
+      await requireAdmin(request2, "shipping.read");
+      const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+      return compareCourierRates(params.id);
+    });
+  });
+  app.post("/admin/orders/:id/shipping/create", async (request2, reply) => {
+    return handle(reply, async () => {
+      const admin = await requireAdmin(request2, "shipping.write");
+      const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+      const body = external_exports.object({ courierId: external_exports.number().int().optional() }).parse(request2.body ?? {});
+      const shipment = await createShipmentForOrder(params.id, body.courierId);
+      await audit({
+        actorType: "admin",
+        actorId: admin.id,
+        actorLabel: admin.email,
+        action: "shipping.create",
+        entityType: "shipment",
+        entityId: shipment.id,
+        summary: `Created shipment for order ${shipment.channel_order_id}`,
+        ip: clientIp(request2)
+      });
+      await notify({
+        type: "shipping.created",
+        title: `Shipment created ${shipment.channel_order_id}`,
+        href: `/admin/shipping/${shipment.id}`
+      });
+      return { shipment };
+    });
+  });
+  app.get("/admin/shipments", async (request2, reply) => {
+    return handle(reply, async () => {
+      await requireAdmin(request2, "shipping.read");
+      const query = external_exports.object({
+        status: external_exports.string().optional(),
+        q: external_exports.string().optional(),
+        page: external_exports.coerce.number().int().min(1).optional().default(1)
+      }).parse(request2.query);
+      const pageSize = 30;
+      let listQuery = db().from("shipments").select(
+        "id, order_id, channel_order_id, awb, courier_name, status, pickup_status, estimated_cost_paise, confirmed_cost_paise, etd_at, last_synced_at, created_at, operation_state"
+      ).order("created_at", { ascending: false }).range((query.page - 1) * pageSize, query.page * pageSize - 1);
+      if (query.status) listQuery = listQuery.eq("status", query.status);
+      if (query.q) {
+        listQuery = listQuery.or(
+          `channel_order_id.ilike.%${query.q}%,awb.ilike.%${query.q}%,courier_name.ilike.%${query.q}%`
+        );
+      }
+      const shipments = await rows(listQuery);
+      const orderIds = [...new Set(shipments.map((row) => row.order_id))];
+      const orders = orderIds.length ? await rows(
+        db().from("orders").select("id, email, status, total_paise").in("id", orderIds)
+      ) : [];
+      const byOrder = new Map(orders.map((order) => [order.id, order]));
+      return shipments.map((shipment) => {
+        const row = shipment;
+        const order = byOrder.get(row.order_id);
+        return {
+          ...row,
+          customer_email: order?.email ?? null,
+          order_status: order?.status ?? null,
+          order_total_paise: order?.total_paise ?? null
+        };
+      });
+    });
+  });
+  app.get("/admin/shipments/:id", async (request2, reply) => {
+    return handle(reply, async () => {
+      await requireAdmin(request2, "shipping.read");
+      const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+      const { shipment, events } = await getShipmentTracking(params.id);
+      const quotes = await rows(
+        db().from("courier_rate_quotes").select("*").eq("order_id", shipment.order_id).order("quoted_at", { ascending: false }).limit(20)
+      );
+      const charges = await one(db().from("shipment_charges").select("*").eq("shipment_id", shipment.id).maybeSingle());
+      const documents = await rows(db().from("shipment_documents").select("*").eq("shipment_id", shipment.id).order("created_at", { ascending: false }));
+      const returns = await rows(db().from("shipment_returns").select("*").eq("original_shipment_id", shipment.id));
+      const order = await one(db().from("orders").select("*").eq("id", shipment.order_id).maybeSingle());
+      const payments = await rows(
+        db().from("payments").select("id, status, amount_paise, gateway, created_at").eq("order_id", shipment.order_id).order("created_at", { ascending: false })
+      );
+      return {
+        tracking: normalizeTrackingPayload(shipment, events, true),
+        shipment,
+        events,
+        quotes,
+        charges,
+        documents,
+        returns,
+        order,
+        payments
+      };
+    });
+  });
+  app.post("/admin/shipments/:id/assign-awb", async (request2, reply) => {
+    return handle(reply, async () => {
+      const admin = await requireAdmin(request2, "shipping.write");
+      const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+      const body = external_exports.object({ courierId: external_exports.number().int().optional() }).parse(request2.body ?? {});
+      const shipment = await assignAwb(params.id, body.courierId);
+      await audit({
+        actorType: "admin",
+        actorId: admin.id,
+        actorLabel: admin.email,
+        action: "shipping.assign_awb",
+        entityType: "shipment",
+        entityId: shipment.id,
+        summary: `AWB ${shipment.awb || ""} assigned`,
+        ip: clientIp(request2)
+      });
+      return { shipment };
+    });
+  });
+  app.post("/admin/shipments/:id/pickup", async (request2, reply) => {
+    return handle(reply, async () => {
+      const admin = await requireAdmin(request2, "shipping.write");
+      const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+      const shipment = await schedulePickup(params.id);
+      await audit({
+        actorType: "admin",
+        actorId: admin.id,
+        actorLabel: admin.email,
+        action: "shipping.pickup",
+        entityType: "shipment",
+        entityId: params.id,
+        summary: "Pickup scheduled",
+        ip: clientIp(request2)
+      });
+      return { shipment };
+    });
+  });
+  app.post("/admin/shipments/:id/label", async (request2, reply) => {
+    return handle(reply, async () => {
+      await requireAdmin(request2, "shipping.write");
+      const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+      return retrieveLabel(params.id);
+    });
+  });
+  app.post("/admin/shipments/:id/sync", async (request2, reply) => {
+    return handle(reply, async () => {
+      await requireAdmin(request2, "shipping.read");
+      const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+      const { shipment, events } = await syncShipmentTracking(params.id);
+      return { tracking: normalizeTrackingPayload(shipment, events, true) };
+    });
+  });
+  app.post("/admin/shipments/:id/return", async (request2, reply) => {
+    return handle(reply, async () => {
+      const admin = await requireAdmin(request2, "shipping.returns");
+      const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
+      const body = external_exports.object({ reason: external_exports.string().min(2).max(500) }).parse(request2.body);
+      const returnRow = await createReturnForShipment(params.id, body.reason);
+      await audit({
+        actorType: "admin",
+        actorId: admin.id,
+        actorLabel: admin.email,
+        action: "shipping.return",
+        entityType: "shipment",
+        entityId: params.id,
+        summary: `Return requested: ${body.reason}`,
+        ip: clientIp(request2)
+      });
+      return { return: returnRow };
+    });
+  });
+  app.get("/admin/shipping/ndr", async (request2, reply) => {
+    return handle(reply, async () => {
+      await requireAdmin(request2, "shipping.returns");
+      return shiprocketClient.listNdr();
+    });
+  });
+  app.post("/admin/shipping/ndr/:awb/action", async (request2, reply) => {
+    return handle(reply, async () => {
+      const admin = await requireAdmin(request2, "shipping.returns");
+      const params = external_exports.object({ awb: external_exports.string().min(3) }).parse(request2.params);
+      const body = external_exports.record(external_exports.unknown()).parse(request2.body ?? {});
+      const result = await shiprocketClient.actNdr(params.awb, body);
+      await audit({
+        actorType: "admin",
+        actorId: admin.id,
+        actorLabel: admin.email,
+        action: "shipping.ndr_action",
+        entityType: "awb",
+        entityId: params.awb,
+        summary: `NDR action on ${params.awb}`,
+        ip: clientIp(request2)
+      });
+      return result;
+    });
+  });
+  app.get("/admin/shipping/analytics", async (request2, reply) => {
+    return handle(reply, async () => {
+      await requireAdmin(request2, "analytics.read");
+      const query = external_exports.object({
+        from: external_exports.string().optional(),
+        to: external_exports.string().optional()
+      }).parse(request2.query);
+      return shippingAnalytics(query.from, query.to);
+    });
+  });
+  app.post("/admin/shipping/reconcile", async (request2, reply) => {
+    return handle(reply, async () => {
+      const admin = await requireAdmin(request2, "shipping.write");
+      const body = external_exports.object({ limit: external_exports.number().int().min(1).max(50).optional().default(20) }).parse(request2.body ?? {});
+      const results = await processShippingJobs(body.limit);
+      await audit({
+        actorType: "admin",
+        actorId: admin.id,
+        actorLabel: admin.email,
+        action: "shipping.reconcile",
+        entityType: "shipping_sync_jobs",
+        entityId: "batch",
+        summary: `Reconciled ${results.length} shipping jobs`,
+        ip: clientIp(request2)
+      });
+      return { ok: true, results };
+    });
+  });
+  app.get("/account/orders/:orderNumber/tracking", async (request2, reply) => {
+    return handle(reply, async () => {
+      const customer = await requireCustomer(request2);
+      const params = external_exports.object({ orderNumber: external_exports.string().min(1) }).parse(request2.params);
+      const order = await one(
+        db().from("orders").select("id, order_number").eq("order_number", params.orderNumber).eq("customer_id", customer.id).maybeSingle()
+      );
+      if (!order) throw new Error("not_found");
+      const shipment = await getShipmentForOrder(order.id);
+      if (!shipment) {
+        return { orderNumber: order.order_number, shipment: null, tracking: null };
+      }
+      const { events } = await getShipmentTracking(shipment.id);
+      return {
+        orderNumber: order.order_number,
+        tracking: normalizeTrackingPayload(shipment, events, false)
+      };
+    });
+  });
+}
+var import_node_crypto4;
+var init_shipping_routes = __esm({
+  "server/src/shipping-routes.ts"() {
+    "use strict";
+    init_zod();
+    init_db();
+    init_http();
+    init_errors2();
+    init_shipping_service();
+    init_client();
+    init_env();
+    import_node_crypto4 = require("node:crypto");
   }
 });
 
@@ -73514,8 +74968,8 @@ var init_seo = __esm({
 
 // server/src/seo-routes.ts
 async function registerSeo(app) {
-  app.get("/seo/resolve", async (request) => {
-    const query = external_exports.object({ path: external_exports.string().default("/en") }).parse(request.query);
+  app.get("/seo/resolve", async (request2) => {
+    const query = external_exports.object({ path: external_exports.string().default("/en") }).parse(request2.query);
     return resolvePath(query.path);
   });
   app.get("/sitemap.xml", async (_request, reply) => {
@@ -73554,15 +75008,15 @@ Sitemap: ${origin}/sitemap.xml
 `;
     return reply.type("text/plain").send(body);
   });
-  app.get("/admin/seo", async (request) => {
-    await requireAdmin(request, "seo.write");
+  app.get("/admin/seo", async (request2) => {
+    await requireAdmin(request2, "seo.write");
     const strategies = await rows(db().from("seo_strategies").select("*").order("page_key"));
     const metadata = await rows(db().from("seo_metadata").select("*").order("path"));
     const redirects = await rows(db().from("redirects").select("*").order("from_path"));
     return { strategies, metadata, redirects };
   });
-  app.put("/admin/seo/metadata", async (request) => {
-    const admin = await requireAdmin(request, "seo.write");
+  app.put("/admin/seo/metadata", async (request2) => {
+    const admin = await requireAdmin(request2, "seo.write");
     const body = external_exports.object({
       path: external_exports.string().min(1),
       entityType: external_exports.string().default("page"),
@@ -73579,7 +75033,7 @@ Sitemap: ${origin}/sitemap.xml
       ogImage: external_exports.string().optional(),
       schemaType: external_exports.string().default("WebPage"),
       includeInSitemap: external_exports.boolean().default(true)
-    }).parse(request.body);
+    }).parse(request2.body);
     await ok(db().from("seo_metadata").upsert({
       path: body.path,
       entity_type: body.entityType,
@@ -73605,17 +75059,17 @@ Sitemap: ${origin}/sitemap.xml
       entityType: "seo_metadata",
       entityId: body.path,
       summary: `SEO updated for ${body.path}`,
-      ip: clientIp(request)
+      ip: clientIp(request2)
     });
     return { ok: true };
   });
-  app.post("/admin/seo/redirects", async (request) => {
-    await requireAdmin(request, "seo.write");
+  app.post("/admin/seo/redirects", async (request2) => {
+    await requireAdmin(request2, "seo.write");
     const body = external_exports.object({
       fromPath: external_exports.string().min(1),
       toPath: external_exports.string().min(1),
       statusCode: external_exports.union([external_exports.literal(301), external_exports.literal(302)]).default(301)
-    }).parse(request.body);
+    }).parse(request2.body);
     const created = await rows(db().from("redirects").upsert({
       from_path: body.fromPath,
       to_path: body.toPath,
@@ -73623,8 +75077,8 @@ Sitemap: ${origin}/sitemap.xml
     }, { onConflict: "from_path" }).select("*"));
     return created[0];
   });
-  app.get("/admin/seo/issues", async (request) => {
-    await requireAdmin(request, "seo.write");
+  app.get("/admin/seo/issues", async (request2) => {
+    await requireAdmin(request2, "seo.write");
     const metadata = await rows(
       db().from("seo_metadata").select("path, seo_title, meta_description, canonical_url, robots_index")
     );
@@ -73762,19 +75216,19 @@ async function resolvePath(path2) {
   };
 }
 async function registerOps(app) {
-  app.get("/admin/notifications", async (request) => {
-    await requireAdmin(request, "notifications.read");
+  app.get("/admin/notifications", async (request2) => {
+    await requireAdmin(request2, "notifications.read");
     return rows(db().from("notifications").select("*").order("created_at", { ascending: false }).limit(50));
   });
-  app.post("/admin/notifications/read", async (request) => {
-    await requireAdmin(request, "notifications.read");
-    const body = external_exports.object({ id: external_exports.string().uuid().optional(), all: external_exports.boolean().optional() }).parse(request.body ?? {});
+  app.post("/admin/notifications/read", async (request2) => {
+    await requireAdmin(request2, "notifications.read");
+    const body = external_exports.object({ id: external_exports.string().uuid().optional(), all: external_exports.boolean().optional() }).parse(request2.body ?? {});
     if (body.all) await ok(db().from("notifications").update({ read_at: (/* @__PURE__ */ new Date()).toISOString() }).is("read_at", null));
     else if (body.id) await ok(db().from("notifications").update({ read_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", body.id));
     return { ok: true };
   });
-  app.get("/admin/notifications/stream", async (request, reply) => {
-    const admin = await readAdmin(request);
+  app.get("/admin/notifications/stream", async (request2, reply) => {
+    const admin = await readAdmin(request2);
     if (!admin) return reply.status(401).send({ error: "unauthorized" });
     reply.hijack();
     reply.raw.writeHead(200, {
@@ -73789,17 +75243,17 @@ async function registerOps(app) {
     };
     const unsubscribe = subscribeNotifications(send);
     const timer = setInterval(() => reply.raw.write(": ping\n\n"), 25e3);
-    request.raw.on("close", () => {
+    request2.raw.on("close", () => {
       clearInterval(timer);
       unsubscribe();
     });
   });
-  app.get("/admin/activity", async (request) => {
-    await requireAdmin(request, "audit.read");
+  app.get("/admin/activity", async (request2) => {
+    await requireAdmin(request2, "audit.read");
     return rows(db().from("activity_logs").select("id, actor_type, actor_label, action, entity_type, entity_id, summary, created_at").order("created_at", { ascending: false }).limit(200));
   });
-  app.get("/admin/analytics", async (request) => {
-    await requireAdmin(request, "analytics.read");
+  app.get("/admin/analytics", async (request2) => {
+    await requireAdmin(request2, "analytics.read");
     const paidStatuses = ["confirmed", "processing", "packed", "shipped", "delivered"];
     const salesOrders = await rows(db().from("orders").select("total_paise, status").in("status", paidStatuses));
     const revenue = salesOrders.reduce((sum, order) => sum + Number(order.total_paise), 0);
@@ -73853,9 +75307,9 @@ async function registerOps(app) {
       bestSellers
     };
   });
-  app.post("/admin/media", async (request, reply) => {
-    await requireAdmin(request, "media.write");
-    const file = await request.file();
+  app.post("/admin/media", async (request2, reply) => {
+    await requireAdmin(request2, "media.write");
+    const file = await request2.file();
     if (!file) return reply.status(400).send({ error: "file_required" });
     const allowed = /* @__PURE__ */ new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
     if (!allowed.has(file.mimetype)) return reply.status(400).send({ error: "unsupported_file" });
@@ -73877,7 +75331,7 @@ async function registerOps(app) {
     });
     if (!response.ok) return reply.status(502).send({ error: "upload_failed" });
     const url = `${env.SUPABASE_URL}/storage/v1/object/public/media/${path2}`;
-    const alt = String(request.query.alt || safeName.replace(/\.[a-z0-9]+$/, "").replace(/-/g, " "));
+    const alt = String(request2.query.alt || safeName.replace(/\.[a-z0-9]+$/, "").replace(/-/g, " "));
     const created = await rows(db().from("media").insert({
       path: path2,
       url,
@@ -73887,9 +75341,9 @@ async function registerOps(app) {
     }).select("*"));
     return created[0];
   });
-  app.get("/admin/media", async (request) => {
-    await requireAdmin(request, "media.write");
-    const query = external_exports.object({ q: external_exports.string().optional() }).parse(request.query);
+  app.get("/admin/media", async (request2) => {
+    await requireAdmin(request2, "media.write");
+    const query = external_exports.object({ q: external_exports.string().optional() }).parse(request2.query);
     let requestQuery = db().from("media").select("*").order("created_at", { ascending: false }).limit(100);
     if (query.q) {
       const term = query.q.replace(/[,()]/g, "");
@@ -73897,9 +75351,9 @@ async function registerOps(app) {
     }
     return rows(requestQuery);
   });
-  app.delete("/admin/media/:id", async (request, reply) => {
-    await requireAdmin(request, "media.write");
-    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+  app.delete("/admin/media/:id", async (request2, reply) => {
+    await requireAdmin(request2, "media.write");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request2.params);
     const images = await db().from("product_images").select("id", { count: "exact", head: true }).eq("media_id", params.id);
     const variantImages = await db().from("product_variant_images").select("id", { count: "exact", head: true }).eq("media_id", params.id);
     if ((images.count ?? 0) + (variantImages.count ?? 0) > 0) return reply.status(409).send({ error: "media_in_use" });
@@ -73967,7 +75421,7 @@ async function buildApp() {
       reply.header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
     }
   });
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error, request2, reply) => {
     if (error instanceof ZodError) {
       const first = error.issues[0];
       const path2 = first?.path?.length ? first.path.join(".") : "";
@@ -73975,7 +75429,7 @@ async function buildApp() {
       return reply.status(400).send({ error: "invalid_request", detail, issues: error.issues.slice(0, 8) });
     }
     const mapped = httpError(error);
-    if (mapped.status === 500) request.log.error(error);
+    if (mapped.status === 500) request2.log.error(error);
     return reply.status(mapped.status).send({ error: mapped.error });
   });
   app.get("/health", async () => {
@@ -73990,6 +75444,7 @@ async function buildApp() {
   await registerAuth(app);
   await registerCatalogAdmin(app);
   await registerCommerce(app);
+  await registerShipping(app);
   await registerContent(app);
   await registerSeo(app);
   await registerOps(app);
@@ -74012,6 +75467,7 @@ var init_app = __esm({
     init_auth_routes();
     init_content_routes();
     init_commerce_routes();
+    init_shipping_routes();
     init_seo_routes();
   }
 });

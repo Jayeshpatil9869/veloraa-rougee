@@ -11,6 +11,7 @@ import { httpError } from './http';
 import { registerAuth } from './auth-routes';
 import { registerCatalogAdmin, registerContent } from './content-routes';
 import { registerCommerce } from './commerce-routes';
+import { registerShipping } from './shipping-routes';
 import { registerOps, registerSeo } from './seo-routes';
 
 export async function buildApp() {
@@ -88,6 +89,7 @@ export async function buildApp() {
   await registerAuth(app);
   await registerCatalogAdmin(app);
   await registerCommerce(app);
+  await registerShipping(app);
   await registerContent(app);
   await registerSeo(app);
   await registerOps(app);

@@ -5,6 +5,7 @@ import {
   Package,
   Layers,
   ShoppingBag,
+  Truck,
   CreditCard,
   Users,
   Tag,
@@ -32,6 +33,7 @@ import { CustomersModule } from './modules/Customers';
 import { Dashboard } from './modules/Dashboard';
 import { EnquiriesModule } from './modules/Enquiries';
 import { OrdersModule } from './modules/Orders';
+import { ShippingModule } from './modules/Shipping';
 import { PaymentsModule } from './modules/Payments';
 import { ProductsModule } from './modules/Products';
 import { ReviewsModule } from './modules/Reviews';
@@ -46,6 +48,7 @@ const NAV = [
   { id: 'products', label: 'Products & Formulas', icon: Package },
   { id: 'categories', label: 'Collections', icon: Layers },
   { id: 'orders', label: 'Customer Orders', icon: ShoppingBag },
+  { id: 'shipping', label: 'Shipping & Logistics', icon: Truck },
   { id: 'payments', label: 'Payments Audit', icon: CreditCard },
   { id: 'customers', label: 'Clientele', icon: Users },
   { id: 'coupons', label: 'Promo Codes', icon: Tag },
@@ -1036,6 +1039,12 @@ export const AdminApp: React.FC<{
           {module === 'categories' && <CategoriesModule />}
           {module === 'orders' && (
             <OrdersModule path={path} onOpen={(id) => adminNav(`/admin/orders/${id}`)} />
+          )}
+          {module === 'shipping' && (
+            <ShippingModule
+              path={path}
+              onOpen={(id) => adminNav(id ? `/admin/shipping/${id}` : '/admin/shipping')}
+            />
           )}
           {module === 'payments' && <PaymentsModule />}
           {module === 'customers' && <CustomersModule />}

@@ -23,6 +23,8 @@ const apiPaths = [
   '/newsletter',
   '/seo',
   '/health',
+  '/webhooks',
+  '/internal',
 ];
 
 export default defineConfig({

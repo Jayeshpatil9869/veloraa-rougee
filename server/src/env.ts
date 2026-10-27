@@ -29,6 +29,11 @@ const schema = z.object({
   ADMIN_EMAIL: z.string().optional(),
   ADMIN_PASSWORD: z.string().optional(),
   ADMIN_NAME: z.string().default('Veloraa Admin'),
+  SHIPROCKET_EMAIL: z.string().optional(),
+  SHIPROCKET_PASSWORD: z.string().optional(),
+  SHIPROCKET_BASE_URL: z.string().default('https://apiv2.shiprocket.in'),
+  SHIPROCKET_WEBHOOK_TOKEN: z.string().optional(),
+  SHIPROCKET_PICKUP_LOCATION: z.string().optional(),
 });
 
 const parsed = schema.parse(process.env);

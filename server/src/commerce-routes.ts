@@ -14,6 +14,7 @@ import { env, payuBase, payuVerifyUrl } from './env';
 import { asOne, db, ok, one, rows } from './db';
 import { audit, clientIp, cookieBase, notify, readCustomer, requireAdmin, requireCustomer } from './http';
 import { randomToken, sha256 } from './password';
+import { getShipmentForOrder, getShipmentTracking, normalizeTrackingPayload } from './shipping-service';
 
 const addressSchema = z.object({
   fullName: z.string().min(1),
@@ -305,7 +306,13 @@ export async function registerCommerce(app: FastifyInstance) {
     if (!order) return reply.status(404).send({ error: 'not_found' });
     const payment = await one<{ status: string }>(db().from('payments').select('status').eq('order_id', order.id).order('created_at', { ascending: false }).limit(1).maybeSingle());
     const items = await rows(db().from('order_items').select('product_name, variant_name, sku, quantity, unit_price_paise, image_url').eq('order_id', order.id));
-    return { order: { ...order, payment_status: payment?.status ?? null }, items };
+    const shipment = await getShipmentForOrder(order.id);
+    let tracking = null;
+    if (shipment) {
+      const { events } = await getShipmentTracking(shipment.id);
+      tracking = normalizeTrackingPayload(shipment, events, false);
+    }
+    return { order: { ...order, payment_status: payment?.status ?? null }, items, tracking };
   });
 
   app.get('/account/orders', async (request) => {
@@ -313,12 +320,37 @@ export async function registerCommerce(app: FastifyInstance) {
     const orders = await rows<{ id: string; order_number: string; status: string; total_paise: number; created_at: string }>(
       db().from('orders').select('id, order_number, status, total_paise, created_at').eq('customer_id', customer.id).order('created_at', { ascending: false }),
     );
-    const payments = orders.length
-      ? await rows<{ order_id: string; status: string; created_at: string }>(db().from('payments').select('order_id, status, created_at').in('order_id', orders.map((order) => order.id)).order('created_at', { ascending: false }))
+    const orderIds = orders.map((order) => order.id);
+    const payments = orderIds.length
+      ? await rows<{ order_id: string; status: string; created_at: string }>(db().from('payments').select('order_id, status, created_at').in('order_id', orderIds).order('created_at', { ascending: false }))
+      : [];
+    const items = orderIds.length
+      ? await rows<{
+          order_id: string;
+          product_name: string;
+          variant_name: string;
+          quantity: number;
+          unit_price_paise: number;
+          image_url: string | null;
+        }>(
+          db()
+            .from('order_items')
+            .select('order_id, product_name, variant_name, quantity, unit_price_paise, image_url')
+            .in('order_id', orderIds),
+        )
       : [];
     return orders.map((order) => ({
       ...order,
       payment_status: payments.find((payment) => payment.order_id === order.id)?.status ?? null,
+      items: items
+        .filter((item) => item.order_id === order.id)
+        .map((item) => ({
+          product_name: item.product_name,
+          variant_name: item.variant_name,
+          quantity: item.quantity,
+          unit_price_paise: item.unit_price_paise,
+          image_url: item.image_url,
+        })),
     }));
   });
 
@@ -332,7 +364,13 @@ export async function registerCommerce(app: FastifyInstance) {
     const items = await rows(db().from('order_items').select('*').eq('order_id', order.id));
     const address = await one(db().from('order_addresses').select('*').eq('order_id', order.id).maybeSingle());
     const payments = await rows(db().from('payments').select('id, status, amount_paise, gateway, failure_reason, created_at').eq('order_id', order.id).order('created_at'));
-    return { order, items, address, payments };
+    const shipment = await getShipmentForOrder(order.id);
+    let tracking = null;
+    if (shipment) {
+      const { events } = await getShipmentTracking(shipment.id);
+      tracking = normalizeTrackingPayload(shipment, events, false);
+    }
+    return { order, items, address, payments, tracking };
   });
 
   app.get('/account/payments', async (request) => {
@@ -531,7 +569,13 @@ export async function registerCommerce(app: FastifyInstance) {
     const items = await rows(db().from('order_items').select('*').eq('order_id', order.id));
     const address = await one(db().from('order_addresses').select('*').eq('order_id', order.id).maybeSingle());
     const payments = await rows(db().from('payments').select('id, status, amount_paise, gateway, gateway_txn_id, failure_reason, created_at').eq('order_id', order.id).order('created_at', { ascending: false }));
-    return { order, items, address, payments };
+    const shipment = await getShipmentForOrder(order.id);
+    let tracking = null;
+    if (shipment) {
+      const { events } = await getShipmentTracking(shipment.id);
+      tracking = normalizeTrackingPayload(shipment, events, true);
+    }
+    return { order, items, address, payments, shipment, tracking };
   });
 
   app.patch('/admin/orders/:id/status', async (request) => {
