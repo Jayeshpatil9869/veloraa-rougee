@@ -42,5 +42,26 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    // Increase inline limit so small SVGs/fonts don't add round trips
+    assetsInlineLimit: 4096,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // GSAP + Lenis animation libs → single async chunk (large, only needed post-hydrate)
+          if (id.includes('gsap') || id.includes('lenis')) return 'animation';
+          // Framer Motion (motion/react) → own chunk (lazy-loaded by ScrollReveal)
+          if (id.includes('motion') || id.includes('framer-motion')) return 'motion';
+          // Lucide icons → own chunk
+          if (id.includes('lucide')) return 'icons';
+          // All admin modules → own async chunk (never loaded on storefront)
+          if (id.includes('/src/admin/')) return 'admin';
+          // Supabase JS client → separate chunk (only used at runtime for auth)
+          if (id.includes('@supabase')) return 'supabase';
+          // Other node_modules → vendor chunk
+          if (id.includes('node_modules')) return 'vendor';
+        },
+      },
+    },
+  },
 });
-

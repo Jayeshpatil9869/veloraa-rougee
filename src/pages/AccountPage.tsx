@@ -152,9 +152,26 @@ export const AccountPage: React.FC<AccountPageProps> = ({ onNavigate }) => {
       onNavigate('/en/login');
       return;
     }
-    void load().catch((reason) =>
-      setError(reason instanceof Error ? reason.message : 'Failed to load client account.')
-    );
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    const orderNumber = params.get('order');
+    if (tab === 'orders' || tab === 'addresses' || tab === 'payments' || tab === 'overview') {
+      setActiveTab(tab);
+    }
+    void load()
+      .then(async () => {
+        if (orderNumber) {
+          setActiveTab('orders');
+          try {
+            setDetail(await api<OrderDetail>(`/account/orders/${orderNumber}`));
+          } catch {
+            // order detail is optional if lookup fails
+          }
+        }
+      })
+      .catch((reason) =>
+        setError(reason instanceof Error ? reason.message : 'Failed to load client account.'),
+      );
   }, [onNavigate]);
 
   const logout = async () => {

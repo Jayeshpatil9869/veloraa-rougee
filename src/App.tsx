@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -24,7 +24,8 @@ import { AuthPage } from './pages/AuthPage';
 import { CheckoutPage, CheckoutReturnPage } from './pages/CheckoutPage';
 import { AccountPage, AuthCallbackPage, ResetPasswordPage } from './pages/AccountPage';
 import { WishlistPage } from './pages/WishlistPage';
-import { AdminApp } from './admin/AdminApp';
+// Admin is lazy-loaded — never included in the initial storefront bundle
+const AdminApp = lazy(() => import('./admin/AdminApp').then(m => ({ default: m.AdminApp })));
 
 import { PageTransition } from './components/motion/PageTransition';
 
@@ -74,12 +75,13 @@ export default function App() {
       });
   }, []);
 
+  // SEO: only re-fetch when the path changes — catalogTick is not relevant to SEO content
   useEffect(() => {
     if (!hasApi() || currentPath.startsWith('/admin')) return;
     api<SeoPayload>(`/seo/resolve?path=${encodeURIComponent(currentPath)}`)
       .then(applySeoHead)
       .catch(() => undefined);
-  }, [currentPath, catalogTick]);
+  }, [currentPath]);
 
   // Initialize Lenis smooth scroll and integrate with GSAP ScrollTrigger
   useEffect(() => {
@@ -312,7 +314,11 @@ export default function App() {
   const isAdminDomain = typeof window !== 'undefined' && window.location.hostname.startsWith('admin.');
 
   if (isAdminDomain || currentPath.startsWith('/admin')) {
-    return <AdminApp path={currentPath} onNavigate={navigate} />;
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-[var(--bg-primary)]" />}>
+        <AdminApp path={currentPath} onNavigate={navigate} />
+      </Suspense>
+    );
   }
 
   return (
@@ -368,7 +374,23 @@ export default function App() {
         onNavigateToShop={() => navigate('/en/collection')}
         onCheckout={() => {
           setCartOpen(false);
-          navigate('/en/checkout');
+          void (async () => {
+            try {
+              await cartService.ensureRemoteCart();
+              if (hasApi()) {
+                const me = await api<{ customer: unknown | null }>('/auth/me');
+                if (!me.customer) {
+                  sessionStorage.setItem('vr_return_to', '/en/checkout');
+                  navigate('/en/login');
+                  return;
+                }
+              }
+              navigate('/en/checkout');
+            } catch {
+              sessionStorage.setItem('vr_return_to', '/en/checkout');
+              navigate('/en/login');
+            }
+          })();
         }}
       />
     </div>

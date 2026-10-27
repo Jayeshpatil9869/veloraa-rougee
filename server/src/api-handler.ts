@@ -14,6 +14,25 @@ const ALLOWED_ORIGINS = new Set([
   'https://api.veloraarougee.com',
 ]);
 
+// ── Instance cache: build Fastify once per process, reuse on warm invocations ──
+type AppInstance = Awaited<ReturnType<typeof import('./app').buildApp>>;
+let _appInstance: AppInstance | null = null;
+let _appBootPromise: Promise<AppInstance> | null = null;
+
+async function getApp(): Promise<AppInstance> {
+  if (_appInstance) return _appInstance;
+  if (!_appBootPromise) {
+    _appBootPromise = (async () => {
+      const { buildApp } = await import('./app');
+      const app = await buildApp();
+      await app.ready();
+      return app;
+    })();
+  }
+  _appInstance = await _appBootPromise;
+  return _appInstance;
+}
+
 function setCorsHeaders(req: IncomingMessage, res: ServerResponse) {
   const origin = req.headers['origin'];
   if (!origin) return;
@@ -62,10 +81,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
 
   try {
     patchRequest(req);
-    // Lazy-load Fastify and routes inside handler wrapped in try/catch to report any boot errors
-    const { buildApp } = await import('./app');
-    const app = await buildApp();
-    await app.ready();
+    // Use cached app instance — built once per process, reused on warm invocations
+    const app = await getApp();
 
     let targetUrl = rawUrl;
     try {

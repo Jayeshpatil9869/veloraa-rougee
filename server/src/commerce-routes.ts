@@ -1,6 +1,14 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { amountToPaise, payuRequestHash, payuVerifyCommandHash, verifyPayuHash } from '../../shared/payu';
+import {
+  amountToPaise,
+  paiseToPayuAmount,
+  payuRefundCommandHash,
+  payuRequestHash,
+  payuVerifyCommandHash,
+  resolvePaymentRpcStatus,
+  verifyPayuHash,
+} from '../../shared/payu';
 import { formatInr } from '../../shared/commerce';
 import { env, payuBase, payuVerifyUrl } from './env';
 import { asOne, db, ok, one, rows } from './db';
@@ -153,7 +161,7 @@ function payuFields(input: { txnId: string; amountPaise: number; email: string; 
 }
 
 export async function registerCommerce(app: FastifyInstance) {
-  const callbackBase = process.env.API_PUBLIC_URL || `http://localhost:${env.PORT}`;
+  const callbackBase = env.API_PUBLIC_URL || process.env.API_PUBLIC_URL || `http://localhost:${env.PORT}`;
 
   app.get('/cart', async (request, reply) => {
     const customer = await readCustomer(request);
@@ -245,6 +253,9 @@ export async function registerCommerce(app: FastifyInstance) {
       orderNumber: String(raw.orderNumber ?? ''),
       viewToken: String(raw.viewToken ?? ''),
     };
+    if (!env.PAYU_KEY || !env.PAYU_SALT) {
+      return reply.status(503).send({ error: 'payment_gateway_unavailable' });
+    }
     const fields = payuFields({
       txnId: result.txnId,
       amountPaise: result.amountPaise,
@@ -253,18 +264,11 @@ export async function registerCommerce(app: FastifyInstance) {
       orderNumber: result.orderNumber,
       phone: body.address.phone,
     });
-    if (fields) {
-      fields.surl = `${callbackBase}/payments/payu/callback`;
-      fields.furl = `${callbackBase}/payments/payu/callback`;
+    if (!fields) {
+      return reply.status(503).send({ error: 'payment_gateway_unavailable' });
     }
-    await notify({
-      type: 'order.placed',
-      title: 'New customer order',
-      body: `Order #${result.orderNumber} placed for ₹${(result.amountPaise / 100).toLocaleString('en-IN')}`,
-      entityType: 'order',
-      entityId: result.orderNumber,
-      href: '/admin/orders',
-    });
+    fields.surl = `${callbackBase}/payments/payu/callback`;
+    fields.furl = `${callbackBase}/payments/payu/callback`;
     return {
       orderNumber: result.orderNumber,
       viewToken: result.viewToken,
@@ -278,29 +282,19 @@ export async function registerCommerce(app: FastifyInstance) {
     if (!env.PAYU_KEY || !env.PAYU_SALT || !verifyPayuHash(body, env.PAYU_KEY, env.PAYU_SALT)) {
       return reply.status(400).send({ error: 'invalid_payment_signature' });
     }
-    const verified = await verifyWithPayu(body.txnid);
-    const paid = body.status === 'success' && verified.ok && verified.amountPaise === amountToPaise(body.amount);
-    const { data, error } = await db().rpc('apply_payment_result', {
-      p_txn_id: body.txnid,
-      p_gateway_txn_id: body.mihpayid ?? '',
-      p_status: paid ? 'paid' : 'failed',
-      p_amount_paise: amountToPaise(body.amount) ?? 0,
-      p_payload: { status: body.status, error: body.error_Message || body.field9 || '' },
-    });
-    if (error) throw new Error(error.message);
-    const raw = (data ?? {}) as Record<string, unknown>;
-    const orderNumber = String(raw.orderNumber ?? '');
-    await notify({
-      type: paid ? 'payment.received' : 'payment.failed',
-      title: paid ? 'Payment received' : 'Payment failed',
-      body: `Order #${orderNumber}: ${paid ? '₹' + ((amountToPaise(body.amount) ?? 0) / 100).toLocaleString('en-IN') + ' paid' : 'Payment declined'}`,
-      entityType: 'payment',
-      entityId: body.txnid,
-      href: '/admin/payments',
-    });
+    const outcome = await finalizePayuBody(body, 'callback');
     const target = new URL('/en/checkout/return', env.APP_ORIGIN);
-    target.searchParams.set('order', orderNumber);
+    target.searchParams.set('order', outcome.orderNumber);
     return reply.redirect(target.toString());
+  });
+
+  app.post('/payments/payu/webhook', async (request, reply) => {
+    const body = request.body as Record<string, string>;
+    if (!env.PAYU_KEY || !env.PAYU_SALT || !verifyPayuHash(body, env.PAYU_KEY, env.PAYU_SALT)) {
+      return reply.status(400).send({ error: 'invalid_payment_signature' });
+    }
+    await finalizePayuBody(body, 'webhook');
+    return { ok: true };
   });
 
   app.get('/orders/lookup', async (request, reply) => {
@@ -401,10 +395,16 @@ export async function registerCommerce(app: FastifyInstance) {
   app.post('/orders/:orderNumber/retry', async (request, reply) => {
     const params = z.object({ orderNumber: z.string() }).parse(request.params);
     const body = z.object({ token: z.string().min(10) }).parse(request.body);
+    if (!env.PAYU_KEY || !env.PAYU_SALT) {
+      return reply.status(503).send({ error: 'payment_gateway_unavailable' });
+    }
     const order = await one<{ id: string; email: string }>(
       db().from('orders').select('id, email').eq('order_number', params.orderNumber).eq('view_token_hash', sha256(body.token)).maybeSingle(),
     );
     if (!order) return reply.status(404).send({ error: 'not_found' });
+    const address = await one<{ full_name: string; phone: string }>(
+      db().from('order_addresses').select('full_name, phone').eq('order_id', order.id).maybeSingle(),
+    );
     const { data, error } = await db().rpc('retry_order_payment', { p_order_id: order.id });
     if (error) throw new Error(error.message);
     const raw = (data ?? {}) as Record<string, unknown>;
@@ -412,15 +412,14 @@ export async function registerCommerce(app: FastifyInstance) {
       txnId: String(raw.txnId ?? raw.txnid),
       amountPaise: Number(raw.amountPaise ?? raw.amountpaise),
       email: order.email,
-      firstName: 'Customer',
+      firstName: address?.full_name || 'Customer',
       orderNumber: params.orderNumber,
-      phone: '',
+      phone: address?.phone || '',
     });
-    if (fields) {
-      fields.surl = `${callbackBase}/payments/payu/callback`;
-      fields.furl = `${callbackBase}/payments/payu/callback`;
-    }
-    return { payu: fields };
+    if (!fields) return reply.status(503).send({ error: 'payment_gateway_unavailable' });
+    fields.surl = `${callbackBase}/payments/payu/callback`;
+    fields.furl = `${callbackBase}/payments/payu/callback`;
+    return { payu: fields, orderNumber: params.orderNumber };
   });
 
   app.post('/reviews', async (request) => {
@@ -574,12 +573,21 @@ export async function registerCommerce(app: FastifyInstance) {
 
   app.get('/admin/payments', async (request) => {
     await requireAdmin(request, 'payments.read');
-    const query = z.object({ days: z.enum(['7', '15', '30']).optional() }).parse(request.query);
-    let paymentQuery = db().from('payments').select('id, status, amount_paise, currency, gateway, gateway_txn_id, failure_reason, created_at, order_id').order('created_at', { ascending: false }).limit(500);
+    const query = z.object({
+      days: z.enum(['7', '15', '30']).optional(),
+      status: z.enum(['pending', 'paid', 'failed', 'cancelled']).optional(),
+      q: z.string().optional(),
+    }).parse(request.query);
+    let paymentQuery = db()
+      .from('payments')
+      .select('id, status, amount_paise, currency, gateway, gateway_txn_id, txn_id, failure_reason, method, verified_at, paid_at, created_at, order_id')
+      .order('created_at', { ascending: false })
+      .limit(500);
     if (query.days) {
       const since = new Date(Date.now() - Number(query.days) * 24 * 60 * 60 * 1000).toISOString();
       paymentQuery = paymentQuery.gte('created_at', since);
     }
+    if (query.status) paymentQuery = paymentQuery.eq('status', query.status);
     const payments = await rows<{
       id: string;
       status: string;
@@ -587,7 +595,11 @@ export async function registerCommerce(app: FastifyInstance) {
       currency: string;
       gateway: string;
       gateway_txn_id: string | null;
+      txn_id: string;
       failure_reason: string | null;
+      method: string | null;
+      verified_at: string | null;
+      paid_at: string | null;
       created_at: string;
       order_id: string;
     }>(paymentQuery);
@@ -595,10 +607,205 @@ export async function registerCommerce(app: FastifyInstance) {
     const orders = orderIds.length
       ? await rows<{ id: string; order_number: string; email: string }>(db().from('orders').select('id, order_number, email').in('id', orderIds))
       : [];
-    return payments.map((payment) => {
+    let mapped = payments.map((payment) => {
       const order = orders.find((item) => item.id === payment.order_id);
-      return { ...payment, order_number: order?.order_number ?? null, email: order?.email ?? null };
+      return {
+        ...payment,
+        order_number: order?.order_number ?? null,
+        email: order?.email ?? null,
+        needs_verification: payment.status === 'pending',
+      };
     });
+    if (query.q) {
+      const term = query.q.toLowerCase();
+      mapped = mapped.filter((payment) =>
+        [payment.order_number, payment.email, payment.txn_id, payment.gateway_txn_id]
+          .some((value) => value?.toLowerCase().includes(term)),
+      );
+    }
+    return mapped;
+  });
+
+  app.get('/admin/payments/:id', async (request, reply) => {
+    await requireAdmin(request, 'payments.read');
+    const params = z.object({ id: z.string().uuid() }).parse(request.params);
+    const payment = await one<Record<string, unknown> & { id: string; order_id: string; amount_paise: number }>(
+      db().from('payments').select('*').eq('id', params.id).maybeSingle(),
+    );
+    if (!payment) return reply.status(404).send({ error: 'not_found' });
+    const order = await one<{ id: string; order_number: string; email: string; status: string; total_paise: number }>(
+      db().from('orders').select('id, order_number, email, status, total_paise').eq('id', payment.order_id).maybeSingle(),
+    );
+    const events = await rows(db().from('payment_events').select('*').eq('payment_id', payment.id).order('created_at', { ascending: false }));
+    const refunds = await rows<{ amount_paise: number; status: string }>(
+      db().from('refunds').select('*').eq('payment_id', payment.id).order('created_at', { ascending: false }),
+    );
+    const attempts = await rows<{ status: string }>(
+      db().from('payments').select('id, txn_id, status, amount_paise, gateway_txn_id, failure_reason, created_at, paid_at, verified_at')
+        .eq('order_id', payment.order_id)
+        .order('created_at', { ascending: false }),
+    );
+    const refundedPaise = refunds
+      .filter((row) => ['succeeded', 'processing', 'pending'].includes(row.status))
+      .reduce((sum: number, row) => sum + Number(row.amount_paise), 0);
+    return {
+      payment,
+      order,
+      events,
+      refunds,
+      attempts,
+      refundable_paise: Math.max(payment.amount_paise - refundedPaise, 0),
+      flags: {
+        needs_verification: String(payment.status) === 'pending',
+        duplicate_capture_risk: attempts.filter((row) => row.status === 'paid').length > 1,
+      },
+    };
+  });
+
+  app.post('/admin/payments/:id/verify', async (request, reply) => {
+    const admin = await requireAdmin(request, 'payments.read');
+    const params = z.object({ id: z.string().uuid() }).parse(request.params);
+    const payment = await one<{ id: string; txn_id: string; amount_paise: number; status: string; gateway_txn_id: string | null }>(
+      db().from('payments').select('id, txn_id, amount_paise, status, gateway_txn_id').eq('id', params.id).maybeSingle(),
+    );
+    if (!payment) return reply.status(404).send({ error: 'not_found' });
+    const verified = await verifyWithPayu(payment.txn_id);
+    const rpcStatus = resolvePaymentRpcStatus({
+      callbackStatus: verified.ok ? 'success' : verified.conclusive ? 'failure' : 'pending',
+      verifiedOk: verified.ok,
+      conclusive: verified.conclusive,
+      callbackAmountPaise: verified.amountPaise,
+      verifiedAmountPaise: verified.amountPaise,
+    });
+    const amountPaise = verified.amountPaise ?? payment.amount_paise;
+    const { data, error } = await db().rpc('apply_payment_result', {
+      p_txn_id: payment.txn_id,
+      p_gateway_txn_id: verified.mihpayid || payment.gateway_txn_id || '',
+      p_status: rpcStatus,
+      p_amount_paise: amountPaise,
+      p_payload: { source: 'admin_verify', verify: verified.raw, actor: admin.email },
+    });
+    if (error) throw new Error(error.message);
+    await audit({
+      actorType: 'admin',
+      actorId: admin.id,
+      actorLabel: admin.email,
+      action: 'payment.verify',
+      entityType: 'payment',
+      entityId: payment.id,
+      summary: `Admin re-verify ${payment.txn_id} → ${rpcStatus}`,
+      ip: clientIp(request),
+    });
+    return { ok: true, status: rpcStatus, result: data };
+  });
+
+  app.post('/admin/payments/:id/refund', async (request, reply) => {
+    const admin = await requireAdmin(request, 'payments.refund');
+    const params = z.object({ id: z.string().uuid() }).parse(request.params);
+    const body = z.object({
+      amountPaise: z.number().int().positive().optional(),
+      reason: z.string().max(500).optional().default(''),
+    }).parse(request.body ?? {});
+    if (!env.PAYU_KEY || !env.PAYU_SALT) {
+      return reply.status(503).send({ error: 'payment_gateway_unavailable' });
+    }
+    const payment = await one<{
+      id: string;
+      order_id: string;
+      txn_id: string;
+      amount_paise: number;
+      status: string;
+      gateway_txn_id: string | null;
+    }>(db().from('payments').select('id, order_id, txn_id, amount_paise, status, gateway_txn_id').eq('id', params.id).maybeSingle());
+    if (!payment) return reply.status(404).send({ error: 'not_found' });
+    if (payment.status !== 'paid') return reply.status(400).send({ error: 'payment_not_refundable' });
+    if (!payment.gateway_txn_id) return reply.status(400).send({ error: 'missing_gateway_txn' });
+
+    const existing = await rows<{ amount_paise: number; status: string }>(
+      db().from('refunds').select('amount_paise, status').eq('payment_id', payment.id),
+    );
+    const reserved = existing
+      .filter((row) => ['pending', 'processing', 'succeeded'].includes(row.status))
+      .reduce((sum, row) => sum + row.amount_paise, 0);
+    const amountPaise = body.amountPaise ?? (payment.amount_paise - reserved);
+    if (amountPaise <= 0 || reserved + amountPaise > payment.amount_paise) {
+      return reply.status(400).send({ error: 'refund_exceeds_captured' });
+    }
+
+    const merchantRef = `RF${Date.now().toString(36).toUpperCase()}${randomToken().slice(0, 8)}`;
+    const created = await rows<{ id: string }>(
+      db().from('refunds').insert({
+        payment_id: payment.id,
+        order_id: payment.order_id,
+        amount_paise: amountPaise,
+        status: 'processing',
+        merchant_ref: merchantRef,
+        reason: body.reason,
+        created_by: admin.email,
+      }).select('id'),
+    );
+    const refundId = created[0]?.id;
+    const payuResult = await refundWithPayu({
+      mihpayid: payment.gateway_txn_id,
+      token: merchantRef,
+      amountPaise,
+    });
+    if (payuResult.ok) {
+      await ok(db().from('refunds').update({
+        status: 'succeeded',
+        provider_ref: payuResult.providerRef,
+        updated_at: new Date().toISOString(),
+        metadata: payuResult.raw,
+      }).eq('id', refundId));
+      if (reserved + amountPaise >= payment.amount_paise) {
+        await ok(db().from('orders').update({ status: 'refunded' }).eq('id', payment.order_id));
+      }
+    } else {
+      await ok(db().from('refunds').update({
+        status: 'failed',
+        failure_reason: payuResult.error,
+        updated_at: new Date().toISOString(),
+        metadata: payuResult.raw,
+      }).eq('id', refundId));
+    }
+    await audit({
+      actorType: 'admin',
+      actorId: admin.id,
+      actorLabel: admin.email,
+      action: 'payment.refund',
+      entityType: 'payment',
+      entityId: payment.id,
+      summary: `Refund ${amountPaise} paise on ${payment.txn_id}: ${payuResult.ok ? 'succeeded' : 'failed'}`,
+      ip: clientIp(request),
+    });
+    return { ok: payuResult.ok, refundId, error: payuResult.error ?? null };
+  });
+
+  app.post('/admin/payments/reconcile', async (request) => {
+    const admin = await requireAdmin(request, 'payments.read');
+    const body = z.object({ limit: z.number().int().min(1).max(50).optional().default(20) }).parse(request.body ?? {});
+    const results = await reconcilePendingPayments(body.limit);
+    await audit({
+      actorType: 'admin',
+      actorId: admin.id,
+      actorLabel: admin.email,
+      action: 'payment.reconcile',
+      entityType: 'payments',
+      entityId: 'batch',
+      summary: `Reconciled ${results.length} pending payments`,
+      ip: clientIp(request),
+    });
+    return { ok: true, results };
+  });
+
+  app.post('/internal/payments/reconcile', async (request, reply) => {
+    const secret = env.CRON_SECRET;
+    if (!secret) return reply.status(503).send({ error: 'cron_not_configured' });
+    const header = String(request.headers['x-cron-secret'] || '');
+    if (header !== secret) return reply.status(401).send({ error: 'unauthorized' });
+    const query = z.object({ limit: z.coerce.number().int().min(1).max(50).optional().default(20) }).parse(request.query);
+    const results = await reconcilePendingPayments(query.limit);
+    return { ok: true, results };
   });
 
   app.post('/admin/inventory/adjust', async (request) => {
@@ -728,27 +935,202 @@ export async function registerCommerce(app: FastifyInstance) {
   });
 }
 
-async function verifyWithPayu(txnid: string) {
-  if (!env.PAYU_KEY || !env.PAYU_SALT || !txnid) return { ok: false, amountPaise: null as number | null };
+type PayuVerifyResult = {
+  ok: boolean;
+  conclusive: boolean;
+  amountPaise: number | null;
+  mihpayid: string;
+  raw: Record<string, unknown>;
+};
+
+async function verifyWithPayu(txnid: string): Promise<PayuVerifyResult> {
+  if (!env.PAYU_KEY || !env.PAYU_SALT || !txnid) {
+    return { ok: false, conclusive: false, amountPaise: null, mihpayid: '', raw: {} };
+  }
   const form = new URLSearchParams({
     key: env.PAYU_KEY,
     command: 'verify_payment',
     var1: txnid,
     hash: payuVerifyCommandHash(env.PAYU_KEY, txnid, env.PAYU_SALT),
   });
-  const response = await fetch(payuVerifyUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: form,
+  try {
+    const response = await fetch(payuVerifyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form,
+    });
+    if (!response.ok) {
+      return { ok: false, conclusive: false, amountPaise: null, mihpayid: '', raw: { httpStatus: response.status } };
+    }
+    const payload = (await response.json()) as {
+      status?: number;
+      transaction_details?: Record<string, { status?: string; amt?: string; mihpayid?: string }>;
+    };
+    const detail = payload.transaction_details?.[txnid];
+    if (!detail?.status) {
+      return { ok: false, conclusive: false, amountPaise: null, mihpayid: '', raw: payload as Record<string, unknown> };
+    }
+    const status = detail.status.toLowerCase();
+    const amountPaise = detail.amt ? amountToPaise(detail.amt) : null;
+    if (status === 'success') {
+      return {
+        ok: true,
+        conclusive: true,
+        amountPaise,
+        mihpayid: detail.mihpayid ?? '',
+        raw: payload as Record<string, unknown>,
+      };
+    }
+    if (status === 'pending' || status === 'in progress' || status === 'initiated') {
+      return {
+        ok: false,
+        conclusive: false,
+        amountPaise,
+        mihpayid: detail.mihpayid ?? '',
+        raw: payload as Record<string, unknown>,
+      };
+    }
+    return {
+      ok: false,
+      conclusive: true,
+      amountPaise,
+      mihpayid: detail.mihpayid ?? '',
+      raw: payload as Record<string, unknown>,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      conclusive: false,
+      amountPaise: null,
+      mihpayid: '',
+      raw: { error: error instanceof Error ? error.message : 'verify_failed' },
+    };
+  }
+}
+
+async function finalizePayuBody(body: Record<string, string>, source: 'callback' | 'webhook') {
+  const verified = await verifyWithPayu(body.txnid);
+  const callbackAmountPaise = amountToPaise(body.amount);
+  const rpcStatus = resolvePaymentRpcStatus({
+    callbackStatus: body.status ?? '',
+    verifiedOk: verified.ok,
+    conclusive: verified.conclusive,
+    callbackAmountPaise,
+    verifiedAmountPaise: verified.amountPaise ?? callbackAmountPaise,
   });
-  if (!response.ok) return { ok: false, amountPaise: null };
-  const payload = (await response.json()) as {
-    status?: number;
-    transaction_details?: Record<string, { status?: string; amt?: string }>;
-  };
-  const detail = payload.transaction_details?.[txnid];
-  return {
-    ok: detail?.status === 'success',
-    amountPaise: detail?.amt ? amountToPaise(detail.amt) : null,
-  };
+  const { data, error } = await db().rpc('apply_payment_result', {
+    p_txn_id: body.txnid,
+    p_gateway_txn_id: body.mihpayid || verified.mihpayid || '',
+    p_status: rpcStatus,
+    p_amount_paise: callbackAmountPaise ?? verified.amountPaise ?? 0,
+    p_payload: {
+      source,
+      status: body.status,
+      error: body.error_Message || body.field9 || '',
+      mode: body.mode,
+      bank_ref_num: body.bank_ref_num,
+      verify: verified.raw,
+    },
+  });
+  if (error) throw new Error(error.message);
+  const raw = (data ?? {}) as Record<string, unknown>;
+  const orderNumber = String(raw.orderNumber ?? body.udf1 ?? '');
+  // Notify admins only after a successful capture — not when checkout starts or payment is abandoned/failed.
+  if (rpcStatus === 'paid' && !raw.idempotent) {
+    await notify({
+      type: 'payment.received',
+      title: 'New paid order',
+      body: `Order #${orderNumber}: ₹${((callbackAmountPaise ?? 0) / 100).toLocaleString('en-IN')} paid`,
+      entityType: 'order',
+      entityId: orderNumber,
+      href: '/admin/orders',
+    });
+  }
+  return { orderNumber, rpcStatus, result: raw };
+}
+
+async function refundWithPayu(input: { mihpayid: string; token: string; amountPaise: number }) {
+  if (!env.PAYU_KEY || !env.PAYU_SALT) {
+    return { ok: false, error: 'payment_gateway_unavailable', providerRef: '', raw: {} as Record<string, unknown> };
+  }
+  const form = new URLSearchParams({
+    key: env.PAYU_KEY,
+    command: 'cancel_refund_transaction',
+    var1: input.mihpayid,
+    var2: input.token,
+    var3: paiseToPayuAmount(input.amountPaise),
+    hash: payuRefundCommandHash(env.PAYU_KEY, input.mihpayid, env.PAYU_SALT),
+  });
+  try {
+    const response = await fetch(payuVerifyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form,
+    });
+    const raw = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+    const status = String(raw.status ?? raw.Status ?? '');
+    const okStatus = status === '1' || status.toLowerCase() === 'success' || Boolean(raw.request_id || raw.txn_update_id);
+    if (!response.ok || !okStatus) {
+      return {
+        ok: false,
+        error: String(raw.msg ?? raw.message ?? raw.error ?? 'refund_failed'),
+        providerRef: String(raw.request_id ?? raw.txn_update_id ?? ''),
+        raw,
+      };
+    }
+    return {
+      ok: true,
+      error: undefined as string | undefined,
+      providerRef: String(raw.request_id ?? raw.txn_update_id ?? ''),
+      raw,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : 'refund_failed',
+      providerRef: '',
+      raw: {} as Record<string, unknown>,
+    };
+  }
+}
+
+async function reconcilePendingPayments(limit: number) {
+  const since = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+  const pending = await rows<{ id: string; txn_id: string; amount_paise: number; gateway_txn_id: string | null }>(
+    db().from('payments')
+      .select('id, txn_id, amount_paise, gateway_txn_id')
+      .eq('status', 'pending')
+      .eq('gateway', 'payu')
+      .lte('created_at', since)
+      .order('created_at', { ascending: true })
+      .limit(limit),
+  );
+  const results: Array<{ paymentId: string; txnId: string; status: string }> = [];
+  for (const payment of pending) {
+    const verified = await verifyWithPayu(payment.txn_id);
+    const rpcStatus = resolvePaymentRpcStatus({
+      callbackStatus: verified.ok ? 'success' : verified.conclusive ? 'failure' : 'pending',
+      verifiedOk: verified.ok,
+      conclusive: verified.conclusive,
+      callbackAmountPaise: verified.amountPaise ?? payment.amount_paise,
+      verifiedAmountPaise: verified.amountPaise ?? payment.amount_paise,
+    });
+    if (rpcStatus === 'pending') {
+      results.push({ paymentId: payment.id, txnId: payment.txn_id, status: 'pending' });
+      continue;
+    }
+    const { error } = await db().rpc('apply_payment_result', {
+      p_txn_id: payment.txn_id,
+      p_gateway_txn_id: verified.mihpayid || payment.gateway_txn_id || '',
+      p_status: rpcStatus,
+      p_amount_paise: verified.amountPaise ?? payment.amount_paise,
+      p_payload: { source: 'reconcile', verify: verified.raw },
+    });
+    if (error) {
+      results.push({ paymentId: payment.id, txnId: payment.txn_id, status: `error:${error.message}` });
+    } else {
+      results.push({ paymentId: payment.id, txnId: payment.txn_id, status: rpcStatus });
+    }
+  }
+  return results;
 }

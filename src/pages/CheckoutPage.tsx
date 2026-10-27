@@ -3,13 +3,15 @@ import {
   ArrowLeft,
   ShieldCheck,
   Lock,
-  CreditCard,
   Truck,
   Tag,
   Trash2,
   Plus,
   Minus,
   CheckCircle2,
+  AlertCircle,
+  Clock3,
+  RefreshCw,
   MapPin,
   User,
   Mail,
@@ -19,10 +21,26 @@ import {
   Circle,
 } from 'lucide-react';
 import { api, hasApi } from '../lib/api';
-import { cartService, FREE_SHIPPING_THRESHOLD } from '../services/cartService';
+import { cartService } from '../services/cartService';
 import { CartItem } from '../types';
 import { BrandImage } from '../components/ui/BrandImage';
-import { ConfettiButton, confetti } from '../registry/magicui/confetti';
+import { confetti } from '../registry/magicui/confetti';
+
+function submitPayuForm(fields: Record<string, string>) {
+  const payuForm = document.createElement('form');
+  payuForm.method = 'POST';
+  payuForm.action = fields.action;
+  for (const [key, value] of Object.entries(fields)) {
+    if (key === 'action' || value == null) continue;
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    payuForm.appendChild(input);
+  }
+  document.body.appendChild(payuForm);
+  payuForm.submit();
+}
 
 interface CheckoutPageProps {
   onNavigate: (path: string) => void;
@@ -44,7 +62,6 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
   const [items, setItems] = useState<CartItem[]>(() => cartService.getCart());
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('online');
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedSavedId, setSelectedSavedId] = useState<string | null>(null);
   const [customer, setCustomer] = useState<{ email: string; fullName: string } | null>(null);
@@ -78,45 +95,59 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
     return () => window.removeEventListener('cart_updated', handleCartUpdate);
   }, []);
 
-  // Fetch logged in customer and addresses if available
+  // Require login, sync bag to API, then load profile / addresses
   useEffect(() => {
     if (!hasApi()) return;
+    let cancelled = false;
 
-    api<{ customer: { email: string; fullName: string } | null }>('/auth/me')
-      .then((res) => {
-        if (res.customer) {
-          setCustomer(res.customer);
-          setForm((prev) => ({
-            ...prev,
-            email: prev.email || res.customer?.email || '',
-            fullName: prev.fullName || res.customer?.fullName || '',
-          }));
+    const boot = async () => {
+      try {
+        const me = await api<{ customer: { email: string; fullName: string } | null }>('/auth/me');
+        if (cancelled) return;
+        if (!me.customer) {
+          sessionStorage.setItem('vr_return_to', '/en/checkout');
+          onNavigate('/en/login');
+          return;
         }
-      })
-      .catch(() => undefined);
+        setCustomer(me.customer);
+        setForm((prev) => ({
+          ...prev,
+          email: prev.email || me.customer?.email || '',
+          fullName: prev.fullName || me.customer?.fullName || '',
+        }));
 
-    api<SavedAddress[]>('/account/addresses')
-      .then((addresses) => {
-        if (Array.isArray(addresses) && addresses.length > 0) {
-          setSavedAddresses(addresses);
-          const defaultAddr = addresses.find((a) => a.is_default) || addresses[0];
-          if (defaultAddr) {
-            setSelectedSavedId(defaultAddr.id);
-            setForm((prev) => ({
-              ...prev,
-              fullName: defaultAddr.full_name || prev.fullName,
-              phone: defaultAddr.phone || prev.phone,
-              line1: defaultAddr.line1 || prev.line1,
-              line2: defaultAddr.line2 || '',
-              city: defaultAddr.city || prev.city,
-              region: defaultAddr.region || prev.region,
-              postalCode: defaultAddr.postal_code || prev.postalCode,
-            }));
-          }
+        await cartService.ensureRemoteCart();
+        if (!cancelled) setItems(cartService.getCart());
+
+        const addresses = await api<SavedAddress[]>('/account/addresses').catch(() => [] as SavedAddress[]);
+        if (cancelled || !Array.isArray(addresses) || addresses.length === 0) return;
+        setSavedAddresses(addresses);
+        const defaultAddr = addresses.find((a) => a.is_default) || addresses[0];
+        if (!defaultAddr) return;
+        setSelectedSavedId(defaultAddr.id);
+        setForm((prev) => ({
+          ...prev,
+          fullName: defaultAddr.full_name || prev.fullName,
+          phone: defaultAddr.phone || prev.phone,
+          line1: defaultAddr.line1 || prev.line1,
+          line2: defaultAddr.line2 || '',
+          city: defaultAddr.city || prev.city,
+          region: defaultAddr.region || prev.region,
+          postalCode: defaultAddr.postal_code || prev.postalCode,
+        }));
+      } catch {
+        if (!cancelled) {
+          sessionStorage.setItem('vr_return_to', '/en/checkout');
+          onNavigate('/en/login');
         }
-      })
-      .catch(() => undefined);
-  }, []);
+      }
+    };
+
+    void boot();
+    return () => {
+      cancelled = true;
+    };
+  }, [onNavigate]);
 
   const handleSelectSavedAddress = (addr: SavedAddress) => {
     setSelectedSavedId(addr.id);
@@ -167,10 +198,18 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
 
   const subtotal = cartService.getSubtotal(items);
   const totalQuantity = cartService.getItemCount(items);
-  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
-  const shippingCharge = subtotal > 0 && !isFreeShipping ? 99 : 0;
+  const shippingCharge = 0;
   const grandTotal = subtotal + shippingCharge;
-  const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+
+  const friendlyCheckoutError = (raw: string) => {
+    const key = raw.toLowerCase();
+    if (key.includes('cart_empty')) return 'Your bag is empty on the server. Please add the item again, then pay.';
+    if (key.includes('unavailable_stock')) return 'One of your items is out of stock. Update your bag and try again.';
+    if (key.includes('address_required')) return 'Please complete every required delivery field.';
+    if (key.includes('email_required')) return 'A valid email is required for order confirmation.';
+    if (key.includes('payment_gateway')) return 'PayU is temporarily unavailable. Please try again shortly.';
+    return raw;
+  };
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -186,8 +225,17 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
       return;
     }
 
+    if (!customer) {
+      sessionStorage.setItem('vr_return_to', '/en/checkout');
+      onNavigate('/en/login');
+      return;
+    }
+
     setPending(true);
     try {
+      await cartService.ensureRemoteCart();
+      setItems(cartService.getCart());
+
       const result = await api<{
         orderNumber: string;
         viewToken: string;
@@ -211,29 +259,24 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
         }),
       });
 
+      if (!result.viewToken) {
+        setError('Checkout could not create a secure order token. Please try again.');
+        setPending(false);
+        return;
+      }
       sessionStorage.setItem(`vr-order-${result.orderNumber}`, result.viewToken);
 
-      if (paymentMethod === 'cod' || !result.payu) {
-        onNavigate(`/en/checkout/return?order=${encodeURIComponent(result.orderNumber)}`);
+      if (!result.payu?.action) {
+        setError('Online payment is temporarily unavailable. Your order was not charged.');
+        setPending(false);
         return;
       }
 
-      // Automatically construct and submit PayU form
-      const payuForm = document.createElement('form');
-      payuForm.method = 'POST';
-      payuForm.action = result.payu.action;
-      for (const [key, value] of Object.entries(result.payu)) {
-        if (key === 'action' || value == null) continue;
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        payuForm.appendChild(input);
-      }
-      document.body.appendChild(payuForm);
-      payuForm.submit();
+      cartService.clearCart();
+      submitPayuForm(result.payu);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'checkout_failed');
+      const raw = reason instanceof Error ? reason.message : 'checkout_failed';
+      setError(friendlyCheckoutError(raw));
       setPending(false);
     }
   };
@@ -267,7 +310,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
               <span className="w-6 h-6 rounded-full border border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center justify-center text-xs font-bold">
                 2
               </span>
-              <span>Payment Details</span>
+              <span>PayU Secure Pay</span>
+            </div>
+            <div className="w-8 h-[1px] bg-[var(--border-subtle)] hidden sm:block" />
+            <div className="flex items-center gap-2 text-[var(--text-muted)]">
+              <span className="w-6 h-6 rounded-full border border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center justify-center text-xs font-bold">
+                3
+              </span>
+              <span>Delivery Tracking</span>
             </div>
           </div>
         </div>
@@ -511,88 +561,10 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                   </div>
                 </div>
 
-                {/* 3. Payment Method Card (Reference UI) */}
-                <div className="bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-2xl p-5 sm:p-7 shadow-xs">
-                  <div className="flex items-center justify-between pb-4 mb-5 border-b border-[var(--border-subtle)]">
-                    <div className="flex items-center gap-2.5">
-                      <CreditCard className="w-4 h-4 text-[var(--accent-gold)]" />
-                      <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                        Payment Method
-                      </h2>
-                    </div>
-                    <span className="text-[11px] text-[var(--accent-gold)] font-bold flex items-center gap-1">
-                      <Lock className="w-3 h-3" /> 256-bit Secure
-                    </span>
-                  </div>
-
-                  <div className="space-y-3">
-                    {/* Option A: Online Payment (PayU) */}
-                    <div
-                      onClick={() => setPaymentMethod('online')}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 ${
-                        paymentMethod === 'online'
-                          ? 'border-[var(--accent-gold)] bg-[var(--bg-secondary)] shadow-xs ring-1 ring-[var(--accent-gold)]'
-                          : 'border-[var(--border-subtle)] bg-[var(--bg-primary)] hover:border-[var(--accent-gold)]/60'
-                      }`}
-                    >
-                      <div className="mt-0.5">
-                        {paymentMethod === 'online' ? (
-                          <div className="w-5 h-5 rounded-full border-2 border-[var(--accent-gold)] flex items-center justify-center">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-gold)]" />
-                          </div>
-                        ) : (
-                          <div className="w-5 h-5 rounded-full border border-[var(--border-subtle)]" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-bold text-[var(--text-primary)]">
-                            Online Payment (Cards, UPI, Netbanking)
-                          </p>
-                          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-[var(--accent-gold)]/15 text-[var(--accent-gold)]">
-                            Recommended
-                          </span>
-                        </div>
-                        <p className="text-xs text-[var(--text-muted)] mt-1">
-                          Instant confirmation &amp; priority dispatch via PayU Secure Gateway. Supports Visa, Mastercard, RuPay, UPI (GPay/PhonePe/Paytm), and NetBanking.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Option B: Cash on Delivery */}
-                    <div
-                      onClick={() => setPaymentMethod('cod')}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 ${
-                        paymentMethod === 'cod'
-                          ? 'border-[var(--accent-gold)] bg-[var(--bg-secondary)] shadow-xs ring-1 ring-[var(--accent-gold)]'
-                          : 'border-[var(--border-subtle)] bg-[var(--bg-primary)] hover:border-[var(--accent-gold)]/60'
-                      }`}
-                    >
-                      <div className="mt-0.5">
-                        {paymentMethod === 'cod' ? (
-                          <div className="w-5 h-5 rounded-full border-2 border-[var(--accent-gold)] flex items-center justify-center">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-gold)]" />
-                          </div>
-                        ) : (
-                          <div className="w-5 h-5 rounded-full border border-[var(--border-subtle)]" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-bold text-[var(--text-primary)]">
-                            Cash on Delivery (COD)
-                          </p>
-                          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md border border-[var(--border-subtle)] text-[var(--text-muted)]">
-                            Doorstep Pay
-                          </span>
-                        </div>
-                        <p className="text-xs text-[var(--text-muted)] mt-1">
-                          Pay directly to our delivery executive in cash or via QR UPI upon receiving your parcel.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <p className="text-xs text-[var(--text-muted)] flex items-center gap-2">
+                  <Lock className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+                  After you click Pay, you will continue on PayU Hosted Checkout (cards, UPI, netbanking).
+                </p>
 
                 {error && (
                   <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs sm:text-sm font-semibold flex items-center gap-2">
@@ -613,27 +585,12 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                   </p>
                 </div>
 
-                {/* Free Shipping Progress Indicator */}
+                {/* Complimentary Shipping Notice */}
                 <div className="mb-5 p-3.5 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
-                  {isFreeShipping ? (
-                    <div className="flex items-center gap-2 text-xs font-bold text-[var(--accent-gold)]">
-                      <Truck className="w-4 h-4 shrink-0" />
-                      <span>Complimentary Luxury Shipping Unlocked!</span>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-1.5">
-                        <span>Add ₹{remainingForFreeShipping.toFixed(0)} more for Free Shipping</span>
-                        <span className="font-bold font-mono">₹{FREE_SHIPPING_THRESHOLD}</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-[var(--border-subtle)] rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-[var(--accent-gold)] transition-all duration-300 rounded-full"
-                          style={{ width: `${Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2 text-xs font-bold text-[var(--accent-gold)]">
+                    <Truck className="w-4 h-4 shrink-0" />
+                    <span>Complimentary Luxury Shipping</span>
+                  </div>
                 </div>
 
                 {/* Cart Items List */}
@@ -756,13 +713,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
 
                   <div className="flex justify-between text-[var(--text-muted)]">
                     <span>Boutique Express Delivery</span>
-                    <span>
-                      {isFreeShipping ? (
-                        <span className="text-[var(--accent-gold)] font-bold uppercase">Free</span>
-                      ) : (
-                        <span className="font-bold tabular-nums text-[var(--text-primary)]">₹99.00</span>
-                      )}
-                    </span>
+                    <span className="text-[var(--accent-gold)] font-bold uppercase">Free</span>
                   </div>
 
                   <div className="flex justify-between text-[var(--text-muted)]">
@@ -799,7 +750,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                       <>
                         <Lock className="w-4 h-4 text-[var(--accent-gold)]" />
                         <span>
-                          {paymentMethod === 'online' ? `Pay ₹${grandTotal.toFixed(2)}` : 'Confirm COD Order'}
+                          {`Pay ₹${grandTotal.toFixed(2)}`}
                         </span>
                       </>
                     )}
@@ -814,7 +765,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Truck className="w-4 h-4 text-[var(--accent-gold)] shrink-0" />
-                    <span>Complimentary over ₹999</span>
+                    <span>Complimentary Shipping</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Lock className="w-4 h-4 text-[var(--accent-gold)] shrink-0" />
@@ -852,7 +803,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
             className="h-11 px-5 btn-theme-primary rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50 shrink-0"
           >
             <Lock className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
-            <span>{paymentMethod === 'online' ? `Pay ₹${grandTotal.toFixed(2)}` : 'Place Order'}</span>
+            <span>{`Pay ₹${grandTotal.toFixed(2)}`}</span>
           </button>
         </aside>
       )}
@@ -873,73 +824,120 @@ export const CheckoutReturnPage: React.FC = () => {
   } | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [retrying, setRetrying] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
+  const loadStatus = async () => {
     if (!order || !token || !hasApi()) {
+      setError(!order ? 'Missing order reference.' : !token ? 'Open this page from the same browser you used to checkout.' : 'API unavailable.');
       setLoading(false);
       return;
     }
-    api<{ order: { order_number: string; payment_status: string; status: string; total_paise: number; email: string } }>(
-      `/orders/lookup?order=${encodeURIComponent(order)}&token=${encodeURIComponent(token)}`
-    )
-      .then((result) => {
-        setState(result.order);
-        setLoading(false);
-      })
-      .catch((reason) => {
-        setError(reason instanceof Error ? reason.message : 'lookup_failed');
-        setLoading(false);
-      });
+    try {
+      const result = await api<{ order: { order_number: string; payment_status: string; status: string; total_paise: number; email: string } }>(
+        `/orders/lookup?order=${encodeURIComponent(order)}&token=${encodeURIComponent(token)}`,
+      );
+      setState(result.order);
+      setError('');
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'lookup_failed');
+      setState(null);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadStatus();
   }, [order, token]);
 
-  // Automatic celebration confetti on successful order confirmation
+  const paymentStatus = state?.payment_status || '';
+  const isPaid = paymentStatus === 'paid';
+  const isFailed = paymentStatus === 'failed' || paymentStatus === 'cancelled';
+  const isPending = Boolean(state) && !isPaid && !isFailed;
+
   useEffect(() => {
-    if (!loading && !error) {
-      const end = Date.now() + 1.2 * 1000;
-      const colors = ['#D1AF92', '#A9755A', '#E6D9CB', '#591215', '#F5EBE0', '#FFD700'];
+    if (!isPaid) return;
+    const end = Date.now() + 1.2 * 1000;
+    const colors = ['#D1AF92', '#A9755A', '#E6D9CB', '#591215', '#F5EBE0'];
+    const frame = () => {
+      confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.7 }, colors });
+      confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.7 }, colors });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    };
+    frame();
+    const timer = window.setTimeout(() => {
+      const target = order
+        ? `/en/account?tab=orders&order=${encodeURIComponent(order)}`
+        : '/en/account?tab=orders';
+      window.location.href = target;
+    }, 3200);
+    return () => window.clearTimeout(timer);
+  }, [isPaid, order]);
 
-      const frame = () => {
-        confetti({
-          particleCount: 3,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0, y: 0.7 },
-          colors,
-        });
-        confetti({
-          particleCount: 3,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1, y: 0.7 },
-          colors,
-        });
+  const refreshStatus = async () => {
+    setRefreshing(true);
+    await loadStatus();
+  };
 
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      };
-      frame();
+  const retryPayment = async () => {
+    if (!order || !token) return;
+    setRetrying(true);
+    setError('');
+    try {
+      const result = await api<{ payu: Record<string, string> | null }>(`/orders/${encodeURIComponent(order)}/retry`, {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
+      if (!result.payu?.action) {
+        setError('Payment retry is temporarily unavailable.');
+        setRetrying(false);
+        return;
+      }
+      submitPayuForm(result.payu);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'retry_failed');
+      setRetrying(false);
     }
-  }, [loading, error]);
+  };
 
-  const isPaid = state?.payment_status === 'paid';
+  const title = loading
+    ? 'Confirming Payment'
+    : error
+      ? 'Order Lookup Needed'
+      : isPaid
+        ? 'Payment Confirmed'
+        : isFailed
+          ? 'Payment Not Completed'
+          : 'Payment Pending';
+
+  const Icon = loading || isPending ? Clock3 : error || isFailed ? AlertCircle : CheckCircle2;
+  const iconTone = isPaid
+    ? 'bg-emerald-500/15 text-emerald-600'
+    : isFailed || error
+      ? 'bg-rose-500/15 text-rose-500'
+      : 'bg-amber-500/15 text-amber-600';
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] py-16 px-4">
       <div className="max-w-xl mx-auto bg-[var(--card-bg)] border border-[var(--border-subtle)] rounded-2xl p-8 sm:p-10 shadow-lg text-center relative overflow-hidden">
-        <div className="w-16 h-16 rounded-full bg-[var(--accent-gold)]/15 text-[var(--accent-gold)] flex items-center justify-center mx-auto mb-5 shadow-xs">
-          <CheckCircle2 className="w-9 h-9" />
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 shadow-xs ${iconTone}`}>
+          <Icon className="w-9 h-9" />
         </div>
 
         <h1 className="text-4xl text-[var(--text-primary)] mb-2" style={{ fontFamily: "'Amithen', cursive" }}>
-          Thank You for Your Order
+          {title}
         </h1>
-        <p className="text-xs uppercase tracking-widest font-bold text-[var(--accent-gold)] mb-6">
-          Order Reference #{order || 'VERIFIED'}
+        <p className="text-xs uppercase tracking-widest font-bold text-[var(--accent-gold)] mb-2">
+          Order Reference #{order || '—'}
+        </p>
+        <p className="text-xs text-[var(--text-muted)] mb-6">
+          Redirect query parameters are not proof of payment. Status below comes from Veloraa after PayU verification.
         </p>
 
         {loading ? (
-          <p className="text-sm text-[var(--text-muted)] py-6">Verifying your luxury order status…</p>
+          <p className="text-sm text-[var(--text-muted)] py-6">Checking payment status with our servers…</p>
         ) : error ? (
           <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-sm mb-6">
             {error}
@@ -949,18 +947,22 @@ export const CheckoutReturnPage: React.FC = () => {
             <div className="flex justify-between text-xs sm:text-sm">
               <span className="text-[var(--text-muted)]">Order Status</span>
               <span className="font-bold uppercase tracking-wider text-[var(--accent-gold)]">
-                {state?.status || 'Processing'}
+                {state?.status || '—'}
               </span>
             </div>
             <div className="flex justify-between text-xs sm:text-sm">
               <span className="text-[var(--text-muted)]">Payment Status</span>
-              <span className={`font-bold uppercase tracking-wider ${isPaid ? 'text-emerald-500' : 'text-amber-500'}`}>
-                {state?.payment_status || 'Pending'}
+              <span
+                className={`font-bold uppercase tracking-wider ${
+                  isPaid ? 'text-emerald-500' : isFailed ? 'text-rose-500' : 'text-amber-500'
+                }`}
+              >
+                {paymentStatus || 'Pending'}
               </span>
             </div>
             {state?.email && (
               <div className="flex justify-between text-xs sm:text-sm">
-                <span className="text-[var(--text-muted)]">Confirmation Sent To</span>
+                <span className="text-[var(--text-muted)]">Email</span>
                 <span className="font-medium text-[var(--text-primary)] truncate max-w-[200px]">{state.email}</span>
               </div>
             )}
@@ -972,56 +974,65 @@ export const CheckoutReturnPage: React.FC = () => {
                 </span>
               </div>
             )}
+            {isPending && (
+              <p className="text-xs text-amber-700 bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                PayU may still be confirming this payment. Wait a moment, then refresh status. Do not pay again unless this shows failed.
+              </p>
+            )}
+            {isFailed && (
+              <p className="text-xs text-rose-700 bg-rose-500/10 border border-rose-500/20 rounded-lg p-3">
+                No charge was captured for this attempt. You can retry online payment securely below.
+              </p>
+            )}
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-8">
-          <div className="relative">
-            <ConfettiButton
-              options={{
-                get angle() {
-                  return Math.random() * 360;
-                },
-              }}
-              className="px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-[var(--accent-gold)] text-[var(--text-inverse)] hover:opacity-90 transition-all cursor-pointer shadow-md flex items-center gap-1.5"
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-8 flex-wrap">
+          {(isPending || error) && (
+            <button
+              type="button"
+              onClick={() => void refreshStatus()}
+              disabled={refreshing}
+              className="px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-[var(--bg-secondary)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] transition-all cursor-pointer inline-flex items-center gap-2 disabled:opacity-50"
             >
-              <span>Celebrate Order 🎉</span>
-            </ConfettiButton>
-          </div>
+              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+              Refresh Status
+            </button>
+          )}
+          {isFailed && (
+            <button
+              type="button"
+              onClick={() => void retryPayment()}
+              disabled={retrying}
+              className="btn-theme-primary px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-xs disabled:opacity-50"
+            >
+              {retrying ? 'Redirecting…' : 'Retry Payment'}
+            </button>
+          )}
+          {isPaid && (
+            <button
+              type="button"
+              onClick={() => {
+                const target = order
+                  ? `/en/account?tab=orders&order=${encodeURIComponent(order)}`
+                  : '/en/account?tab=orders';
+                window.location.href = target;
+              }}
+              className="btn-theme-primary px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-xs"
+            >
+              View Delivery Status
+            </button>
+          )}
           <button
             type="button"
             onClick={() => (window.location.href = '/en')}
-            className="btn-theme-primary px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-xs"
-          >
-            Continue Shopping
-          </button>
-          <button
-            type="button"
-            onClick={() => (window.location.href = '/en/account')}
             className="px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-[var(--bg-secondary)] hover:bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] transition-all cursor-pointer"
           >
-            View My Account
+            Continue Shopping
           </button>
         </div>
       </div>
     </div>
   );
 };
-
-export function ConfettiButtonDemo() {
-  return (
-    <div className="relative inline-block">
-      <ConfettiButton
-        options={{
-          get angle() {
-            return Math.random() * 360;
-          },
-        }}
-        className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[var(--accent-gold)] text-[var(--text-inverse)] hover:opacity-90 transition-all cursor-pointer shadow-md"
-      >
-        Random Confetti 🎉
-      </ConfettiButton>
-    </div>
-  );
-}
 

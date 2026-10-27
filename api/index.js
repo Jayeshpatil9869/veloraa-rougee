@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -46105,9 +46105,9 @@ var init_env = __esm({
     import_meta = {};
     try {
       const dir = import_node_path.default.dirname((0, import_node_url.fileURLToPath)(import_meta.url));
-      (0, import_dotenv.config)({ path: import_node_path.default.resolve(dir, "../../.env") });
-      (0, import_dotenv.config)({ path: import_node_path.default.resolve(dir, "../.env") });
-      (0, import_dotenv.config)();
+      (0, import_dotenv.config)({ path: import_node_path.default.resolve(dir, "../../.env"), override: true });
+      (0, import_dotenv.config)({ path: import_node_path.default.resolve(dir, "../.env"), override: true });
+      (0, import_dotenv.config)({ override: true });
     } catch {
     }
     schema = external_exports.object({
@@ -46119,7 +46119,9 @@ var init_env = __esm({
       SUPABASE_SERVICE_ROLE_KEY: external_exports.string().optional(),
       PAYU_KEY: external_exports.string().optional(),
       PAYU_SALT: external_exports.string().optional(),
-      PAYU_MODE: external_exports.enum(["test", "live"]).default("test"),
+      PAYU_MODE: external_exports.enum(["test", "live"]).default("live"),
+      API_PUBLIC_URL: external_exports.string().optional(),
+      CRON_SECRET: external_exports.string().optional(),
       ADMIN_EMAIL: external_exports.string().optional(),
       ADMIN_PASSWORD: external_exports.string().optional(),
       ADMIN_NAME: external_exports.string().default("Veloraa Admin")
@@ -46131,6 +46133,9 @@ var init_env = __esm({
     };
     payuBase = env.PAYU_MODE === "live" ? "https://secure.payu.in" : "https://test.payu.in";
     payuVerifyUrl = `${payuBase}/merchant/postservice?form=2`;
+    if (env.PAYU_KEY) {
+      console.info(`[payu] mode=${env.PAYU_MODE} base=${payuBase}`);
+    }
   }
 });
 
@@ -46814,8 +46819,8 @@ var require_FunctionsClient = __commonJS({
        *
        * @remarks
        * - The API key is sent in the `apikey` header. The `Authorization` header is reserved
-       *   for the signed-in user's JWT (or a custom auth token) ÔÇö when there is no session, a
-       *   new-format API key (`sb_publishable_ÔÇª` / `sb_secret_ÔÇª`) is not sent as a Bearer token.
+       *   for the signed-in user's JWT (or a custom auth token) — when there is no session, a
+       *   new-format API key (`sb_publishable_…` / `sb_secret_…`) is not sent as a Bearer token.
        * - Invoke params generally match the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) spec.
        * - When you pass in a body to your function, we automatically attach the Content-Type header for `Blob`, `ArrayBuffer`, `File`, `FormData` and `String`. If it doesn't match any of these types we assume the payload is `json`, serialize it and attach the `Content-Type` header as `application/json`. You can override this behavior by passing in a `Content-Type` header of your own.
        * - Responses are automatically parsed as `json`, `blob` and `form-data` depending on the `Content-Type` header sent by your function. Responses are parsed as `text` by default.
@@ -48418,8 +48423,8 @@ ${cause.stack}`;
       *
       * Server-side, PostgREST runs the query inside a transaction and rolls it back
       * instead of committing. The response still contains the data that *would* have
-      * been returned ÔÇö `RETURNING` clauses execute and RLS, triggers, and constraints
-      * are all evaluated ÔÇö but no row is actually inserted, updated, or deleted.
+      * been returned — `RETURNING` clauses execute and RLS, triggers, and constraints
+      * are all evaluated — but no row is actually inserted, updated, or deleted.
       *
       * This affects only the single request it is chained to. The JS caller has no
       * handle on the transaction: supabase-js does not group multiple queries into
@@ -49148,7 +49153,7 @@ ${cause.stack}`;
       * ```
       *
       * @exampleDescription Handling errors
-      * The most useful field on a Postgres error is usually `hint` ÔÇö when the database knows the fix, it puts the literal SQL there. For example, a permission-denied error (`code: '42501'`) arrives with a `hint` like `"Grant the required privileges to the current role with: GRANT SELECT ON public.characters TO anon;"`. Log the full `error` object so the hint isn't hidden behind `error.message`.
+      * The most useful field on a Postgres error is usually `hint` — when the database knows the fix, it puts the literal SQL there. For example, a permission-denied error (`code: '42501'`) arrives with a `hint` like `"Grant the required privileges to the current role with: GRANT SELECT ON public.characters TO anon;"`. Log the full `error` object so the hint isn't hidden behind `error.message`.
       *
       * @example Handling errors
       * ```js
@@ -49476,7 +49481,7 @@ ${cause.stack}`;
       *  insert into
       *    messages (sender_id, receiver_id, content)
       *  values
-      *    (1, 2, '­ƒæï');
+      *    (1, 2, '👋');
       *  ```
       * ```
       *
@@ -49485,7 +49490,7 @@ ${cause.stack}`;
       * {
       *   "data": [
       *     {
-      *       "content": "­ƒæï",
+      *       "content": "👋",
       *       "from": {
       *         "name": "Kiran"
       *       },
@@ -50819,7 +50824,7 @@ ${cause.stack}`;
       *
       * @example Call a Postgres function with arguments
       * ```ts
-      * const { data, error } = await supabase.rpc('echo', { say: '­ƒæï' })
+      * const { data, error } = await supabase.rpc('echo', { say: '👋' })
       * ```
       *
       * @exampleSql Call a Postgres function with arguments
@@ -50832,7 +50837,7 @@ ${cause.stack}`;
       * @exampleResponse Call a Postgres function with arguments
       * ```json
       *   {
-      *     "data": "­ƒæï",
+      *     "data": "👋",
       *     "status": 200,
       *     "statusText": "OK"
       *   }
@@ -50972,7 +50977,7 @@ var require_websocket_factory = __commonJS({
     exports2.WebSocketFactory = void 0;
     var WebSocketFactory = class {
       /**
-       * Static-only utility ÔÇô prevent instantiation.
+       * Static-only utility – prevent instantiation.
        */
       constructor() {
       }
@@ -53663,7 +53668,7 @@ var require_RealtimePostgresFilterBuilder = __commonJS({
        * Requires at least one value; duplicates are removed. An element containing a
        * reserved character is double-quoted (`in.("a,b",c)`), so commas inside an
        * element are preserved. `null` is intentionally not accepted (`IN (null)`
-       * never matches in SQL) ÔÇö use `is`/`not('col','is',null)` for null checks.
+       * never matches in SQL) — use `is`/`not('col','is',null)` for null checks.
        */
       in(column, values) {
         return this.add(column, "in", values);
@@ -53702,8 +53707,8 @@ var require_RealtimePostgresFilterBuilder = __commonJS({
        * Serialize all conditions into the comma-separated (AND) filter string.
        *
        * Conditions are joined by commas, which the server applies as `AND`. A scalar
-       * value (or single `in` element) that contains a reserved character ÔÇö `,`,
-       * `(`, `)`, `"`, `\` ÔÇö or surrounding whitespace is double-quoted and escaped
+       * value (or single `in` element) that contains a reserved character — `,`,
+       * `(`, `)`, `"`, `\` — or surrounding whitespace is double-quoted and escaped
        * the way PostgREST does, so commas inside a value are preserved rather than
        * read as a condition boundary.
        */
@@ -53934,7 +53939,7 @@ var require_RealtimeChannel = __commonJS({
        * client is online. Use `untrack` to stop broadcasting presence for the same key.
        *
        * Tracking makes this client visible to other subscribers immediately, regardless of this
-       * channel's `config.presence.enabled` setting or whether it has a `presence` listener ÔÇö that
+       * channel's `config.presence.enabled` setting or whether it has a `presence` listener — that
        * flag only affects whether *this* client receives presence updates from others (and, on
        * RLS-protected channels, whether it's authorized to do so).
        *
@@ -57047,7 +57052,7 @@ var init_dist4 = __esm({
       * issues a CDN invalidation for the object and returns `{ message: 'success' }`.
       *
       * **Requires the `service_role` key.** The underlying endpoint enforces
-      * `service_role` JWT ÔÇö calls made with the anon key or a user JWT will be
+      * `service_role` JWT — calls made with the anon key or a user JWT will be
       * rejected by the server.
       *
       * **Hosted CDN feature.** On self-hosted Supabase, the Storage service must
@@ -57196,7 +57201,7 @@ var init_dist4 = __esm({
       /**
       * Lists all the files and folders within a bucket using the V2 API with pagination support.
       *
-      * **Important:** Folder entries in the `folders` array only contain `name` and optionally `key` ÔÇö
+      * **Important:** Folder entries in the `folders` array only contain `name` and optionally `key` —
       * they have no `id`, timestamps, or `metadata` fields. Full file metadata is only available
       * on entries in the `objects` array.
       *
@@ -57720,7 +57725,7 @@ var init_dist4 = __esm({
       * issues a CDN invalidation for the bucket and returns `{ message: 'success' }`.
       *
       * **Requires the `service_role` key.** The underlying endpoint enforces
-      * `service_role` JWT ÔÇö calls made with the anon key or a user JWT will be
+      * `service_role` JWT — calls made with the anon key or a user JWT will be
       * rejected by the server.
       *
       * **Hosted CDN feature.** On self-hosted Supabase, the Storage service must
@@ -62220,7 +62225,7 @@ var require_GoTrueClient = __commonJS({
        * than awaiting `initialize()`.
        *
        * You only need to call it manually when you have opted out of the automatic
-       * call by passing `skipAutoInitialize: true` ÔÇö for example, in an SSR context
+       * call by passing `skipAutoInitialize: true` — for example, in an SSR context
        * where you need to control initialization timing. In that case, awaiting
        * `initialize()` returns the resolved session result (or any error encountered
        * while detecting it from the URL).
@@ -62933,7 +62938,7 @@ var require_GoTrueClient = __commonJS({
        *   automatically in a browser).
        * - When a flow id is present but its stored verifier is gone (evicted,
        *   already used, or from another device), the call fails with a verifier
-       *   missing error instead of trying another flow's verifier ÔÇö a mismatched
+       *   missing error instead of trying another flow's verifier — a mismatched
        *   verifier would consume the single-use code. Without any flow id the
        *   most recently stored verifier is used, as before.
        *
@@ -63696,13 +63701,13 @@ var require_GoTrueClient = __commonJS({
        * @remarks
        * - The `verifyOtp` method takes in different verification types.
        * - If a phone number is used, the type can either be:
-       *   1. `sms` ÔÇô Used when verifying a one-time password (OTP) sent via SMS during sign-up or sign-in.
-       *   2. `phone_change` ÔÇô Used when verifying an OTP sent to a new phone number during a phone number update process.
+       *   1. `sms` – Used when verifying a one-time password (OTP) sent via SMS during sign-up or sign-in.
+       *   2. `phone_change` – Used when verifying an OTP sent to a new phone number during a phone number update process.
        * - If an email address is used, the type can be one of the following (note: `signup` and `magiclink` types are deprecated):
-       *   1. `email` ÔÇô Used when verifying an OTP sent to the user's email during sign-up or sign-in.
-       *   2. `recovery` ÔÇô Used when verifying an OTP sent for account recovery, typically after a password reset request.
-       *   3. `invite` ÔÇô Used when verifying an OTP sent as part of an invitation to join a project or organization.
-       *   4. `email_change` ÔÇô Used when verifying an OTP sent to a new email address during an email update process.
+       *   1. `email` – Used when verifying an OTP sent to the user's email during sign-up or sign-in.
+       *   2. `recovery` – Used when verifying an OTP sent for account recovery, typically after a password reset request.
+       *   3. `invite` – Used when verifying an OTP sent as part of an invitation to join a project or organization.
+       *   4. `email_change` – Used when verifying an OTP sent to a new email address during an email update process.
        * - The verification type used should be determined based on the corresponding auth method called before `verifyOtp` to sign up / sign-in a user.
        * - The `TokenHash` is contained in the [email templates](/docs/guides/auth/auth-email-templates) and can be used to sign in.  You may wish to use the hash for the PKCE flow for Server Side Auth. Read [the Password-based Auth guide](/docs/guides/auth/passwords) for more details.
        *
@@ -65108,7 +65113,7 @@ var require_GoTrueClient = __commonJS({
        *   terminate the others.
        * - Since Supabase Auth uses JWTs for authentication, the access token JWT will be valid until it's expired. When the user signs out, Supabase revokes the refresh token and deletes the JWT from the client-side. This does not revoke the JWT and it will still be valid until it expires.
        *
-       * @example Sign out of every device (global ÔÇô default)
+       * @example Sign out of every device (global – default)
        * ```js
        * const { error } = await supabase.auth.signOut()
        * ```
@@ -65855,7 +65860,7 @@ var require_GoTrueClient = __commonJS({
           const storageChangedUnderUs = storedAtStart !== null && (storedAfter === null || storedAfter.refresh_token !== storedAtStart.refresh_token);
           if (storageChangedUnderUs) {
             this._debug(debugName, "commit guard: storage changed since refresh started, discarding rotated tokens", {
-              // Presence indicators only ÔÇö never log refresh token fragments,
+              // Presence indicators only — never log refresh token fragments,
               // even partial. Logs may be forwarded to third-party services.
               startedWith: "present",
               nowHolds: storedAfter ? "replaced" : "cleared"
@@ -67727,14 +67732,14 @@ var init_dist5 = __esm({
       * @param supabaseUrl The unique Supabase URL which is supplied when you create a new project in your project dashboard.
       * @param supabaseKey The unique Supabase Key which is supplied when you create a new project in your project dashboard.
       * @param options Optional configuration for the client:
-      * - `db.schema` ÔÇö You can switch in between schemas. The schema needs to be on the list of exposed schemas inside Supabase.
-      * - `auth.autoRefreshToken` ÔÇö Set to `true` if you want to automatically refresh the token before expiring.
-      * - `auth.persistSession` ÔÇö Set to `true` if you want to automatically save the user session into local storage.
-      * - `auth.detectSessionInUrl` ÔÇö Set to `true` if you want to automatically detect OAuth grants in the URL and sign in the user.
-      * - `realtime` ÔÇö Options passed along to the realtime-js constructor.
-      * - `storage` ÔÇö Options passed along to the storage-js constructor.
-      * - `global.fetch` ÔÇö A custom fetch implementation.
-      * - `global.headers` ÔÇö Any additional headers to send with each network request.
+      * - `db.schema` — You can switch in between schemas. The schema needs to be on the list of exposed schemas inside Supabase.
+      * - `auth.autoRefreshToken` — Set to `true` if you want to automatically refresh the token before expiring.
+      * - `auth.persistSession` — Set to `true` if you want to automatically save the user session into local storage.
+      * - `auth.detectSessionInUrl` — Set to `true` if you want to automatically detect OAuth grants in the URL and sign in the user.
+      * - `realtime` — Options passed along to the realtime-js constructor.
+      * - `storage` — Options passed along to the storage-js constructor.
+      * - `global.fetch` — A custom fetch implementation.
+      * - `global.headers` — Any additional headers to send with each network request.
       *
       * @example Creating a client
       * ```js
@@ -68120,7 +68125,7 @@ var init_dist5 = __esm({
         return this.realtime.removeAllChannels();
       }
       /**
-      * The raw session token ÔÇö the custom `accessToken` result or the signed-in user's JWT ÔÇö
+      * The raw session token — the custom `accessToken` result or the signed-in user's JWT —
       * or `null` when there is no session. Unlike {@link _getAccessToken} it does not fall back
       * to `supabaseKey`, so callers can distinguish "no session" from "has session".
       */
@@ -70754,7 +70759,8 @@ var init_http = __esm({
       "forbidden",
       "invalid_credentials",
       "email_taken",
-      "not_found"
+      "not_found",
+      "product_has_orders"
     ]);
     subscribers = /* @__PURE__ */ new Set();
   }
@@ -71186,7 +71192,8 @@ async function loadProducts(options) {
   const page = filtered.slice(options.offset ?? 0, (options.offset ?? 0) + (options.limit ?? 100));
   return page.map((row) => {
     const category = asOne(row.categories);
-    const productVariants = (row.product_variants ?? []).filter((variant) => variant.active).sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name));
+    const includeInactive = options.status == null && !options.slug;
+    const productVariants = (row.product_variants ?? []).filter((variant) => includeInactive || variant.active).sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name));
     const images = (row.product_images ?? []).slice().sort((a, b) => a.sort_order - b.sort_order).map((image) => ({
       id: image.id,
       src: image.url,
@@ -71490,10 +71497,26 @@ async function registerCatalogAdmin(app) {
   app.delete("/admin/products/:id", async (request, reply) => {
     const admin = await requireAdmin(request, "products.write");
     const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
-    const { count } = await db().from("order_items").select("id", { count: "exact", head: true }).eq("product_id", params.id);
-    if ((count ?? 0) > 0) return reply.status(409).send({ error: "product_has_orders" });
     const variants = await rows(db().from("product_variants").select("id").eq("product_id", params.id));
-    await clearVariantDependents(variants.map((variant) => variant.id));
+    const variantIds = variants.map((variant) => variant.id);
+    const byProduct = await db().from("order_items").select("id", { count: "exact", head: true }).eq("product_id", params.id);
+    const byVariant = variantIds.length ? await db().from("order_items").select("id", { count: "exact", head: true }).in("variant_id", variantIds) : { count: 0 };
+    if ((byProduct.count ?? 0) > 0 || (byVariant.count ?? 0) > 0) {
+      await ok(db().from("products").update({ status: "archived" }).eq("id", params.id));
+      if (variantIds.length) await ok(db().from("product_variants").update({ active: false }).in("id", variantIds));
+      await audit({
+        actorType: "admin",
+        actorId: admin.id,
+        actorLabel: admin.email,
+        action: "product.archived",
+        entityType: "product",
+        entityId: params.id,
+        summary: "Archived product (has order history)",
+        ip: clientIp(request)
+      });
+      return { ok: true, archived: true };
+    }
+    await clearVariantDependents(variantIds);
     await ok(db().from("products").delete().eq("id", params.id));
     await audit({
       actorType: "admin",
@@ -71505,7 +71528,7 @@ async function registerCatalogAdmin(app) {
       summary: "Deleted product with no orders",
       ip: clientIp(request)
     });
-    return { ok: true };
+    return { ok: true, archived: false };
   });
   app.get("/admin/categories", async (request) => {
     await requireAdmin(request, "products.read");
@@ -71546,6 +71569,8 @@ async function clearVariantDependents(variantIds) {
   if (!variantIds.length) return;
   await ok(db().from("inventory_movements").delete().in("variant_id", variantIds));
   await ok(db().from("cart_items").delete().in("variant_id", variantIds));
+  await ok(db().from("wishlists").delete().in("variant_id", variantIds));
+  await ok(db().from("product_variant_images").delete().in("variant_id", variantIds));
   await ok(db().from("reviews").update({ variant_id: null }).in("variant_id", variantIds));
 }
 async function categoryId(slug) {
@@ -72046,7 +72071,7 @@ async function registerContent(app) {
     return { ok: true };
   });
 }
-var variantSchema, productSchema;
+var imageSchema, variantSchema, productSchema;
 var init_content_routes = __esm({
   "server/src/content-routes.ts"() {
     "use strict";
@@ -72054,22 +72079,29 @@ var init_content_routes = __esm({
     init_db();
     init_http();
     init_catalog();
+    imageSchema = external_exports.object({
+      url: external_exports.string().min(1),
+      alt: external_exports.string().min(1).default("Product image")
+    });
     variantSchema = external_exports.object({
-      id: external_exports.string().uuid().optional(),
+      id: external_exports.preprocess(
+        (value) => typeof value === "string" && value.trim() ? value.trim() : void 0,
+        external_exports.string().uuid().optional()
+      ),
       legacyVariantId: external_exports.string().optional(),
       name: external_exports.string().min(1),
       sku: external_exports.string().optional(),
-      price: external_exports.number().nonnegative(),
-      compareAtPrice: external_exports.number().nonnegative().optional(),
-      stock: external_exports.number().int().min(0).default(0),
-      lowStockThreshold: external_exports.number().int().min(0).default(5),
+      price: external_exports.coerce.number().min(0, "Price must be \u20B90 or more"),
+      compareAtPrice: external_exports.coerce.number().min(0).optional(),
+      stock: external_exports.coerce.number().int().min(0).default(0),
+      lowStockThreshold: external_exports.coerce.number().int().min(0).default(5),
       hexColor: external_exports.string().optional(),
       active: external_exports.boolean().default(true),
       isDefault: external_exports.boolean().default(false),
-      sortOrder: external_exports.number().int().default(0),
+      sortOrder: external_exports.coerce.number().int().default(0),
       barcode: external_exports.string().optional(),
-      weightGrams: external_exports.number().int().optional(),
-      images: external_exports.array(external_exports.object({ url: external_exports.string().url(), alt: external_exports.string().min(1) })).default([])
+      weightGrams: external_exports.coerce.number().int().optional(),
+      images: external_exports.array(imageSchema).default([])
     });
     productSchema = external_exports.object({
       name: external_exports.string().min(1),
@@ -72089,7 +72121,7 @@ var init_content_routes = __esm({
       bestseller: external_exports.boolean().default(false),
       newArrival: external_exports.boolean().default(false),
       status: external_exports.enum(["draft", "published", "archived"]).default("draft"),
-      images: external_exports.array(external_exports.object({ url: external_exports.string().url(), alt: external_exports.string().min(1) })).default([]),
+      images: external_exports.array(imageSchema).default([]),
       variants: external_exports.array(variantSchema).min(1)
     });
   }
@@ -72175,10 +72207,23 @@ function verifyPayuHash(body, key, salt) {
 function payuVerifyCommandHash(key, txnid, salt) {
   return sha512(`${key}|verify_payment|${txnid}|${salt}`);
 }
+function payuRefundCommandHash(key, mihpayid, salt) {
+  return sha512(`${key}|cancel_refund_transaction|${mihpayid}|${salt}`);
+}
 function amountToPaise(amount) {
   const value = Number(amount);
   if (!Number.isFinite(value)) return null;
   return Math.round(value * 100);
+}
+function paiseToPayuAmount(paise) {
+  return (paise / 100).toFixed(2);
+}
+function resolvePaymentRpcStatus(input) {
+  const amountsMatch = input.callbackAmountPaise != null && input.verifiedAmountPaise != null && input.callbackAmountPaise === input.verifiedAmountPaise;
+  if (input.verifiedOk && amountsMatch) return "paid";
+  if (!input.conclusive) return "pending";
+  if (!input.verifiedOk && input.callbackStatus.toLowerCase() !== "success") return "failed";
+  return "pending";
 }
 var import_node_crypto2;
 var init_payu = __esm({
@@ -72306,7 +72351,7 @@ function payuFields(input) {
   };
 }
 async function registerCommerce(app) {
-  const callbackBase = process.env.API_PUBLIC_URL || `http://localhost:${env.PORT}`;
+  const callbackBase = env.API_PUBLIC_URL || process.env.API_PUBLIC_URL || `http://localhost:${env.PORT}`;
   app.get("/cart", async (request, reply) => {
     const customer = await readCustomer(request);
     const id = await cartIdFor(request, reply, customer?.id);
@@ -72392,6 +72437,9 @@ async function registerCommerce(app) {
       orderNumber: String(raw.orderNumber ?? ""),
       viewToken: String(raw.viewToken ?? "")
     };
+    if (!env.PAYU_KEY || !env.PAYU_SALT) {
+      return reply.status(503).send({ error: "payment_gateway_unavailable" });
+    }
     const fields = payuFields({
       txnId: result.txnId,
       amountPaise: result.amountPaise,
@@ -72400,10 +72448,11 @@ async function registerCommerce(app) {
       orderNumber: result.orderNumber,
       phone: body.address.phone
     });
-    if (fields) {
-      fields.surl = `${callbackBase}/payments/payu/callback`;
-      fields.furl = `${callbackBase}/payments/payu/callback`;
+    if (!fields) {
+      return reply.status(503).send({ error: "payment_gateway_unavailable" });
     }
+    fields.surl = `${callbackBase}/payments/payu/callback`;
+    fields.furl = `${callbackBase}/payments/payu/callback`;
     await notify({
       type: "order.placed",
       title: "New customer order",
@@ -72424,29 +72473,18 @@ async function registerCommerce(app) {
     if (!env.PAYU_KEY || !env.PAYU_SALT || !verifyPayuHash(body, env.PAYU_KEY, env.PAYU_SALT)) {
       return reply.status(400).send({ error: "invalid_payment_signature" });
     }
-    const verified = await verifyWithPayu(body.txnid);
-    const paid = body.status === "success" && verified.ok && verified.amountPaise === amountToPaise(body.amount);
-    const { data, error } = await db().rpc("apply_payment_result", {
-      p_txn_id: body.txnid,
-      p_gateway_txn_id: body.mihpayid ?? "",
-      p_status: paid ? "paid" : "failed",
-      p_amount_paise: amountToPaise(body.amount) ?? 0,
-      p_payload: { status: body.status, error: body.error_Message || body.field9 || "" }
-    });
-    if (error) throw new Error(error.message);
-    const raw = data ?? {};
-    const orderNumber = String(raw.orderNumber ?? "");
-    await notify({
-      type: paid ? "payment.received" : "payment.failed",
-      title: paid ? "Payment received" : "Payment failed",
-      body: `Order #${orderNumber}: ${paid ? "\u20B9" + ((amountToPaise(body.amount) ?? 0) / 100).toLocaleString("en-IN") + " paid" : "Payment declined"}`,
-      entityType: "payment",
-      entityId: body.txnid,
-      href: "/admin/payments"
-    });
+    const outcome = await finalizePayuBody(body, "callback");
     const target = new URL("/en/checkout/return", env.APP_ORIGIN);
-    target.searchParams.set("order", orderNumber);
+    target.searchParams.set("order", outcome.orderNumber);
     return reply.redirect(target.toString());
+  });
+  app.post("/payments/payu/webhook", async (request, reply) => {
+    const body = request.body;
+    if (!env.PAYU_KEY || !env.PAYU_SALT || !verifyPayuHash(body, env.PAYU_KEY, env.PAYU_SALT)) {
+      return reply.status(400).send({ error: "invalid_payment_signature" });
+    }
+    await finalizePayuBody(body, "webhook");
+    return { ok: true };
   });
   app.get("/orders/lookup", async (request, reply) => {
     const query = external_exports.object({ order: external_exports.string(), token: external_exports.string().min(10) }).parse(request.query);
@@ -72537,10 +72575,16 @@ async function registerCommerce(app) {
   app.post("/orders/:orderNumber/retry", async (request, reply) => {
     const params = external_exports.object({ orderNumber: external_exports.string() }).parse(request.params);
     const body = external_exports.object({ token: external_exports.string().min(10) }).parse(request.body);
+    if (!env.PAYU_KEY || !env.PAYU_SALT) {
+      return reply.status(503).send({ error: "payment_gateway_unavailable" });
+    }
     const order = await one(
       db().from("orders").select("id, email").eq("order_number", params.orderNumber).eq("view_token_hash", sha256(body.token)).maybeSingle()
     );
     if (!order) return reply.status(404).send({ error: "not_found" });
+    const address = await one(
+      db().from("order_addresses").select("full_name, phone").eq("order_id", order.id).maybeSingle()
+    );
     const { data, error } = await db().rpc("retry_order_payment", { p_order_id: order.id });
     if (error) throw new Error(error.message);
     const raw = data ?? {};
@@ -72548,15 +72592,14 @@ async function registerCommerce(app) {
       txnId: String(raw.txnId ?? raw.txnid),
       amountPaise: Number(raw.amountPaise ?? raw.amountpaise),
       email: order.email,
-      firstName: "Customer",
+      firstName: address?.full_name || "Customer",
       orderNumber: params.orderNumber,
-      phone: ""
+      phone: address?.phone || ""
     });
-    if (fields) {
-      fields.surl = `${callbackBase}/payments/payu/callback`;
-      fields.furl = `${callbackBase}/payments/payu/callback`;
-    }
-    return { payu: fields };
+    if (!fields) return reply.status(503).send({ error: "payment_gateway_unavailable" });
+    fields.surl = `${callbackBase}/payments/payu/callback`;
+    fields.furl = `${callbackBase}/payments/payu/callback`;
+    return { payu: fields, orderNumber: params.orderNumber };
   });
   app.post("/reviews", async (request) => {
     const customer = await requireCustomer(request);
@@ -72697,19 +72740,198 @@ async function registerCommerce(app) {
   });
   app.get("/admin/payments", async (request) => {
     await requireAdmin(request, "payments.read");
-    const query = external_exports.object({ days: external_exports.enum(["7", "15", "30"]).optional() }).parse(request.query);
-    let paymentQuery = db().from("payments").select("id, status, amount_paise, currency, gateway, gateway_txn_id, failure_reason, created_at, order_id").order("created_at", { ascending: false }).limit(500);
+    const query = external_exports.object({
+      days: external_exports.enum(["7", "15", "30"]).optional(),
+      status: external_exports.enum(["pending", "paid", "failed", "cancelled"]).optional(),
+      q: external_exports.string().optional()
+    }).parse(request.query);
+    let paymentQuery = db().from("payments").select("id, status, amount_paise, currency, gateway, gateway_txn_id, txn_id, failure_reason, method, verified_at, paid_at, created_at, order_id").order("created_at", { ascending: false }).limit(500);
     if (query.days) {
       const since = new Date(Date.now() - Number(query.days) * 24 * 60 * 60 * 1e3).toISOString();
       paymentQuery = paymentQuery.gte("created_at", since);
     }
+    if (query.status) paymentQuery = paymentQuery.eq("status", query.status);
     const payments = await rows(paymentQuery);
     const orderIds = [...new Set(payments.map((payment) => payment.order_id))];
     const orders = orderIds.length ? await rows(db().from("orders").select("id, order_number, email").in("id", orderIds)) : [];
-    return payments.map((payment) => {
+    let mapped = payments.map((payment) => {
       const order = orders.find((item) => item.id === payment.order_id);
-      return { ...payment, order_number: order?.order_number ?? null, email: order?.email ?? null };
+      return {
+        ...payment,
+        order_number: order?.order_number ?? null,
+        email: order?.email ?? null,
+        needs_verification: payment.status === "pending"
+      };
     });
+    if (query.q) {
+      const term = query.q.toLowerCase();
+      mapped = mapped.filter(
+        (payment) => [payment.order_number, payment.email, payment.txn_id, payment.gateway_txn_id].some((value) => value?.toLowerCase().includes(term))
+      );
+    }
+    return mapped;
+  });
+  app.get("/admin/payments/:id", async (request, reply) => {
+    await requireAdmin(request, "payments.read");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+    const payment = await one(
+      db().from("payments").select("*").eq("id", params.id).maybeSingle()
+    );
+    if (!payment) return reply.status(404).send({ error: "not_found" });
+    const order = await one(
+      db().from("orders").select("id, order_number, email, status, total_paise").eq("id", payment.order_id).maybeSingle()
+    );
+    const events = await rows(db().from("payment_events").select("*").eq("payment_id", payment.id).order("created_at", { ascending: false }));
+    const refunds = await rows(
+      db().from("refunds").select("*").eq("payment_id", payment.id).order("created_at", { ascending: false })
+    );
+    const attempts = await rows(
+      db().from("payments").select("id, txn_id, status, amount_paise, gateway_txn_id, failure_reason, created_at, paid_at, verified_at").eq("order_id", payment.order_id).order("created_at", { ascending: false })
+    );
+    const refundedPaise = refunds.filter((row) => ["succeeded", "processing", "pending"].includes(row.status)).reduce((sum, row) => sum + Number(row.amount_paise), 0);
+    return {
+      payment,
+      order,
+      events,
+      refunds,
+      attempts,
+      refundable_paise: Math.max(payment.amount_paise - refundedPaise, 0),
+      flags: {
+        needs_verification: String(payment.status) === "pending",
+        duplicate_capture_risk: attempts.filter((row) => row.status === "paid").length > 1
+      }
+    };
+  });
+  app.post("/admin/payments/:id/verify", async (request, reply) => {
+    const admin = await requireAdmin(request, "payments.read");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+    const payment = await one(
+      db().from("payments").select("id, txn_id, amount_paise, status, gateway_txn_id").eq("id", params.id).maybeSingle()
+    );
+    if (!payment) return reply.status(404).send({ error: "not_found" });
+    const verified = await verifyWithPayu(payment.txn_id);
+    const rpcStatus = resolvePaymentRpcStatus({
+      callbackStatus: verified.ok ? "success" : verified.conclusive ? "failure" : "pending",
+      verifiedOk: verified.ok,
+      conclusive: verified.conclusive,
+      callbackAmountPaise: verified.amountPaise,
+      verifiedAmountPaise: verified.amountPaise
+    });
+    const amountPaise = verified.amountPaise ?? payment.amount_paise;
+    const { data, error } = await db().rpc("apply_payment_result", {
+      p_txn_id: payment.txn_id,
+      p_gateway_txn_id: verified.mihpayid || payment.gateway_txn_id || "",
+      p_status: rpcStatus,
+      p_amount_paise: amountPaise,
+      p_payload: { source: "admin_verify", verify: verified.raw, actor: admin.email }
+    });
+    if (error) throw new Error(error.message);
+    await audit({
+      actorType: "admin",
+      actorId: admin.id,
+      actorLabel: admin.email,
+      action: "payment.verify",
+      entityType: "payment",
+      entityId: payment.id,
+      summary: `Admin re-verify ${payment.txn_id} \u2192 ${rpcStatus}`,
+      ip: clientIp(request)
+    });
+    return { ok: true, status: rpcStatus, result: data };
+  });
+  app.post("/admin/payments/:id/refund", async (request, reply) => {
+    const admin = await requireAdmin(request, "payments.refund");
+    const params = external_exports.object({ id: external_exports.string().uuid() }).parse(request.params);
+    const body = external_exports.object({
+      amountPaise: external_exports.number().int().positive().optional(),
+      reason: external_exports.string().max(500).optional().default("")
+    }).parse(request.body ?? {});
+    if (!env.PAYU_KEY || !env.PAYU_SALT) {
+      return reply.status(503).send({ error: "payment_gateway_unavailable" });
+    }
+    const payment = await one(db().from("payments").select("id, order_id, txn_id, amount_paise, status, gateway_txn_id").eq("id", params.id).maybeSingle());
+    if (!payment) return reply.status(404).send({ error: "not_found" });
+    if (payment.status !== "paid") return reply.status(400).send({ error: "payment_not_refundable" });
+    if (!payment.gateway_txn_id) return reply.status(400).send({ error: "missing_gateway_txn" });
+    const existing = await rows(
+      db().from("refunds").select("amount_paise, status").eq("payment_id", payment.id)
+    );
+    const reserved = existing.filter((row) => ["pending", "processing", "succeeded"].includes(row.status)).reduce((sum, row) => sum + row.amount_paise, 0);
+    const amountPaise = body.amountPaise ?? payment.amount_paise - reserved;
+    if (amountPaise <= 0 || reserved + amountPaise > payment.amount_paise) {
+      return reply.status(400).send({ error: "refund_exceeds_captured" });
+    }
+    const merchantRef = `RF${Date.now().toString(36).toUpperCase()}${randomToken().slice(0, 8)}`;
+    const created = await rows(
+      db().from("refunds").insert({
+        payment_id: payment.id,
+        order_id: payment.order_id,
+        amount_paise: amountPaise,
+        status: "processing",
+        merchant_ref: merchantRef,
+        reason: body.reason,
+        created_by: admin.email
+      }).select("id")
+    );
+    const refundId = created[0]?.id;
+    const payuResult = await refundWithPayu({
+      mihpayid: payment.gateway_txn_id,
+      token: merchantRef,
+      amountPaise
+    });
+    if (payuResult.ok) {
+      await ok(db().from("refunds").update({
+        status: "succeeded",
+        provider_ref: payuResult.providerRef,
+        updated_at: (/* @__PURE__ */ new Date()).toISOString(),
+        metadata: payuResult.raw
+      }).eq("id", refundId));
+      if (reserved + amountPaise >= payment.amount_paise) {
+        await ok(db().from("orders").update({ status: "refunded" }).eq("id", payment.order_id));
+      }
+    } else {
+      await ok(db().from("refunds").update({
+        status: "failed",
+        failure_reason: payuResult.error,
+        updated_at: (/* @__PURE__ */ new Date()).toISOString(),
+        metadata: payuResult.raw
+      }).eq("id", refundId));
+    }
+    await audit({
+      actorType: "admin",
+      actorId: admin.id,
+      actorLabel: admin.email,
+      action: "payment.refund",
+      entityType: "payment",
+      entityId: payment.id,
+      summary: `Refund ${amountPaise} paise on ${payment.txn_id}: ${payuResult.ok ? "succeeded" : "failed"}`,
+      ip: clientIp(request)
+    });
+    return { ok: payuResult.ok, refundId, error: payuResult.error ?? null };
+  });
+  app.post("/admin/payments/reconcile", async (request) => {
+    const admin = await requireAdmin(request, "payments.read");
+    const body = external_exports.object({ limit: external_exports.number().int().min(1).max(50).optional().default(20) }).parse(request.body ?? {});
+    const results = await reconcilePendingPayments(body.limit);
+    await audit({
+      actorType: "admin",
+      actorId: admin.id,
+      actorLabel: admin.email,
+      action: "payment.reconcile",
+      entityType: "payments",
+      entityId: "batch",
+      summary: `Reconciled ${results.length} pending payments`,
+      ip: clientIp(request)
+    });
+    return { ok: true, results };
+  });
+  app.post("/internal/payments/reconcile", async (request, reply) => {
+    const secret = env.CRON_SECRET;
+    if (!secret) return reply.status(503).send({ error: "cron_not_configured" });
+    const header = String(request.headers["x-cron-secret"] || "");
+    if (header !== secret) return reply.status(401).send({ error: "unauthorized" });
+    const query = external_exports.object({ limit: external_exports.coerce.number().int().min(1).max(50).optional().default(20) }).parse(request.query);
+    const results = await reconcilePendingPayments(query.limit);
+    return { ok: true, results };
   });
   app.post("/admin/inventory/adjust", async (request) => {
     const admin = await requireAdmin(request, "inventory.write");
@@ -72821,25 +73043,182 @@ async function registerCommerce(app) {
   });
 }
 async function verifyWithPayu(txnid) {
-  if (!env.PAYU_KEY || !env.PAYU_SALT || !txnid) return { ok: false, amountPaise: null };
+  if (!env.PAYU_KEY || !env.PAYU_SALT || !txnid) {
+    return { ok: false, conclusive: false, amountPaise: null, mihpayid: "", raw: {} };
+  }
   const form = new URLSearchParams({
     key: env.PAYU_KEY,
     command: "verify_payment",
     var1: txnid,
     hash: payuVerifyCommandHash(env.PAYU_KEY, txnid, env.PAYU_SALT)
   });
-  const response = await fetch(payuVerifyUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form
+  try {
+    const response = await fetch(payuVerifyUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: form
+    });
+    if (!response.ok) {
+      return { ok: false, conclusive: false, amountPaise: null, mihpayid: "", raw: { httpStatus: response.status } };
+    }
+    const payload = await response.json();
+    const detail = payload.transaction_details?.[txnid];
+    if (!detail?.status) {
+      return { ok: false, conclusive: false, amountPaise: null, mihpayid: "", raw: payload };
+    }
+    const status = detail.status.toLowerCase();
+    const amountPaise = detail.amt ? amountToPaise(detail.amt) : null;
+    if (status === "success") {
+      return {
+        ok: true,
+        conclusive: true,
+        amountPaise,
+        mihpayid: detail.mihpayid ?? "",
+        raw: payload
+      };
+    }
+    if (status === "pending" || status === "in progress" || status === "initiated") {
+      return {
+        ok: false,
+        conclusive: false,
+        amountPaise,
+        mihpayid: detail.mihpayid ?? "",
+        raw: payload
+      };
+    }
+    return {
+      ok: false,
+      conclusive: true,
+      amountPaise,
+      mihpayid: detail.mihpayid ?? "",
+      raw: payload
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      conclusive: false,
+      amountPaise: null,
+      mihpayid: "",
+      raw: { error: error instanceof Error ? error.message : "verify_failed" }
+    };
+  }
+}
+async function finalizePayuBody(body, source) {
+  const verified = await verifyWithPayu(body.txnid);
+  const callbackAmountPaise = amountToPaise(body.amount);
+  const rpcStatus = resolvePaymentRpcStatus({
+    callbackStatus: body.status ?? "",
+    verifiedOk: verified.ok,
+    conclusive: verified.conclusive,
+    callbackAmountPaise,
+    verifiedAmountPaise: verified.amountPaise ?? callbackAmountPaise
   });
-  if (!response.ok) return { ok: false, amountPaise: null };
-  const payload = await response.json();
-  const detail = payload.transaction_details?.[txnid];
-  return {
-    ok: detail?.status === "success",
-    amountPaise: detail?.amt ? amountToPaise(detail.amt) : null
-  };
+  const { data, error } = await db().rpc("apply_payment_result", {
+    p_txn_id: body.txnid,
+    p_gateway_txn_id: body.mihpayid || verified.mihpayid || "",
+    p_status: rpcStatus,
+    p_amount_paise: callbackAmountPaise ?? verified.amountPaise ?? 0,
+    p_payload: {
+      source,
+      status: body.status,
+      error: body.error_Message || body.field9 || "",
+      mode: body.mode,
+      bank_ref_num: body.bank_ref_num,
+      verify: verified.raw
+    }
+  });
+  if (error) throw new Error(error.message);
+  const raw = data ?? {};
+  const orderNumber = String(raw.orderNumber ?? body.udf1 ?? "");
+  if (rpcStatus !== "pending" && !raw.idempotent) {
+    await notify({
+      type: rpcStatus === "paid" ? "payment.received" : "payment.failed",
+      title: rpcStatus === "paid" ? "Payment received" : "Payment failed",
+      body: `Order #${orderNumber}: ${rpcStatus === "paid" ? `\u20B9${((callbackAmountPaise ?? 0) / 100).toLocaleString("en-IN")} paid` : "Payment declined"}`,
+      entityType: "payment",
+      entityId: body.txnid,
+      href: "/admin/payments"
+    });
+  }
+  return { orderNumber, rpcStatus, result: raw };
+}
+async function refundWithPayu(input) {
+  if (!env.PAYU_KEY || !env.PAYU_SALT) {
+    return { ok: false, error: "payment_gateway_unavailable", providerRef: "", raw: {} };
+  }
+  const form = new URLSearchParams({
+    key: env.PAYU_KEY,
+    command: "cancel_refund_transaction",
+    var1: input.mihpayid,
+    var2: input.token,
+    var3: paiseToPayuAmount(input.amountPaise),
+    hash: payuRefundCommandHash(env.PAYU_KEY, input.mihpayid, env.PAYU_SALT)
+  });
+  try {
+    const response = await fetch(payuVerifyUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: form
+    });
+    const raw = await response.json().catch(() => ({}));
+    const status = String(raw.status ?? raw.Status ?? "");
+    const okStatus = status === "1" || status.toLowerCase() === "success" || Boolean(raw.request_id || raw.txn_update_id);
+    if (!response.ok || !okStatus) {
+      return {
+        ok: false,
+        error: String(raw.msg ?? raw.message ?? raw.error ?? "refund_failed"),
+        providerRef: String(raw.request_id ?? raw.txn_update_id ?? ""),
+        raw
+      };
+    }
+    return {
+      ok: true,
+      error: void 0,
+      providerRef: String(raw.request_id ?? raw.txn_update_id ?? ""),
+      raw
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "refund_failed",
+      providerRef: "",
+      raw: {}
+    };
+  }
+}
+async function reconcilePendingPayments(limit) {
+  const since = new Date(Date.now() - 2 * 60 * 1e3).toISOString();
+  const pending = await rows(
+    db().from("payments").select("id, txn_id, amount_paise, gateway_txn_id").eq("status", "pending").eq("gateway", "payu").lte("created_at", since).order("created_at", { ascending: true }).limit(limit)
+  );
+  const results = [];
+  for (const payment of pending) {
+    const verified = await verifyWithPayu(payment.txn_id);
+    const rpcStatus = resolvePaymentRpcStatus({
+      callbackStatus: verified.ok ? "success" : verified.conclusive ? "failure" : "pending",
+      verifiedOk: verified.ok,
+      conclusive: verified.conclusive,
+      callbackAmountPaise: verified.amountPaise ?? payment.amount_paise,
+      verifiedAmountPaise: verified.amountPaise ?? payment.amount_paise
+    });
+    if (rpcStatus === "pending") {
+      results.push({ paymentId: payment.id, txnId: payment.txn_id, status: "pending" });
+      continue;
+    }
+    const { error } = await db().rpc("apply_payment_result", {
+      p_txn_id: payment.txn_id,
+      p_gateway_txn_id: verified.mihpayid || payment.gateway_txn_id || "",
+      p_status: rpcStatus,
+      p_amount_paise: verified.amountPaise ?? payment.amount_paise,
+      p_payload: { source: "reconcile", verify: verified.raw }
+    });
+    if (error) {
+      results.push({ paymentId: payment.id, txnId: payment.txn_id, status: `error:${error.message}` });
+    } else {
+      results.push({ paymentId: payment.id, txnId: payment.txn_id, status: rpcStatus });
+    }
+  }
+  return results;
 }
 var addressSchema;
 var init_commerce_routes = __esm({
@@ -73590,7 +73969,10 @@ async function buildApp() {
   });
   app.setErrorHandler((error, request, reply) => {
     if (error instanceof ZodError) {
-      return reply.status(400).send({ error: "invalid_request" });
+      const first = error.issues[0];
+      const path2 = first?.path?.length ? first.path.join(".") : "";
+      const detail = first ? `${path2 ? `${path2}: ` : ""}${first.message}` : "invalid_request";
+      return reply.status(400).send({ error: "invalid_request", detail, issues: error.issues.slice(0, 8) });
     }
     const mapped = httpError(error);
     if (mapped.status === 500) request.log.error(error);
@@ -73653,6 +74035,21 @@ var ALLOWED_ORIGINS = /* @__PURE__ */ new Set([
   "https://admin.veloraarougee.com",
   "https://api.veloraarougee.com"
 ]);
+var _appInstance = null;
+var _appBootPromise = null;
+async function getApp() {
+  if (_appInstance) return _appInstance;
+  if (!_appBootPromise) {
+    _appBootPromise = (async () => {
+      const { buildApp: buildApp2 } = await Promise.resolve().then(() => (init_app(), app_exports));
+      const app = await buildApp2();
+      await app.ready();
+      return app;
+    })();
+  }
+  _appInstance = await _appBootPromise;
+  return _appInstance;
+}
 function setCorsHeaders(req, res) {
   const origin2 = req.headers["origin"];
   if (!origin2) return;
@@ -73692,9 +74089,7 @@ async function handler(req, res) {
   }
   try {
     patchRequest(req);
-    const { buildApp: buildApp2 } = await Promise.resolve().then(() => (init_app(), app_exports));
-    const app = await buildApp2();
-    await app.ready();
+    const app = await getApp();
     let targetUrl = rawUrl;
     try {
       const parsed2 = new URL(rawUrl, "http://localhost");
@@ -73755,7 +74150,7 @@ toad-cache/dist/toad-cache.cjs:
    *)
 
 light-my-request/lib/form-data.js:
-  (*! formdata-polyfill. MIT License. Jimmy W├ñrting <https://jimmy.warting.se/opensource> *)
+  (*! formdata-polyfill. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> *)
 
 hash-wasm/dist/index.umd.js:
   (*!

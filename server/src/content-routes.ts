@@ -4,22 +4,30 @@ import { asOne, db, ok, one, rows } from './db';
 import { audit, clientIp, notify, requireAdmin } from './http';
 import { loadCategories, loadProducts } from './catalog';
 
+const imageSchema = z.object({
+  url: z.string().min(1),
+  alt: z.string().min(1).default('Product image'),
+});
+
 const variantSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() ? value.trim() : undefined),
+    z.string().uuid().optional(),
+  ),
   legacyVariantId: z.string().optional(),
   name: z.string().min(1),
   sku: z.string().optional(),
-  price: z.number().nonnegative(),
-  compareAtPrice: z.number().nonnegative().optional(),
-  stock: z.number().int().min(0).default(0),
-  lowStockThreshold: z.number().int().min(0).default(5),
+  price: z.coerce.number().min(0, 'Price must be ₹0 or more'),
+  compareAtPrice: z.coerce.number().min(0).optional(),
+  stock: z.coerce.number().int().min(0).default(0),
+  lowStockThreshold: z.coerce.number().int().min(0).default(5),
   hexColor: z.string().optional(),
   active: z.boolean().default(true),
   isDefault: z.boolean().default(false),
-  sortOrder: z.number().int().default(0),
+  sortOrder: z.coerce.number().int().default(0),
   barcode: z.string().optional(),
-  weightGrams: z.number().int().optional(),
-  images: z.array(z.object({ url: z.string().url(), alt: z.string().min(1) })).default([]),
+  weightGrams: z.coerce.number().int().optional(),
+  images: z.array(imageSchema).default([]),
 });
 
 const productSchema = z.object({
@@ -40,7 +48,7 @@ const productSchema = z.object({
   bestseller: z.boolean().default(false),
   newArrival: z.boolean().default(false),
   status: z.enum(['draft', 'published', 'archived']).default('draft'),
-  images: z.array(z.object({ url: z.string().url(), alt: z.string().min(1) })).default([]),
+  images: z.array(imageSchema).default([]),
   variants: z.array(variantSchema).min(1),
 });
 
@@ -254,16 +262,29 @@ export async function registerCatalogAdmin(app: FastifyInstance) {
   app.delete('/admin/products/:id', async (request, reply) => {
     const admin = await requireAdmin(request, 'products.write');
     const params = z.object({ id: z.string().uuid() }).parse(request.params);
-    const { count } = await db().from('order_items').select('id', { count: 'exact', head: true }).eq('product_id', params.id);
-    if ((count ?? 0) > 0) return reply.status(409).send({ error: 'product_has_orders' });
     const variants = await rows<{ id: string }>(db().from('product_variants').select('id').eq('product_id', params.id));
-    await clearVariantDependents(variants.map((variant) => variant.id));
+    const variantIds = variants.map((variant) => variant.id);
+    const byProduct = await db().from('order_items').select('id', { count: 'exact', head: true }).eq('product_id', params.id);
+    const byVariant = variantIds.length
+      ? await db().from('order_items').select('id', { count: 'exact', head: true }).in('variant_id', variantIds)
+      : { count: 0 };
+    if ((byProduct.count ?? 0) > 0 || (byVariant.count ?? 0) > 0) {
+      // Soft-delete: keep history / FKs, hide from catalog
+      await ok(db().from('products').update({ status: 'archived' }).eq('id', params.id));
+      if (variantIds.length) await ok(db().from('product_variants').update({ active: false }).in('id', variantIds));
+      await audit({
+        actorType: 'admin', actorId: admin.id, actorLabel: admin.email, action: 'product.archived',
+        entityType: 'product', entityId: params.id, summary: 'Archived product (has order history)', ip: clientIp(request),
+      });
+      return { ok: true, archived: true };
+    }
+    await clearVariantDependents(variantIds);
     await ok(db().from('products').delete().eq('id', params.id));
     await audit({
       actorType: 'admin', actorId: admin.id, actorLabel: admin.email, action: 'product.deleted',
       entityType: 'product', entityId: params.id, summary: 'Deleted product with no orders', ip: clientIp(request),
     });
-    return { ok: true };
+    return { ok: true, archived: false };
   });
 
   app.get('/admin/categories', async (request) => {
@@ -301,6 +322,8 @@ async function clearVariantDependents(variantIds: string[]) {
   if (!variantIds.length) return;
   await ok(db().from('inventory_movements').delete().in('variant_id', variantIds));
   await ok(db().from('cart_items').delete().in('variant_id', variantIds));
+  await ok(db().from('wishlists').delete().in('variant_id', variantIds));
+  await ok(db().from('product_variant_images').delete().in('variant_id', variantIds));
   await ok(db().from('reviews').update({ variant_id: null }).in('variant_id', variantIds));
 }
 

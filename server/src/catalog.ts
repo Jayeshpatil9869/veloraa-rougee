@@ -126,7 +126,11 @@ export async function loadProducts(options: {
   const page = filtered.slice(options.offset ?? 0, (options.offset ?? 0) + (options.limit ?? 100));
   return page.map((row) => {
     const category = asOne(row.categories);
-    const productVariants = (row.product_variants ?? []).filter((variant) => variant.active).sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name));
+    // Admin loads (status=null) need inactive shades for editing; storefront keeps active only.
+    const includeInactive = options.status == null && !options.slug;
+    const productVariants = (row.product_variants ?? [])
+      .filter((variant) => includeInactive || variant.active)
+      .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name));
     const images = (row.product_images ?? [])
       .slice()
       .sort((a, b) => a.sort_order - b.sort_order)

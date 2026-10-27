@@ -111,8 +111,36 @@ export function payuVerifyCommandHash(key: string, txnid: string, salt: string) 
   return sha512(`${key}|verify_payment|${txnid}|${salt}`);
 }
 
+/** PayU cancel_refund_transaction command hash: key|command|var1|salt */
+export function payuRefundCommandHash(key: string, mihpayid: string, salt: string) {
+  return sha512(`${key}|cancel_refund_transaction|${mihpayid}|${salt}`);
+}
+
 export function amountToPaise(amount: string) {
   const value = Number(amount);
   if (!Number.isFinite(value)) return null;
   return Math.round(value * 100);
+}
+
+export function paiseToPayuAmount(paise: number) {
+  return (paise / 100).toFixed(2);
+}
+
+/** Map PayU verify + callback fields into an RPC status without inventing failures. */
+export function resolvePaymentRpcStatus(input: {
+  callbackStatus: string;
+  verifiedOk: boolean;
+  conclusive: boolean;
+  callbackAmountPaise: number | null;
+  verifiedAmountPaise: number | null;
+}): 'paid' | 'failed' | 'pending' {
+  const amountsMatch =
+    input.callbackAmountPaise != null &&
+    input.verifiedAmountPaise != null &&
+    input.callbackAmountPaise === input.verifiedAmountPaise;
+
+  if (input.verifiedOk && amountsMatch) return 'paid';
+  if (!input.conclusive) return 'pending';
+  if (!input.verifiedOk && input.callbackStatus.toLowerCase() !== 'success') return 'failed';
+  return 'pending';
 }

@@ -77,11 +77,10 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
 
   const data = await response.json().catch(() => null);
   if (!response.ok) {
-    const message = data && typeof data.error === 'string'
-      ? data.error
-      : response.status === 404
-        ? 'api_unreachable'
-        : 'request_failed';
+    const detail = data && typeof data.detail === 'string' ? data.detail : '';
+    const code = data && typeof data.error === 'string' ? data.error : '';
+    const message = detail || code
+      || (response.status === 404 ? 'api_unreachable' : 'request_failed');
     throw new Error(message);
   }
   if (!data) throw new Error('api_unreachable');

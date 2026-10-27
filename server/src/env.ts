@@ -3,12 +3,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
-// Load .env files in local development before parsing process.env
+// Load .env files in local development before parsing process.env.
+// override:true so the project .env wins over a stale shell PAYU_MODE=test.
 try {
   const dir = path.dirname(fileURLToPath(import.meta.url));
-  loadEnv({ path: path.resolve(dir, '../../.env') });
-  loadEnv({ path: path.resolve(dir, '../.env') });
-  loadEnv();
+  loadEnv({ path: path.resolve(dir, '../../.env'), override: true });
+  loadEnv({ path: path.resolve(dir, '../.env'), override: true });
+  loadEnv({ override: true });
 } catch {
   // Ignored in serverless environments where dotenv/filesystem is not needed
 }
@@ -22,7 +23,9 @@ const schema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   PAYU_KEY: z.string().optional(),
   PAYU_SALT: z.string().optional(),
-  PAYU_MODE: z.enum(['test', 'live']).default('test'),
+  PAYU_MODE: z.enum(['test', 'live']).default('live'),
+  API_PUBLIC_URL: z.string().optional(),
+  CRON_SECRET: z.string().optional(),
   ADMIN_EMAIL: z.string().optional(),
   ADMIN_PASSWORD: z.string().optional(),
   ADMIN_NAME: z.string().default('Veloraa Admin'),
@@ -40,3 +43,7 @@ export const env = {
 
 export const payuBase = env.PAYU_MODE === 'live' ? 'https://secure.payu.in' : 'https://test.payu.in';
 export const payuVerifyUrl = `${payuBase}/merchant/postservice?form=2`;
+
+if (env.PAYU_KEY) {
+  console.info(`[payu] mode=${env.PAYU_MODE} base=${payuBase}`);
+}

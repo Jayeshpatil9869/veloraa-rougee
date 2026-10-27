@@ -88,10 +88,22 @@ export const ProductsModule: React.FC = () => {
   }, [products, searchQuery, selectedCategory]);
 
   const remove = async (product: Product) => {
-    if (!product.databaseId || !window.confirm(`Are you sure you want to delete "${product.name}"?`))
+    if (
+      !product.databaseId ||
+      !window.confirm(
+        `Delete "${product.name}"? Products with past orders are archived instead of permanently removed.`,
+      )
+    ) {
       return;
+    }
     try {
-      await api(`/admin/products/${product.databaseId}`, { method: 'DELETE' });
+      const result = await api<{ ok: boolean; archived?: boolean }>(`/admin/products/${product.databaseId}`, {
+        method: 'DELETE',
+      });
+      if (result.archived) {
+        setError('');
+        window.alert(`"${product.name}" has order history, so it was archived instead of deleted.`);
+      }
       load();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Failed to delete product.');
@@ -386,19 +398,31 @@ const ProductForm: React.FC<{
       status: targetStatus,
       bestseller,
       featured,
-      images: images.map((src, idx) => ({
-        url: src,
-        src: src,
-        alt: `${name} - View ${idx + 1}`,
-      })),
-      variants: shades.map((shade, index) => ({
-        id: shade.databaseId,
-        name: shade.name || 'Default Shade',
-        price: Number(shade.price) || 80,
-        stock: Number(shade.stock) || 25,
-        isDefault: index === 0,
-        images: [],
-      })),
+      tags: [
+        ...(bestseller ? ['bestseller'] : []),
+        ...(featured ? ['featured'] : []),
+      ],
+      images: images
+        .filter((src) => typeof src === 'string' && src.trim().length > 0)
+        .map((src, idx) => ({
+          url: src.trim(),
+          src: src.trim(),
+          alt: `${name || 'Product'} - View ${idx + 1}`,
+        })),
+      variants: shades.map((shade, index) => {
+        const parsedPrice = Number(shade.price);
+        const parsedStock = Number(shade.stock);
+        return {
+          id: shade.databaseId || undefined,
+          name: (shade.name || 'Default Shade').trim() || 'Default Shade',
+          price: Number.isFinite(parsedPrice) && parsedPrice >= 0 ? parsedPrice : 0,
+          stock: Number.isFinite(parsedStock) && parsedStock >= 0 ? Math.floor(parsedStock) : 0,
+          active: true,
+          isDefault: index === 0,
+          sortOrder: index,
+          images: [],
+        };
+      }),
     };
     try {
       if (product?.databaseId) {
@@ -831,13 +855,16 @@ const ProductForm: React.FC<{
                           <span className="text-xs text-[var(--text-muted)] font-bold mr-1">₹</span>
                           <input
                             type="number"
+                            min={0}
+                            step="0.01"
                             className="w-full bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1.5 py-1 text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none transition-all"
                             value={shade.price}
                             placeholder="80"
                             onChange={(e) => {
-                              const val = e.target.value;
+                              const raw = e.target.value;
+                              const val = raw === '' ? '' : String(Math.max(0, Number(raw) || 0));
                               setShades((prev) =>
-                                prev.map((item, i) => (i === index ? { ...item, price: val } : item))
+                                prev.map((item, i) => (i === index ? { ...item, price: raw === '' ? '' : val } : item))
                               );
                             }}
                           />
@@ -847,13 +874,16 @@ const ProductForm: React.FC<{
                         <div className="col-span-3 sm:col-span-3 flex items-center gap-1.5">
                           <input
                             type="number"
+                            min={0}
+                            step={1}
                             className="w-14 bg-transparent border border-transparent hover:border-[var(--border-subtle)] focus:border-[var(--accent-primary)] focus:bg-[var(--card-bg)] rounded px-1.5 py-1 text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none transition-all"
                             value={shade.stock}
                             placeholder="25"
                             onChange={(e) => {
-                              const val = e.target.value;
+                              const raw = e.target.value;
+                              const val = raw === '' ? '' : String(Math.max(0, Math.floor(Number(raw) || 0)));
                               setShades((prev) =>
-                                prev.map((item, i) => (i === index ? { ...item, stock: val } : item))
+                                prev.map((item, i) => (i === index ? { ...item, stock: raw === '' ? '' : val } : item))
                               );
                             }}
                           />

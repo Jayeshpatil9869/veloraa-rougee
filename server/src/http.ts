@@ -24,6 +24,7 @@ const KNOWN = new Set([
   'invalid_credentials',
   'email_taken',
   'not_found',
+  'product_has_orders',
 ]);
 
 export function httpError(error: unknown) {

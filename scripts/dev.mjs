@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { config as loadEnv } from 'dotenv';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-loadEnv({ path: path.join(root, '.env') });
-loadEnv({ path: path.join(root, 'server', '.env') });
+loadEnv({ path: path.join(root, '.env'), override: true });
+loadEnv({ path: path.join(root, 'server', '.env'), override: true });
 
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 

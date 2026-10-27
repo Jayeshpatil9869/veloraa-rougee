@@ -34,6 +34,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [buying, setBuying] = useState(false);
   const [saved, setSaved] = useState(() => wishlistService.isWishlisted(product, initialVariant?.id));
   const [signedIn, setSignedIn] = useState(false);
   const [currentCustomerId, setCurrentCustomerId] = useState<string | null>(null);
@@ -58,6 +59,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     setSelectedVariant(initialVariant);
     setSelectedImageIndex(0);
     setQuantity(1);
+    setBuying(false);
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
@@ -172,8 +174,16 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   };
 
   const handleBuyNow = () => {
+    if (buying) return;
+    setBuying(true);
+    // Local add + navigate immediately; checkout page syncs the server cart.
     cartService.addItem(product, selectedVariant, quantity);
     if (onCartUpdated) onCartUpdated();
+    if (!signedIn) {
+      sessionStorage.setItem('vr_return_to', '/en/checkout');
+      onNavigate('/en/login');
+      return;
+    }
     onNavigate('/en/checkout');
   };
 
@@ -333,10 +343,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               <button
                 type="button"
                 onClick={handleBuyNow}
-                className="w-full h-11 sm:h-12 bg-gradient-to-r from-[#C5A262] via-[#E2C98A] to-[#C5A262] hover:brightness-105 active:scale-[0.99] text-[#121212] font-black text-xs sm:text-sm uppercase tracking-widest rounded-brand transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                disabled={buying}
+                aria-busy={buying}
+                className="w-full h-11 sm:h-12 bg-gradient-to-r from-[#C5A262] via-[#E2C98A] to-[#C5A262] hover:brightness-105 active:scale-[0.99] text-[#121212] font-black text-xs sm:text-sm uppercase tracking-widest rounded-brand transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-70 disabled:pointer-events-none"
               >
                 <Zap className="w-4 h-4 fill-current shrink-0" />
-                <span>BUY NOW ─ DIRECT CHECKOUT</span>
+                <span>{buying ? 'Opening checkout…' : 'BUY NOW'}</span>
               </button>
 
               <div className="text-[11px] sm:text-xs text-[var(--text-secondary)] bg-[var(--bg-secondary)] p-2.5 sm:p-3 rounded-brand border border-[var(--border-subtle)] flex items-center justify-center font-medium">

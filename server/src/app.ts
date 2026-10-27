@@ -65,7 +65,10 @@ export async function buildApp() {
 
   app.setErrorHandler((error, request, reply) => {
     if (error instanceof ZodError) {
-      return reply.status(400).send({ error: 'invalid_request' });
+      const first = error.issues[0];
+      const path = first?.path?.length ? first.path.join('.') : '';
+      const detail = first ? `${path ? `${path}: ` : ''}${first.message}` : 'invalid_request';
+      return reply.status(400).send({ error: 'invalid_request', detail, issues: error.issues.slice(0, 8) });
     }
     const mapped = httpError(error);
     if (mapped.status === 500) request.log.error(error);

@@ -9,3 +9,7 @@ coverage/
 tmp-sql/
 
 .env.example
+
+docs/
+supabase/migrations/20261027120000_payu_payment_events_view_token_refunds.sql
+supabase/migrations/20261027121000_fix_view_token_extensions.sql

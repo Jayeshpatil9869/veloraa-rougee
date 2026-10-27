@@ -74,6 +74,40 @@ export const cartService = {
     return memory;
   },
 
+  /** Align server cart with local lines so /checkout does not see cart_empty. */
+  async ensureRemoteCart() {
+    if (!hasApi()) return memory;
+    const local = memory.length ? memory : readLocal();
+    if (!local.length) {
+      await this.refresh();
+      return memory;
+    }
+    const remote = await api<RemoteCart>('/cart').catch(
+      () => ({ items: [], subtotal: 0, freeShippingThreshold: FREE_SHIPPING_THRESHOLD }) as RemoteCart,
+    );
+    for (const item of local) {
+      const variantId = item.variant.id || item.id;
+      const onServer = remote.items.find((entry) => entry.variantId === variantId);
+      if (onServer) {
+        if (onServer.quantity !== item.quantity) {
+          await api<RemoteCart>(`/cart/items/${encodeURIComponent(variantId)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ quantity: item.quantity }),
+          });
+        }
+      } else {
+        await api<RemoteCart>('/cart/items', {
+          method: 'POST',
+          body: JSON.stringify({ variantId, quantity: item.quantity }),
+        });
+      }
+    }
+    await this.refresh();
+    // Keep local UI if remote product mapping failed, but server lines were written above.
+    if (!memory.length) publish(local);
+    return memory;
+  },
+
   addItem: (product: Product, variant: ProductVariant, quantity = 1): CartItem[] => {
     const current = [...memory];
     const existing = current.find((item) => item.variant.id === variant.id || item.id === variant.id);
@@ -90,6 +124,16 @@ export const cartService = {
         .catch((err) => console.warn('Remote cart item add failed:', err));
     }
     return current;
+  },
+
+  async addItemAndSync(product: Product, variant: ProductVariant, quantity = 1) {
+    const current = [...memory];
+    const existing = current.find((item) => item.variant.id === variant.id || item.id === variant.id);
+    if (existing) existing.quantity += quantity;
+    else current.push({ id: variant.id, product, variant, quantity });
+    publish(current);
+    await this.ensureRemoteCart();
+    return memory;
   },
 
   updateQuantity: (variantId: string, quantity: number): CartItem[] => {
